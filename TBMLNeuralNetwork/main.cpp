@@ -1,6 +1,7 @@
 ﻿#include <vector>
 #include <iostream>
 #include <chrono>
+#include <string>
 #include <omp.h>
 
 #include "MNIST.h"
@@ -19,7 +20,7 @@ void testMNISTSerialization();
 int main()
 {
 	srand(0);
-	testMNIST();
+	testSerialization();
 }
 
 void testTime()
@@ -84,16 +85,16 @@ void testTraining()
 	tbml::Tensor expected{ std::vector<std::vector<float>>{ { L }, { H }, { H }, { L } } };
 
 	tbml::nn::NeuralNetwork network({
-		std::make_shared<tbml::nn::Layer::Dense>(2, 2),
+		std::make_shared<tbml::nn::Layer::Dense>(2, 3),
 		std::make_shared<tbml::nn::Layer::TanH>(),
-		std::make_shared<tbml::nn::Layer::Dense>(2, 1),
+		std::make_shared<tbml::nn::Layer::Dense>(3, 1),
 		std::make_shared<tbml::nn::Layer::TanH>() });
 
 	// Print values and train
 	input.print("Input:");
 	expected.print("Expected:");
 	network.propogate(input).print("Net Initial: ");
-	network.train(input, expected, std::make_shared<tbml::fn::SquareError>(), { -1, -1, 0.2f, 0.85f, 0.01f, 2 });
+	network.train(input, expected, std::make_shared<tbml::fn::SquareError>(), { -1, -1, 0.2f, 0.85f, 0.01f, 2, 1 });
 	network.propogate(input).print("Net Trained: ");
 }
 

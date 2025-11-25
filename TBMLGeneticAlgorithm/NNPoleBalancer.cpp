@@ -18,12 +18,12 @@ void NNPoleBalancerAgent::initVisual()
 
 	// Set up shapes
 	cartShape.setSize({ 0.3f * METRE_TO_UNIT, 0.22f * METRE_TO_UNIT });
-	cartShape.setOrigin(0.5f * (0.3f * METRE_TO_UNIT), 0.5f * (0.32f * METRE_TO_UNIT));
+	cartShape.setOrigin({ 0.5f * (0.3f * METRE_TO_UNIT), 0.5f * (0.32f * METRE_TO_UNIT) });
 	cartShape.setFillColor(sf::Color::Transparent);
 	cartShape.setOutlineColor(sf::Color::White);
 	cartShape.setOutlineThickness(1.0f);
 	poleShape.setSize({ 5.0f, poleLength * METRE_TO_UNIT * 2 });
-	poleShape.setOrigin(0.5f * 5.0f, poleLength * METRE_TO_UNIT * 2);
+	poleShape.setOrigin({ 0.5f * 5.0f, poleLength * METRE_TO_UNIT * 2 });
 	poleShape.setFillColor(sf::Color::Transparent);
 	poleShape.setOutlineColor(sf::Color::White);
 	poleShape.setOutlineThickness(1.0f);
@@ -73,9 +73,9 @@ bool NNPoleBalancerAgent::evaluate()
 		// Set final visual state
 		cartShape.setOutlineColor(sf::Color(100, 100, 140, 5));
 		poleShape.setOutlineColor(sf::Color(100, 100, 140, 5));
-		cartShape.setPosition(700.0f + cartPosition * METRE_TO_UNIT, 700.0f);
-		poleShape.setPosition(700.0f + cartPosition * METRE_TO_UNIT, 700.0f);
-		poleShape.setRotation(poleAngle * (180.0f / 3.141592653f));
+		cartShape.setPosition({ 700.0f + cartPosition * METRE_TO_UNIT, 700.0f });
+		poleShape.setPosition({ 700.0f + cartPosition * METRE_TO_UNIT, 700.0f });
+		poleShape.setRotation(sf::degrees(poleAngle));
 	}
 
 	return isFinished;
@@ -100,9 +100,9 @@ void NNPoleBalancerAgent::render(sf::RenderWindow* window)
 		}
 
 		// Update shape positions and rotations
-		cartShape.setPosition(700.0f + cartPosition * METRE_TO_UNIT, 700.0f);
-		poleShape.setPosition(700.0f + cartPosition * METRE_TO_UNIT, 700.0f);
-		poleShape.setRotation(poleAngle * (180.0f / 3.141592653f));
+		cartShape.setPosition({ 700.0f + cartPosition * METRE_TO_UNIT, 700.0f });
+		poleShape.setPosition({ 700.0f + cartPosition * METRE_TO_UNIT, 700.0f });
+		poleShape.setRotation(sf::degrees(poleAngle));
 	}
 
 	// Draw both to screen

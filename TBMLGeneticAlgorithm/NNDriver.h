@@ -71,7 +71,7 @@ class NNDriverGenepool : public tbml::ga::Genepool<NNGenome, NNDriverAgent>
 {
 public:
 	NNDriverGenepool(
-		std::function<GenomeCnPtr(void)> createGenomeFn, std::function<AgentPtr(GenomeCnPtr)> createAgentFn,
+		std::function<GenomeCPtr(void)> createGenomeFn, std::function<AgentPtr(GenomeCPtr)> createAgentFn,
 		std::vector<sf::Vector2f> targets, float targetRadius, std::vector<Body> worldBodies);
 
 	void initVisual();

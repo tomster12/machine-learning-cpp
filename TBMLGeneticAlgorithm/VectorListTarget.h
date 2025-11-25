@@ -33,7 +33,7 @@ class VectorListTargetGenepool : public tbml::ga::Genepool<VectorListGenome, Vec
 {
 public:
 	VectorListTargetGenepool(
-		std::function<GenomeCnPtr(void)> createGenomeFn, std::function<AgentPtr(GenomeCnPtr)> createAgentFn,
+		std::function<GenomeCPtr(void)> createGenomeFn, std::function<AgentPtr(GenomeCPtr)> createAgentFn,
 		sf::Vector2f targetPos, float targetRadius);
 
 	void initVisual();

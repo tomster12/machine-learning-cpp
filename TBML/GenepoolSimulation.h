@@ -83,10 +83,10 @@ namespace tbml
 		class Genepool : public IGenepool
 		{
 		public:
-			using GenomeCnPtr = std::shared_ptr<const TGenome>;
+			using GenomeCPtr = std::shared_ptr<const TGenome>;
 			using AgentPtr = std::shared_ptr<TAgent>;
 
-			Genepool(std::function<GenomeCnPtr(void)> createGenomeFn, std::function<AgentPtr(GenomeCnPtr)> createAgentFn)
+			Genepool(std::function<GenomeCPtr(void)> createGenomeFn, std::function<AgentPtr(GenomeCPtr)> createAgentFn)
 				: createGenomeFn(createGenomeFn), createAgentFn(createAgentFn)
 			{}
 
@@ -96,7 +96,7 @@ namespace tbml
 				this->agentPopulation.clear();
 				for (int i = 0; i < populationSize; i++)
 				{
-					GenomeCnPtr genome = createGenomeFn();
+					GenomeCPtr genome = createGenomeFn();
 					AgentPtr agent = createAgentFn(std::move(genome));
 					this->agentPopulation.push_back(std::move(agent));
 				}
@@ -109,6 +109,8 @@ namespace tbml
 				this->isGenerationEvaluated = false;
 
 				initializeGeneration();
+
+				std::cout << "Genepool initialized with population size " << this->populationSize << " and mutation rate " << this->mutationRate << "." << std::endl;
 			};
 
 			void initializeGeneration() {}
@@ -139,11 +141,13 @@ namespace tbml
 					std::vector<std::future<bool>> threadResults(threadCount);
 					int subsetSize = static_cast<int>(ceil((float)this->populationSize / threadCount));
 
+					std::cout << "Evaluating generation " << this->currentGeneration << " using " << threadCount << " threads." << std::endl;
+
 					while (!this->isGenerationEvaluated)
 					{
 						for (size_t i = 0; i < threadCount; i++)
 						{
-							int startIndex = i * subsetSize;
+							int startIndex = (int)i * subsetSize;
 							int endIndex = static_cast<int>(std::min(startIndex + subsetSize, this->populationSize));
 							threadResults[i] = this->evaluateThreadPool.enqueue([=] { return evaluateSubset(singleStep || syncThreadedFullSteps, startIndex, endIndex); });
 						}
@@ -181,7 +185,7 @@ namespace tbml
 				// Sort generation and extract best agent
 				std::sort(this->agentPopulation.begin(), this->agentPopulation.end(), [this](const auto& a, const auto& b) { return a->getFitness() > b->getFitness(); });
 				const AgentPtr& bestInstance = this->agentPopulation[0];
-				this->bestGenome = GenomeCnPtr(bestInstance->getGenome());
+				this->bestGenome = GenomeCPtr(bestInstance->getGenome());
 				this->bestFitness = bestInstance->getFitness();
 				std::cout << "Generation " << this->currentGeneration << " iterating, best fitness: " << this->bestFitness << std::endl;
 
@@ -191,17 +195,17 @@ namespace tbml
 
 				// [SELECTION] Select all parents to use
 				size_t reproduceCount = this->populationSize - 1;
-				std::vector<AgentPtr> parentData = selectRoulette(this->agentPopulation, reproduceCount * 2);
+				std::vector<AgentPtr> parentData = selectRoulette(this->agentPopulation, (int)reproduceCount * 2);
 				//std::vector<AgentPtr> parentData = selectTournament(this->agentPopulation, reproduceCount * 2, 3);
 
 				for (size_t i = 0; i < reproduceCount; i++)
 				{
 					// Grab the 2 parents from the selection
-					const GenomeCnPtr& parentDataA = parentData[i * 2 + 0]->getGenome();
-					const GenomeCnPtr& parentDataB = parentData[i * 2 + 1]->getGenome();
+					const GenomeCPtr& parentDataA = parentData[i * 2 + 0]->getGenome();
+					const GenomeCPtr& parentDataB = parentData[i * 2 + 1]->getGenome();
 
 					// [CROSSOVER], [MUTATION] Crossover and mutate new child genome
-					GenomeCnPtr childGenome = parentDataA->crossover(parentDataB, this->mutationRate);
+					GenomeCPtr childGenome = parentDataA->crossover(parentDataB, this->mutationRate);
 					nextGeneration.push_back(createAgentFn(std::move(childGenome)));
 				}
 
@@ -231,11 +235,16 @@ namespace tbml
 				this->useThreadedStep = enableMultithreadedStepEvaluation;
 				this->useThreadedFullStep = enableMultithreadedFullEvaluation;
 				this->syncThreadedFullSteps = syncMultithreadedSteps;
+
+				std::cout << "Genepool threading configured: " <<
+					(this->useThreadedStep ? "MultithreadedStepEvaluation " : "") <<
+					(this->useThreadedFullStep ? "MultithreadedFullEvaluation " : "") <<
+					(this->syncThreadedFullSteps ? "SynchronizedThreadedSteps " : "") << std::endl;
 			}
 
 			int getGenerationNumber() const { return this->currentGeneration; }
 
-			GenomeCnPtr getBestData() const { return this->bestGenome; }
+			GenomeCPtr getBestData() const { return this->bestGenome; }
 
 			float getBestFitness() const { return this->bestFitness; }
 
@@ -245,13 +254,13 @@ namespace tbml
 
 			bool getShowVisuals() const { return this->showVisuals; }
 
-			void setCreateGenomeFn(std::function<GenomeCnPtr(void)> createGenomeFn) { this->createGenomeFn = createGenomeFn; }
+			void setCreateGenomeFn(std::function<GenomeCPtr(void)> createGenomeFn) { this->createGenomeFn = createGenomeFn; }
 
-			void setCreateAgentFn(std::function<AgentPtr(GenomeCnPtr)> createAgentFn) { this->createAgentFn = createAgentFn; }
+			void setCreateAgentFn(std::function<AgentPtr(GenomeCPtr)> createAgentFn) { this->createAgentFn = createAgentFn; }
 
 		protected:
-			std::function<GenomeCnPtr(void)> createGenomeFn;
-			std::function<AgentPtr(GenomeCnPtr)> createAgentFn;
+			std::function<GenomeCPtr(void)> createGenomeFn;
+			std::function<AgentPtr(GenomeCPtr)> createAgentFn;
 			bool useThreadedStep = false;
 			bool useThreadedFullStep = false;
 			bool syncThreadedFullSteps = false;
@@ -263,7 +272,7 @@ namespace tbml
 			bool isGenerationEvaluated = false;
 			int currentGeneration = 0;
 			int currentStep = 0;
-			GenomeCnPtr bestGenome = nullptr;
+			GenomeCPtr bestGenome = nullptr;
 			float bestFitness = 0.0f;
 			ThreadPool evaluateThreadPool;
 			std::vector<AgentPtr> agentPopulation;

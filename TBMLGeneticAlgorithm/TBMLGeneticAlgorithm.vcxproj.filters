@@ -1,87 +1,132 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Implementation">
-      <UniqueIdentifier>{3af60f0c-f959-4df0-bfce-61e5c4635af9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UI">
-      <UniqueIdentifier>{cba3320b-ded3-4b64-b3c0-c29ad8adfffe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Implementation\Vector List Target">
-      <UniqueIdentifier>{a9a08ced-686f-4a7f-998c-df780b399c98}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Implementation\NN Pole Balancer">
-      <UniqueIdentifier>{75f633c6-2ceb-4f36-bc16-35298ee2e0e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main">
+    <Filter Include="Source">
       <UniqueIdentifier>{545865f4-55f7-4adc-ad8a-98753c44d30e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Implementation\NN Driver">
+    <Filter Include="Source\Scenarios">
+      <UniqueIdentifier>{3af60f0c-f959-4df0-bfce-61e5c4635af9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scenarios\Vector List Target">
+      <UniqueIdentifier>{a9a08ced-686f-4a7f-998c-df780b399c98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scenarios\NN Pole Balancer">
+      <UniqueIdentifier>{75f633c6-2ceb-4f36-bc16-35298ee2e0e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scenarios\NN Driver">
       <UniqueIdentifier>{5b7c034e-2050-4205-8c6d-fd3f7557dd3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Implementation\NN Ice Target">
+    <Filter Include="Source\Scenarios\NN Target">
       <UniqueIdentifier>{1e677a4d-0d7b-45e7-9093-6308907c46c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI">
+      <UniqueIdentifier>{cba3320b-ded3-4b64-b3c0-c29ad8adfffe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common">
+      <UniqueIdentifier>{fdbed969-76fe-4dc1-83b5-ba05c0876b41}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Game.cpp">
-      <Filter>Main</Filter>
+    <ClCompile Include="App.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Main</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Main</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="UIManager.cpp">
-      <Filter>UI</Filter>
+      <Filter>Source\UI</Filter>
     </ClCompile>
     <ClCompile Include="VectorListTarget.cpp">
-      <Filter>Implementation\Vector List Target</Filter>
+      <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClCompile>
     <ClCompile Include="global.cpp">
-      <Filter>Main</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="NNTarget.cpp">
-      <Filter>Implementation\NN Ice Target</Filter>
-    </ClCompile>
-    <ClCompile Include="CommonImpl.cpp">
-      <Filter>Implementation</Filter>
+    <ClCompile Include="NNTargetGenepool.cpp">
+      <Filter>Source\Scenarios\NN Target</Filter>
     </ClCompile>
     <ClCompile Include="NNPoleBalancer.cpp">
-      <Filter>Implementation\NN Pole Balancer</Filter>
+      <Filter>Source\Scenarios\NN Pole Balancer</Filter>
     </ClCompile>
     <ClCompile Include="NNDriver.cpp">
-      <Filter>Implementation\NN Driver</Filter>
+      <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="UIElement.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIButton.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIToggleButton.h">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIToggleButton.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDynamicText.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonImpl.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="GenepoolController.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="GenepoolController.h">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="NNTargetApp.cpp">
+      <Filter>Source\Scenarios\NN Target</Filter>
+    </ClCompile>
+    <ClCompile Include="NNTargetAgent.cpp">
+      <Filter>Source\Scenarios\NN Target</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h">
-      <Filter>Main</Filter>
+    <ClInclude Include="App.h">
+      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>Main</Filter>
+      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="UIManager.h">
-      <Filter>UI</Filter>
+      <Filter>Source\UI</Filter>
     </ClInclude>
     <ClInclude Include="VectorListTarget.h">
-      <Filter>Implementation\Vector List Target</Filter>
+      <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClInclude>
     <ClInclude Include="global.h">
-      <Filter>Main</Filter>
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="NNTarget.h">
-      <Filter>Implementation\NN Ice Target</Filter>
-    </ClInclude>
-    <ClInclude Include="CommonImpl.h">
-      <Filter>Implementation</Filter>
+    <ClInclude Include="NNTargetGenepool.h">
+      <Filter>Source\Scenarios\NN Target</Filter>
     </ClInclude>
     <ClInclude Include="NNPoleBalancer.h">
-      <Filter>Implementation\NN Pole Balancer</Filter>
+      <Filter>Source\Scenarios\NN Pole Balancer</Filter>
     </ClInclude>
     <ClInclude Include="NNDriver.h">
-      <Filter>Implementation\NN Driver</Filter>
+      <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="UIElement.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIButton.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIDynamicText.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonImpl.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="NNTargetApp.h">
+      <Filter>Source\Scenarios\NN Target</Filter>
+    </ClInclude>
+    <ClInclude Include="NNTargetAgent.h">
+      <Filter>Source\Scenarios\NN Target</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

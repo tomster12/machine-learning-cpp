@@ -6,7 +6,7 @@
 void Body::updateShape(sf::RectangleShape& shape) const
 {
 	shape.setPosition(pos);
-	shape.setRotation(rot * (180.0f / 3.14159265f));
+	shape.setRotation(sf::degrees(rot));
 }
 
 void Body::recalculateVertices()
@@ -106,12 +106,12 @@ void NNDriverAgent::initVisual()
 	mainShape.setOutlineColor(sf::Color(255, 255, 255, 120));
 	mainShape.setOutlineThickness(1.0f);
 	mainShape.setSize(mainBody.size);
-	mainShape.setOrigin(mainBody.size.x / 2.0f, mainBody.size.y / 2.0f);
+	mainShape.setOrigin({ mainBody.size.x / 2.0f, mainBody.size.y / 2.0f });
 
 	// Set up eye shape
 	eyeShape.setFillColor(eyeColourMiss);
 	eyeShape.setSize(sf::Vector2f(eyeLength, 3.0f));
-	eyeShape.setOrigin(0, 1.5f);
+	eyeShape.setOrigin({ 0, 1.5f });
 
 	if (isFinished) this->setFinishedVisual();
 
@@ -215,7 +215,7 @@ void NNDriverAgent::render(sf::RenderWindow* window)
 		{
 			float angle = mainBody.rot + (i - 2) * 0.2f * 3.14159265f;
 			eyeShape.setPosition(pos);
-			eyeShape.setRotation(angle * (180.0f / 3.14159265f));
+			eyeShape.setRotation(sf::degrees(angle));
 			eyeShape.setFillColor(eyeHits[i] > 0.5f ? eyeColourHit : eyeColourMiss);
 			window->draw(eyeShape);
 		}
@@ -243,7 +243,7 @@ void NNDriverAgent::calculateFitness()
 }
 
 NNDriverGenepool::NNDriverGenepool(
-	std::function<GenomeCnPtr(void)> createGenomeFn, std::function<AgentPtr(GenomeCnPtr)> createAgentFn,
+	std::function<GenomeCPtr(void)> createGenomeFn, std::function<AgentPtr(GenomeCPtr)> createAgentFn,
 	std::vector<sf::Vector2f> targets, float targetRadius, std::vector<Body> worldBodies)
 	: Genepool(createGenomeFn, createAgentFn),
 	targets(targets), targetRadius(targetRadius), worldBodies(worldBodies)
@@ -262,7 +262,7 @@ void NNDriverGenepool::initVisual()
 		shape.setOutlineColor(sf::Color::Green);
 		shape.setOutlineThickness(1.0f);
 		shape.setRadius(targetRadius);
-		shape.setOrigin(targetRadius, targetRadius);
+		shape.setOrigin({ targetRadius, targetRadius });
 		targetShapes.push_back(shape);
 	}
 
@@ -274,7 +274,7 @@ void NNDriverGenepool::initVisual()
 		shape.setOutlineColor(sf::Color::White);
 		shape.setOutlineThickness(1.0f);
 		shape.setSize(body.size);
-		shape.setOrigin(body.size.x / 2.0f, body.size.y / 2.0f);
+		shape.setOrigin({ body.size.x / 2.0f, body.size.y / 2.0f });
 		body.updateShape(shape);
 		body.recalculateVertices();
 		worldShapes.push_back(shape);

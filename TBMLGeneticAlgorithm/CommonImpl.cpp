@@ -15,7 +15,7 @@ VectorListGenome::VectorListGenome(int dataSize)
 
 VectorListGenome::VectorListGenome(std::vector<sf::Vector2f>&& values)
 {
-	this->dataSize = values.size();
+	this->dataSize = (int)values.size();
 	this->values = std::move(values);
 }
 

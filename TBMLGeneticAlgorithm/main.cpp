@@ -1,11 +1,9 @@
-
 #include "stdafx.h"
-#include "Game.h"
+#include "NNTargetApp.h"
 
 int main()
 {
-	Game game;
-	global::initialize();
-	game.run();
-	return 0;
+	if (global::initialize() != 0) return 1;
+	NNTargetApp app;
+	return app.run();
 }

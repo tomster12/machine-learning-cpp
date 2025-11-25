@@ -16,7 +16,7 @@ void VectorListTargetAgent::initVisual()
 
 	// Set up shape
 	shape.setRadius(radius);
-	shape.setOrigin(radius, radius);
+	shape.setOrigin({ radius, radius });
 	shape.setFillColor(sf::Color::Transparent);
 	shape.setOutlineColor(sf::Color::White);
 	shape.setOutlineThickness(1.0f);
@@ -49,7 +49,7 @@ void VectorListTargetAgent::render(sf::RenderWindow* window)
 	if (!isVisualInit) initVisual();
 
 	// Update shape position and colour
-	shape.setPosition(pos.x, pos.y);
+	shape.setPosition({ pos.x, pos.y });
 
 	// Draw shape to window
 	window->draw(shape);
@@ -85,7 +85,7 @@ float VectorListTargetAgent::calculateFitness()
 };
 
 VectorListTargetGenepool::VectorListTargetGenepool(
-	std::function<GenomeCnPtr(void)> createGenomeFn, std::function<AgentPtr(GenomeCnPtr)> createAgentFn,
+	std::function<GenomeCPtr(void)> createGenomeFn, std::function<AgentPtr(GenomeCPtr)> createAgentFn,
 	sf::Vector2f targetPos, float targetRadius)
 	: Genepool(createGenomeFn, createAgentFn), targetPos(targetPos), targetRadius(targetRadius)
 {
@@ -97,7 +97,7 @@ void VectorListTargetGenepool::initVisual()
 	// Initialize variables
 	target.setPosition(targetPos);
 	target.setRadius(targetRadius);
-	target.setOrigin(targetRadius, targetRadius);
+	target.setOrigin({ targetRadius, targetRadius });
 	target.setFillColor(sf::Color::Transparent);
 	target.setOutlineColor(sf::Color::White);
 	target.setOutlineThickness(1.0f);

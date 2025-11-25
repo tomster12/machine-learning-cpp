@@ -106,7 +106,7 @@ namespace tbml
 				gradWeights = Tensor(weights.getShape(), 0);
 				gradBias = Tensor(bias.getShape(), 0);
 
-				#pragma omp parallel for num_threads(12)
+				// #pragma omp parallel for num_threads(12)
 				for (int batchRow = 0; batchRow < batchSize; batchRow++)
 				{
 					for (int i = 0; i < m; i++)
@@ -372,13 +372,18 @@ namespace tbml
 			// Setup indices
 			indices.resize(input.getShape(0));
 			std::iota(indices.begin(), indices.end(), 0);
-			if (shuffle) std::random_shuffle(indices.begin(), indices.end());
+			if (shuffle)
+			{
+				static thread_local std::mt19937 rng{ std::random_device{}() };
+				std::shuffle(indices.begin(), indices.end(), rng);
+			}
 			if (preload) loadBatches();
 		}
 
 		void TensorBatcher::shuffleAndLoad()
 		{
-			std::random_shuffle(indices.begin(), indices.end());
+			static thread_local std::mt19937 rng{ std::random_device{}() };
+			std::shuffle(indices.begin(), indices.end(), rng);
 			loadBatches();
 		}
 

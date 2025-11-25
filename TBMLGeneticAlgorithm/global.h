@@ -4,5 +4,5 @@ namespace global
 {
 	extern sf::Font font;
 
-	void initialize();
+	int initialize();
 };

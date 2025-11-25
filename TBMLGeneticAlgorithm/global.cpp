@@ -1,12 +1,13 @@
-#include "stdafx.h"
 #include "global.h"
+#include "stdafx.h"
 
 namespace global
 {
 	sf::Font font;
 
-	void initialize()
+	int initialize()
 	{
-		font.loadFromFile("assets/arial.ttf");
+		font = sf::Font("assets/arial.ttf");
+		return 0;
 	}
 }

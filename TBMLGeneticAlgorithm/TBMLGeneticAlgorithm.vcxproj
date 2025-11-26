@@ -194,7 +194,9 @@
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="UIToggleButton.cpp" />
-    <ClCompile Include="VectorListTarget.cpp" />
+    <ClCompile Include="VectorListTargetAgent.cpp" />
+    <ClCompile Include="VectorListTargetApp.cpp" />
+    <ClCompile Include="VectorListTargetGenepool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.h" />
@@ -214,9 +216,11 @@
     <ClInclude Include="UIDynamicText.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="UIManager.h" />
-    <ClInclude Include="VectorListTarget.h" />
     <ClInclude Include="GenepoolController.h" />
     <ClInclude Include="UIToggleButton.h" />
+    <ClInclude Include="VectorListTargetAgent.h" />
+    <ClInclude Include="VectorListTargetApp.h" />
+    <ClInclude Include="VectorListTargetGenepool.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TBML\TBML.vcxproj">

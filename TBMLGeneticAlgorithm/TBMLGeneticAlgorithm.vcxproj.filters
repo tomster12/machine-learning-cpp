@@ -39,9 +39,6 @@
     <ClCompile Include="UIManager.cpp">
       <Filter>Source\UI</Filter>
     </ClCompile>
-    <ClCompile Include="VectorListTarget.cpp">
-      <Filter>Source\Scenarios\Vector List Target</Filter>
-    </ClCompile>
     <ClCompile Include="global.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -90,6 +87,15 @@
     <ClCompile Include="NNDriverAgent.cpp">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClCompile>
+    <ClCompile Include="VectorListTargetAgent.cpp">
+      <Filter>Source\Scenarios\Vector List Target</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorListTargetGenepool.cpp">
+      <Filter>Source\Scenarios\Vector List Target</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorListTargetApp.cpp">
+      <Filter>Source\Scenarios\Vector List Target</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -100,9 +106,6 @@
     </ClInclude>
     <ClInclude Include="UIManager.h">
       <Filter>Source\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="VectorListTarget.h">
-      <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClInclude>
     <ClInclude Include="global.h">
       <Filter>Source</Filter>
@@ -131,8 +134,6 @@
     <ClInclude Include="NNTargetAgent.h">
       <Filter>Source\Scenarios\NN Target</Filter>
     </ClInclude>
-    <ClInclude Include="GenepoolController.h" />
-    <ClInclude Include="UIToggleButton.h" />
     <ClInclude Include="NNPoleBalancerApp.h">
       <Filter>Source\Scenarios\NN Pole Balancer</Filter>
     </ClInclude>
@@ -147,6 +148,21 @@
     </ClInclude>
     <ClInclude Include="NNDriverAgent.h">
       <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="GenepoolController.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="UIToggleButton.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorListTargetAgent.h">
+      <Filter>Source\Scenarios\Vector List Target</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorListTargetGenepool.h">
+      <Filter>Source\Scenarios\Vector List Target</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorListTargetApp.h">
+      <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

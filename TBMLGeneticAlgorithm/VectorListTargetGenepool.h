@@ -2,9 +2,9 @@
 
 #include "CommonImpl.h"
 #include "VectorListTargetAgent.h"
-#include "AppGenepoolController.h"
+#include "AppScenarioController.h"
 
-class VectorListTargetGenepool : public tbml::ga::Genepool<VectorListGenome, VectorListTargetAgent>, public IAppGenepool
+class VectorListTargetGenepool : public tbml::ga::Genepool<VectorListGenome, VectorListTargetAgent>
 {
 public:
 	VectorListTargetGenepool(
@@ -15,8 +15,6 @@ public:
 	void render(sf::RenderWindow* window);
 	sf::Vector2f getTargetPos() const;
 	float getTargetRadius() const;
-
-	static IAppGenepoolPtr createGenepool();
 
 protected:
 	sf::CircleShape target;

@@ -169,7 +169,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AppGenepoolController.cpp" />
+    <ClCompile Include="AppScenarioController.cpp" />
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="CommonImpl.cpp" />
     <ClCompile Include="App.cpp" />
@@ -196,9 +196,10 @@
     <ClCompile Include="UIToggleButton.cpp" />
     <ClCompile Include="VectorListTargetAgent.cpp" />
     <ClCompile Include="VectorListTargetGenepool.cpp" />
+    <ClCompile Include="VectorListTargetScenario.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppGenepoolController.h" />
+    <ClInclude Include="AppScenarioController.h" />
     <ClInclude Include="Body.h" />
     <ClInclude Include="CommonImpl.h" />
     <ClInclude Include="App.h" />
@@ -219,6 +220,7 @@
     <ClInclude Include="UIToggleButton.h" />
     <ClInclude Include="VectorListTargetAgent.h" />
     <ClInclude Include="VectorListTargetGenepool.h" />
+    <ClInclude Include="VectorListTargetScenario.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TBML\TBML.vcxproj">

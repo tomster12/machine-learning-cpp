@@ -90,8 +90,11 @@
     <ClCompile Include="VectorListTargetGenepool.cpp">
       <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClCompile>
-    <ClCompile Include="AppGenepoolController.cpp">
+    <ClCompile Include="AppScenarioController.cpp">
       <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorListTargetScenario.cpp">
+      <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,8 +158,11 @@
     <ClInclude Include="VectorListTargetGenepool.h">
       <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClInclude>
-    <ClInclude Include="AppGenepoolController.h">
+    <ClInclude Include="AppScenarioController.h">
       <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorListTargetScenario.h">
+      <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

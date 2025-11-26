@@ -4,15 +4,18 @@
 #include "UIButton.h"
 #include "UIDynamicText.h"
 #include "TbmlGlobal.h"
+#include "VectorListTargetScenario.h"
+
+#define SCENARIO 3
 
 App::~App()
 {
 	delete window;
 }
 
-int App::run(IAppGenepoolPtr&& genepool)
+int App::run()
 {
-	if (initialize(std::move(genepool)) != 0) return 1;
+	if (initialize() != 0) return 1;
 
 	while (window->isOpen())
 	{
@@ -23,7 +26,7 @@ int App::run(IAppGenepoolPtr&& genepool)
 	return 0;
 }
 
-int App::initialize(IAppGenepoolPtr&& genepool)
+int App::initialize()
 {
 	if (global::initialize() != 0) return 1;
 
@@ -33,8 +36,17 @@ int App::initialize(IAppGenepoolPtr&& genepool)
 	window = new sf::RenderWindow(mode, "Genetic Algorithm", sf::Style::Titlebar | sf::Style::Close);
 	window->setFramerateLimit(60);
 
-	genepool->logInformation();
-	controller = std::make_unique<AppGenepoolController>(std::move(genepool));
+	#if SCENARIO == 0
+	NNTargetApp app;
+	#elif SCENARIO == 1
+	NNPoleBalancerApp app;
+	#elif SCENARIO == 2
+	NNDriverApp app;
+	#elif SCENARIO == 3
+	IAppScenarioUPtr scenario = std::make_unique<VectorListTargetScenario>();
+	#endif
+
+	controller = std::make_unique<AppScenarioController>(std::move(scenario));
 	ui = std::make_unique<UIManager>();
 
 	setupUI();

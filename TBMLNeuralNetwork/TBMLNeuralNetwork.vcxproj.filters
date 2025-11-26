@@ -2,17 +2,17 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Main</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Main">
+    <Filter Include="Source">
       <UniqueIdentifier>{57dad968-8b7c-4a09-bb3c-1ade54fa11f2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MNIST.h">
-      <Filter>Main</Filter>
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

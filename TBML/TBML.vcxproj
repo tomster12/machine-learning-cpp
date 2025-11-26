@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="TbmlGlobal.cpp" />
+    <ClCompile Include="TbmlGlobal.h" />
     <ClCompile Include="GenepoolSimulation.cpp" />
     <ClCompile Include="NeuralNetwork.cpp" />
     <ClCompile Include="stdafx.cpp" />

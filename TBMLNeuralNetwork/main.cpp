@@ -9,6 +9,7 @@
 #include "NeuralNetwork.h"
 #include "Utility.h"
 #include "Tensor.h"
+#include "TbmlGlobal.h"
 
 void testTime();
 void testBatch();
@@ -19,8 +20,9 @@ void testMNISTSerialization();
 
 int main()
 {
+	tbml::setOmpThreads(12);
 	srand(0);
-	testSerialization();
+	testMNISTSerialization();
 }
 
 void testTime()

@@ -20,7 +20,7 @@ protected:
 	float dt = 0;
 
 private:
-	void initialize();
+	int initialize();
 	void update();
 	void render();
 };

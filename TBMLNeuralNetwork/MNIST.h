@@ -1,124 +1,104 @@
-#pragma once
-
 #include <fstream>
-#include <stdlib.h>
-#include <uchar.h>
+#include <stdexcept>
+#include <vector>
+#include <cstdint>
 
 #include "Tensor.h"
 
-typedef unsigned char uchar;
+using uchar = unsigned char;
+
+static inline uint32_t swap32(uint32_t x)
+{
+	// Cross-platform big-endian swap for 32-bit ints
+	return ((x & 0x000000FFu) << 24) |
+		((x & 0x0000FF00u) << 8) |
+		((x & 0x00FF0000u) >> 8) |
+		((x & 0xFF000000u) >> 24);
+}
 
 class MNIST
 {
 public:
-	static uchar** readImages(std::string path, size_t& imageCount, size_t& imageSize)
+	static uchar** readImages(const std::string& path, size_t& imageCount, size_t& imageSize)
 	{
-		// Helper function
-		auto reverseInt = [](int i)
-		{
-			unsigned char c1, c2, c3, c4;
-			c1 = i & 255, c2 = (i >> 8) & 255, c3 = (i >> 16) & 255, c4 = (i >> 24) & 255;
-			return ((int)c1 << 24) + ((int)c2 << 16) + ((int)c3 << 8) + c4;
-		};
-
-		// Open file
 		std::ifstream file(path, std::ios::binary);
-		if (file.is_open())
-		{
-			int magic_number = 0, n_rows = 0, n_cols = 0;
+		if (!file) throw std::runtime_error("Failed to open: " + path);
 
-			// Read magic number
-			file.read((char*)&magic_number, sizeof(magic_number));
-			magic_number = reverseInt(magic_number);
-			if (magic_number != 2051) throw std::runtime_error("Invalid MNIST image file!");
+		uint32_t magic, count, rows, cols;
 
-			// Read dataset parameters
-			file.read((char*)&imageCount, sizeof(imageCount)), imageCount = reverseInt((int)imageCount);
-			file.read((char*)&n_rows, sizeof(n_rows)), n_rows = reverseInt(n_rows);
-			file.read((char*)&n_cols, sizeof(n_cols)), n_cols = reverseInt(n_cols);
-			imageSize = n_rows * n_cols;
+		file.read((char*)&magic, 4);
+		magic = swap32(magic);
+		if (magic != 2051) throw std::runtime_error("Invalid MNIST image file");
 
-			// Read in dataset
-			uchar** _dataset = new uchar * [imageCount];
-			for (size_t i = 0; i < imageCount; i++)
-			{
-				_dataset[i] = new uchar[imageSize];
-				file.read((char*)_dataset[i], imageSize);
-			}
-			return _dataset;
-		}
+		file.read((char*)&count, 4);
+		file.read((char*)&rows, 4);
+		file.read((char*)&cols, 4);
 
-		// File reading error
-		else throw std::runtime_error("Cannot open file `" + path + "`!");
-	}
+		count = swap32(count);
+		rows = swap32(rows);
+		cols = swap32(cols);
 
-	static uchar* readLabels(std::string path, size_t& labelCount)
-	{
-		// Helper function
-		auto reverseInt = [](int i)
-		{
-			unsigned char c1, c2, c3, c4;
-			c1 = i & 255, c2 = (i >> 8) & 255, c3 = (i >> 16) & 255, c4 = (i >> 24) & 255;
-			return ((int)c1 << 24) + ((int)c2 << 16) + ((int)c3 << 8) + c4;
-		};
+		imageCount = count;
+		imageSize = rows * cols;
 
-		// Open file
-		std::ifstream file(path, std::ios::binary);
-		if (file.is_open())
-		{
-			int magic_number = 0;
-
-			// Read magic number
-			file.read((char*)&magic_number, sizeof(magic_number));
-			magic_number = reverseInt(magic_number);
-			if (magic_number != 2049) throw std::runtime_error("Invalid MNIST label file!");
-
-			// Read dataset parameters
-			file.read((char*)&labelCount, sizeof(labelCount)), labelCount = reverseInt((int)labelCount);
-
-			// Read in dataset
-			uchar* _dataset = new uchar[labelCount];
-			for (size_t i = 0; i < labelCount; i++)
-				file.read((char*)&_dataset[i], 1);
-			return _dataset;
-		}
-
-		// File reading error
-		else throw std::runtime_error("Unable to open file `" + path + "`!");
-	}
-
-	static tbml::Tensor readImagesTensor(std::string path, size_t& imageCount, size_t& imageSize)
-	{
-		uchar** images = readImages(path, imageCount, imageSize);
-
-		tbml::Tensor tensor = tbml::Tensor({ imageCount, imageSize }, 0);
+		uchar** out = new uchar * [imageCount];
 
 		for (size_t i = 0; i < imageCount; i++)
 		{
-			for (size_t o = 0; o < imageSize; o++)
-			{
-				tensor(i, o) = (float)images[i][o] / 255.0f;
-			}
-
-			delete images[i];
+			out[i] = new uchar[imageSize];
+			file.read((char*)out[i], imageSize);
 		}
-
-		delete images;
-		return tensor;
+		return out;
 	}
 
-	static tbml::Tensor readLabelsTensor(std::string path, size_t& labelCount)
+	static uchar* readLabels(const std::string& path, size_t& labelCount)
 	{
-		uchar* labels = readLabels(path, labelCount);
+		std::ifstream file(path, std::ios::binary);
+		if (!file) throw std::runtime_error("Failed to open: " + path);
 
-		tbml::Tensor tensor = tbml::Tensor({ labelCount, 10 }, 0);
+		uint32_t magic, count;
 
-		for (size_t i = 0; i < labelCount; i++)
+		file.read((char*)&magic, 4);
+		magic = swap32(magic);
+		if (magic != 2049) throw std::runtime_error("Invalid MNIST label file");
+
+		file.read((char*)&count, 4);
+		count = swap32(count);
+
+		labelCount = count;
+
+		uchar* labels = new uchar[labelCount];
+		file.read((char*)labels, labelCount);
+
+		return labels;
+	}
+
+	static tbml::Tensor readImagesTensor(const std::string& path, size_t& imageCount, size_t& imageSize)
+	{
+		uchar** images = readImages(path, imageCount, imageSize);
+
+		tbml::Tensor t({ imageCount, imageSize }, 0);
+
+		for (size_t i = 0; i < imageCount; i++)
 		{
-			tensor(i, labels[i]) = 1.0f;
+			for (size_t j = 0; j < imageSize; j++)
+				t(i, j) = images[i][j] / 255.0f;
+			delete[] images[i];
 		}
 
-		delete labels;
-		return tensor;
+		delete[] images;
+		return t;
+	}
+
+	static tbml::Tensor readLabelsTensor(const std::string& path, size_t& count)
+	{
+		uchar* labels = readLabels(path, count);
+
+		tbml::Tensor t({ count, 10 }, 0);
+		for (size_t i = 0; i < count; i++)
+			t(i, labels[i]) = 1.0f;
+
+		delete[] labels;
+		return t;
 	}
 };

@@ -74,6 +74,7 @@ namespace tbml
 			virtual bool getGenerationEvaluated() const = 0;
 			virtual bool getShowVisuals() const = 0;
 			virtual void setShowVisuals(bool showVisuals) = 0;
+			virtual void logInformation() = 0;
 		};
 
 		using IGenepoolPtr = std::shared_ptr<IGenepool>;
@@ -109,8 +110,6 @@ namespace tbml
 				this->isGenerationEvaluated = false;
 
 				initializeGeneration();
-
-				std::cout << "Genepool initialized with population size " << this->populationSize << " and mutation rate " << this->mutationRate << "." << std::endl;
 			};
 
 			void initializeGeneration() {}
@@ -141,8 +140,6 @@ namespace tbml
 					std::vector<std::future<bool>> threadResults(threadCount);
 					int subsetSize = static_cast<int>(ceil((float)this->populationSize / threadCount));
 
-					std::cout << "Evaluating generation " << this->currentGeneration << " using " << threadCount << " threads." << std::endl;
-
 					while (!this->isGenerationEvaluated)
 					{
 						for (size_t i = 0; i < threadCount; i++)
@@ -169,11 +166,6 @@ namespace tbml
 						this->currentStep++;
 						if (singleStep) break;
 					}
-				}
-
-				if (this->isGenerationEvaluated)
-				{
-					std::cout << "Generation " << this->currentGeneration << " finished evaluating." << std::endl;
 				}
 			}
 
@@ -235,11 +227,6 @@ namespace tbml
 				this->useThreadedStep = enableMultithreadedStepEvaluation;
 				this->useThreadedFullStep = enableMultithreadedFullEvaluation;
 				this->syncThreadedFullSteps = syncMultithreadedSteps;
-
-				std::cout << "Genepool threading configured: " <<
-					(this->useThreadedStep ? "MultithreadedStepEvaluation " : "") <<
-					(this->useThreadedFullStep ? "MultithreadedFullEvaluation " : "") <<
-					(this->syncThreadedFullSteps ? "SynchronizedThreadedSteps " : "") << std::endl;
 			}
 
 			int getGenerationNumber() const { return this->currentGeneration; }
@@ -257,6 +244,20 @@ namespace tbml
 			void setCreateGenomeFn(std::function<GenomeCPtr(void)> createGenomeFn) { this->createGenomeFn = createGenomeFn; }
 
 			void setCreateAgentFn(std::function<AgentPtr(GenomeCPtr)> createAgentFn) { this->createAgentFn = createAgentFn; }
+
+			void logInformation()
+			{
+				if (!this->isGenepoolInitialized) throw std::runtime_error("tbml::GenepoolSimulation: Cannot log because uninitialized.");
+
+				std::cout << "---- Genepool ----" << std::endl;
+				std::cout << "Population Size: " << this->populationSize << std::endl;
+				std::cout << "Mutation Rate: " << this->mutationRate << std::endl;
+				std::cout << "Threading:" << std::endl;
+				std::cout << "  Multithreaded Step Evaluation: " << (this->useThreadedStep ? "Enabled" : "Disabled") << std::endl;
+				std::cout << "  Multithreaded Full Evaluation: " << (this->useThreadedFullStep ? "Enabled" : "Disabled") << std::endl;
+				std::cout << "  Sync Multithreaded Steps: " << (this->syncThreadedFullSteps ? "Enabled" : "Disabled") << std::endl;
+				std::cout << std::endl;
+			}
 
 		protected:
 			std::function<GenomeCPtr(void)> createGenomeFn;

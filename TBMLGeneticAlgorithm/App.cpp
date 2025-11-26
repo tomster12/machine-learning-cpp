@@ -1,17 +1,21 @@
 #include "stdafx.h"
 #include "App.h"
-#include "GenepoolController.h"
 #include "UIToggleButton.h"
 #include "UIButton.h"
 #include "UIDynamicText.h"
+#include "TbmlGlobal.h"
 
 App::~App()
 {
 	delete window;
 }
 
-void App::initialize()
+int App::initialize()
 {
+	if (global::initialize() != 0) return 1;
+
+	tbml::setOmpThreads(1);
+
 	sf::VideoMode mode({ 1400, 1000 });
 	window = new sf::RenderWindow(mode, "Genetic Algorithm", sf::Style::Titlebar | sf::Style::Close);
 	window->setFramerateLimit(60);
@@ -19,6 +23,7 @@ void App::initialize()
 	auto pool = createGenepool();
 	pool->configThreading(false, true, false);
 	pool->resetGenepool(1000, 0.05f);
+	pool->logInformation();
 
 	controller = std::make_unique<GenepoolController>(std::move(pool));
 	ui = std::make_unique<UIManager>();
@@ -28,13 +33,14 @@ void App::initialize()
 
 int App::run()
 {
-	initialize();
+	if (initialize() != 0) return 1;
 
 	while (window->isOpen())
 	{
 		update();
 		render();
 	}
+
 	return 0;
 }
 

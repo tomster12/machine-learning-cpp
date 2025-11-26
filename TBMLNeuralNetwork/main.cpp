@@ -22,7 +22,7 @@ int main()
 {
 	tbml::setOmpThreads(12);
 	srand(0);
-	testMNISTSerialization();
+	testMNIST();
 }
 
 void testTime()

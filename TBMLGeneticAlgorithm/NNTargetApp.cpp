@@ -23,5 +23,8 @@ tbml::ga::IGenepoolPtr NNTargetApp::createGenepool()
 			2.0f, 400.0f, 0.99f, 3000);
 	});
 
+	pool->configThreading(false, true, false);
+	pool->resetGenepool(1000, 0.1f);
+
 	return tbml::ga::IGenepoolPtr(pool);
 }

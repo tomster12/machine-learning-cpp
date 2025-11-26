@@ -48,19 +48,13 @@
     <ClCompile Include="NNTargetGenepool.cpp">
       <Filter>Source\Scenarios\NN Target</Filter>
     </ClCompile>
-    <ClCompile Include="NNPoleBalancer.cpp">
+    <ClCompile Include="NNPoleBalancerAgent.cpp">
       <Filter>Source\Scenarios\NN Pole Balancer</Filter>
-    </ClCompile>
-    <ClCompile Include="NNDriver.cpp">
-      <Filter>Source\Scenarios\NN Driver</Filter>
     </ClCompile>
     <ClCompile Include="UIElement.cpp">
       <Filter>Source\UI</Filter>
     </ClCompile>
     <ClCompile Include="UIButton.cpp">
-      <Filter>Source\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UIToggleButton.h">
       <Filter>Source\UI</Filter>
     </ClCompile>
     <ClCompile Include="UIToggleButton.cpp">
@@ -75,14 +69,26 @@
     <ClCompile Include="GenepoolController.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
-    <ClCompile Include="GenepoolController.h">
-      <Filter>Source\Common</Filter>
-    </ClCompile>
     <ClCompile Include="NNTargetApp.cpp">
       <Filter>Source\Scenarios\NN Target</Filter>
     </ClCompile>
     <ClCompile Include="NNTargetAgent.cpp">
       <Filter>Source\Scenarios\NN Target</Filter>
+    </ClCompile>
+    <ClCompile Include="NNPoleBalancerApp.cpp">
+      <Filter>Source\Scenarios\NN Pole Balancer</Filter>
+    </ClCompile>
+    <ClCompile Include="NNDriverApp.cpp">
+      <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="NNDriverGenepool.cpp">
+      <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Body.cpp">
+      <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="NNDriverAgent.cpp">
+      <Filter>Source\Scenarios\NN Driver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -104,11 +110,8 @@
     <ClInclude Include="NNTargetGenepool.h">
       <Filter>Source\Scenarios\NN Target</Filter>
     </ClInclude>
-    <ClInclude Include="NNPoleBalancer.h">
+    <ClInclude Include="NNPoleBalancerAgent.h">
       <Filter>Source\Scenarios\NN Pole Balancer</Filter>
-    </ClInclude>
-    <ClInclude Include="NNDriver.h">
-      <Filter>Source\Scenarios\NN Driver</Filter>
     </ClInclude>
     <ClInclude Include="UIElement.h">
       <Filter>Source\UI</Filter>
@@ -127,6 +130,23 @@
     </ClInclude>
     <ClInclude Include="NNTargetAgent.h">
       <Filter>Source\Scenarios\NN Target</Filter>
+    </ClInclude>
+    <ClInclude Include="GenepoolController.h" />
+    <ClInclude Include="UIToggleButton.h" />
+    <ClInclude Include="NNPoleBalancerApp.h">
+      <Filter>Source\Scenarios\NN Pole Balancer</Filter>
+    </ClInclude>
+    <ClInclude Include="NNDriverApp.h">
+      <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="NNDriverGenepool.h">
+      <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Body.h">
+      <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="NNDriverAgent.h">
+      <Filter>Source\Scenarios\NN Driver</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

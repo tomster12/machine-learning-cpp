@@ -21,14 +21,14 @@ int App::initialize()
 	window->setFramerateLimit(60);
 
 	auto pool = createGenepool();
-	pool->configThreading(false, true, false);
-	pool->resetGenepool(1000, 0.05f);
 	pool->logInformation();
 
 	controller = std::make_unique<GenepoolController>(std::move(pool));
 	ui = std::make_unique<UIManager>();
 
 	setupUI();
+
+	return 0;
 }
 
 int App::run()

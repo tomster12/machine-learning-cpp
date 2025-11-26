@@ -169,10 +169,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppGenepoolController.cpp" />
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="CommonImpl.cpp" />
     <ClCompile Include="App.cpp" />
-    <ClCompile Include="GenepoolController.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NNDriverAgent.cpp" />
@@ -195,10 +195,10 @@
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="UIToggleButton.cpp" />
     <ClCompile Include="VectorListTargetAgent.cpp" />
-    <ClCompile Include="VectorListTargetApp.cpp" />
     <ClCompile Include="VectorListTargetGenepool.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AppGenepoolController.h" />
     <ClInclude Include="Body.h" />
     <ClInclude Include="CommonImpl.h" />
     <ClInclude Include="App.h" />
@@ -216,10 +216,8 @@
     <ClInclude Include="UIDynamicText.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="UIManager.h" />
-    <ClInclude Include="GenepoolController.h" />
     <ClInclude Include="UIToggleButton.h" />
     <ClInclude Include="VectorListTargetAgent.h" />
-    <ClInclude Include="VectorListTargetApp.h" />
     <ClInclude Include="VectorListTargetGenepool.h" />
   </ItemGroup>
   <ItemGroup>

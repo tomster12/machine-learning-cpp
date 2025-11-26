@@ -13,7 +13,6 @@ void VectorListTargetAgent::initVisual()
 {
 	if (isVisualInit) return;
 
-	// Set up shape
 	shape.setRadius(radius);
 	shape.setOrigin({ radius, radius });
 	shape.setFillColor(sf::Color::Transparent);

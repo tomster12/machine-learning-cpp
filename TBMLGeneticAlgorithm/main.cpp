@@ -1,8 +1,6 @@
 #include "stdafx.h"
-#include "NNTargetApp.h"
-#include "NNPoleBalancerApp.h"
-#include "NNDriverApp.h"
-#include "VectorListTargetApp.h"
+#include "App.h"
+#include "VectorListTargetGenepool.h"
 
 #define SCENARIO 3
 
@@ -15,8 +13,9 @@ int main()
 	#elif SCENARIO == 2
 	NNDriverApp app;
 	#elif SCENARIO == 3
-	VectorListTargetApp app;
+	IAppGenepoolPtr genepool = VectorListTargetGenepool::createGenepool();
 	#endif
 
-	return app.run();
+	App app;
+	return app.run(std::move(genepool));
 }

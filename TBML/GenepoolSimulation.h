@@ -4,13 +4,6 @@
 #include "Utility.h"
 #include "ThreadPool.h"
 
-// Require SFML to be imported
-// TODO: Figure out if this is best way
-namespace sf
-{
-	class RenderWindow;
-}
-
 namespace tbml
 {
 	namespace ga
@@ -47,7 +40,6 @@ namespace tbml
 			Agent(const Agent&&) = delete;
 			Agent& operator=(const Agent&&) = delete;
 			virtual bool evaluate() = 0;
-			virtual void render(sf::RenderWindow* window) = 0;
 			const GenomeCPtr& getGenome() const { return this->genome; };
 			bool getFinished() const { return this->isFinished; };
 			float getFitness() const { return this->fitness; };
@@ -64,7 +56,6 @@ namespace tbml
 		public:
 			virtual void configThreading(bool enableMultithreadedStepEvaluation = false, bool enableMultithreadedFullEvaluation = false, bool syncMultithreadedSteps = false) = 0;
 			virtual void resetGenepool(int populationSize, float mutationRate) = 0;
-			virtual void render(sf::RenderWindow* window) = 0;
 			virtual void initializeGeneration() = 0;
 			virtual void evaluateGeneration(bool step = false) = 0;
 			virtual void iterateGeneration() = 0;
@@ -81,7 +72,7 @@ namespace tbml
 
 		// TGenome: Genome<TGenome>, TAgent: Agent<TGenome>
 		template<class TGenome, class TAgent>
-		class Genepool : public IGenepool
+		class Genepool : public virtual IGenepool
 		{
 		public:
 			using GenomeCPtr = std::shared_ptr<const TGenome>;
@@ -206,13 +197,6 @@ namespace tbml
 				this->currentGeneration++;
 				this->isGenerationEvaluated = false;
 				initializeGeneration();
-			};
-
-			void render(sf::RenderWindow* window)
-			{
-				if (!this->isGenepoolInitialized) throw std::runtime_error("tbml::GenepoolSimulation: Cannot render because uninitialized.");
-				if (!this->showVisuals) return;
-				for (const auto& inst : agentPopulation) inst->render(window);
 			};
 
 			void setShowVisuals(bool showVisuals) { this->showVisuals = showVisuals; }

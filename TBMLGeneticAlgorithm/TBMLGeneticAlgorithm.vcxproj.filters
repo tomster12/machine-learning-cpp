@@ -63,9 +63,6 @@
     <ClCompile Include="CommonImpl.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
-    <ClCompile Include="GenepoolController.cpp">
-      <Filter>Source\Common</Filter>
-    </ClCompile>
     <ClCompile Include="NNTargetApp.cpp">
       <Filter>Source\Scenarios\NN Target</Filter>
     </ClCompile>
@@ -93,8 +90,8 @@
     <ClCompile Include="VectorListTargetGenepool.cpp">
       <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClCompile>
-    <ClCompile Include="VectorListTargetApp.cpp">
-      <Filter>Source\Scenarios\Vector List Target</Filter>
+    <ClCompile Include="AppGenepoolController.cpp">
+      <Filter>Source\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,9 +146,6 @@
     <ClInclude Include="NNDriverAgent.h">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClInclude>
-    <ClInclude Include="GenepoolController.h">
-      <Filter>Source\Common</Filter>
-    </ClInclude>
     <ClInclude Include="UIToggleButton.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
@@ -161,8 +155,8 @@
     <ClInclude Include="VectorListTargetGenepool.h">
       <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClInclude>
-    <ClInclude Include="VectorListTargetApp.h">
-      <Filter>Source\Scenarios\Vector List Target</Filter>
+    <ClInclude Include="AppGenepoolController.h">
+      <Filter>Source\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

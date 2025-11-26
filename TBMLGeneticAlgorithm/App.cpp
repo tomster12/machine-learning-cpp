@@ -10,7 +10,20 @@ App::~App()
 	delete window;
 }
 
-int App::initialize()
+int App::run(IAppGenepoolPtr&& genepool)
+{
+	if (initialize(std::move(genepool)) != 0) return 1;
+
+	while (window->isOpen())
+	{
+		update();
+		render();
+	}
+
+	return 0;
+}
+
+int App::initialize(IAppGenepoolPtr&& genepool)
 {
 	if (global::initialize() != 0) return 1;
 
@@ -20,10 +33,8 @@ int App::initialize()
 	window = new sf::RenderWindow(mode, "Genetic Algorithm", sf::Style::Titlebar | sf::Style::Close);
 	window->setFramerateLimit(60);
 
-	auto pool = createGenepool();
-	pool->logInformation();
-
-	controller = std::make_unique<GenepoolController>(std::move(pool));
+	genepool->logInformation();
+	controller = std::make_unique<AppGenepoolController>(std::move(genepool));
 	ui = std::make_unique<UIManager>();
 
 	setupUI();
@@ -61,19 +72,6 @@ void App::setupUI()
 
 	this->ui->addElement(std::shared_ptr<UIElement>(new UIDynamicText(this->window, { osp + sp * 1.2f, osp + sp + osp + 2 * (sp + sz) + 40 }, 15,
 		[&]() { return std::string("Best Fitness: ") + std::to_string(this->controller->getGenepool()->getBestFitness()); })));
-}
-
-int App::run()
-{
-	if (initialize() != 0) return 1;
-
-	while (window->isOpen())
-	{
-		update();
-		render();
-	}
-
-	return 0;
 }
 
 void App::update()

@@ -1,26 +1,25 @@
 #pragma once
 
-#include "GenepoolController.h"
+#include "AppGenepoolController.h"
 #include "UIManager.h"
 
 class App
 {
 public:
 	virtual ~App();
-	int run();
+	int run(IAppGenepoolPtr&& genepool);
 
 protected:
 	virtual void setupUI();
-	virtual tbml::ga::IGenepoolPtr createGenepool() = 0;
 
-	std::unique_ptr<GenepoolController> controller;
+	std::unique_ptr<AppGenepoolController> controller;
 	std::unique_ptr<UIManager> ui;
 	sf::RenderWindow* window = nullptr;
 	sf::Clock dtClock;
 	float dt = 0;
 
 private:
-	int initialize();
+	int initialize(IAppGenepoolPtr&& genepool);
 	void update();
 	void render();
 };

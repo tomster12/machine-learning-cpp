@@ -13,7 +13,7 @@ public:
 
 	void initVisual();
 	bool evaluate() override;
-	void render(sf::RenderWindow* window) override;
+	void render(sf::RenderWindow* window);
 	float calculateDist();
 	float calculateFitness();
 

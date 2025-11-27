@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#include "TbmlGlobal.h"
 #include "CommonImpl.h"
 #include "NNDriverScenario.h"
 #include "Body.h"
@@ -48,8 +48,11 @@ NNDriverScenario::NNDriverScenario()
 		);
 	});
 
+	tbml::setOmpThreads(2);
+
 	this->genepool->configThreading(false, true, false);
 	this->genepool->resetGenepool(1000, 0.1f);
+	this->genepool->logInformation();
 }
 
 void NNDriverScenario::render(sf::RenderWindow* window)

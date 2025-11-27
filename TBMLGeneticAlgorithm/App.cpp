@@ -6,7 +6,7 @@
 #include "VectorListTargetScenario.h"
 #include "NNTargetScenario.h"
 
-#define SCENARIO 0
+#define SCENARIO 1
 
 App::~App()
 {
@@ -27,7 +27,6 @@ void App::run()
 void App::initialize()
 {
 	global::initialize();
-
 	tbml::setOmpThreads(1);
 
 	sf::VideoMode mode({ 1400, 1000 });

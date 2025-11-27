@@ -2,6 +2,7 @@
 #include "NeuralNetwork.h"
 #include "Utility.h"
 #include "omp.h"
+#include "tbmlGlobal.h"
 
 namespace tbml
 {
@@ -67,11 +68,17 @@ namespace tbml
 						bias.map([](float _) { return fn::getRandomFloat() * 2 - 1; });
 					}
 				}
+
+				gradWeights = Tensor(weights.getShape(), 0);
+				gradBias = Tensor(bias.getShape(), 0);
 			}
 
 			Dense::Dense(Tensor&& weights, Tensor&& bias)
 				: weights(std::move(weights)), bias(std::move(bias))
-			{}
+			{
+				gradWeights = Tensor(weights.getShape(), 0);
+				gradBias = Tensor(bias.getShape(), 0);
+			}
 
 			void Dense::propogateMut(Tensor& input) const
 			{
@@ -88,7 +95,7 @@ namespace tbml
 				// Propogate input with weights and bias
 				// Retain input and output for backprop
 				this->input = input;
-				output = input->matmulled(weights).add(bias, 0);
+				input->matmulled_to(weights, output).add(bias, 0);
 				return &output;
 			}
 
@@ -97,16 +104,18 @@ namespace tbml
 				assert(gradOutput->getDims() == 2 && gradOutput->getShape(1) == weights.getShape(1) && "gradOutput shape does not match weights shape");
 
 				// Calculate pd to neuron in and layer in
-				gradInput = gradOutput->matmulled(weights.transposed());
+				gradOutput->matmulled_to(weights.transposed(), gradInput);
 
-				// Calculate pd to weights and bias as average of batches
 				int batchSize = (int)input->getShape(0);
 				int m = (int)weights.getShape(0);
 				int n = (int)weights.getShape(1);
-				gradWeights = Tensor(weights.getShape(), 0);
-				gradBias = Tensor(bias.getShape(), 0);
 
-				// #pragma omp parallel for num_threads(12)
+				gradWeights.zero();
+				gradBias.zero();
+
+				// Calculate pd to weights and bias as average of batches
+				int threads = tbml::getOmpThreads();
+				#pragma omp parallel for num_threads(threads)
 				for (int batchRow = 0; batchRow < batchSize; batchRow++)
 				{
 					for (int i = 0; i < m; i++)
@@ -444,7 +453,17 @@ namespace tbml
 
 			// Train for each batch for each epoch
 			size_t maxEpoch = config.maxEpoch == -1 ? MAX_EPOCHS : config.maxEpoch;
-			if (config.logLevel > 0) printf("Training started for %zd epochs\n", maxEpoch);
+
+			if (config.logLevel > 0)
+			{
+				printf("Training started:\n");
+				printf("\tMax Epochs: %zu\n", maxEpoch);
+				printf("\tBatch Size: %d\n", config.batchSize);
+				printf("\tLearning Rate: %f\n", config.learningRate);
+				printf("\tMomentum Rate: %f\n", config.momentumRate);
+				printf("\tError Threshold: %f\n\n", config.errorThreshold);
+			}
+
 			std::chrono::steady_clock::time_point tTrainStart = std::chrono::steady_clock::now();
 			std::chrono::steady_clock::time_point tEpochStart = tTrainStart;
 			std::chrono::steady_clock::time_point tBatchStart = tTrainStart;
@@ -465,7 +484,7 @@ namespace tbml
 					float batchLoss = lossFn->calculate(*predicted, expectedBatch);
 					epochLoss += batchLoss / maxBatch;
 
-					// Backpropogate loss then through each layer
+					// Backpropogate loss through each layer
 					const Tensor gradLossToOut = lossFn->derivative(*predicted, expectedBatch);
 					layers[layers.size() - 1]->backpropogate(&gradLossToOut);
 					for (int i = (int)layers.size() - 2; i >= 0; i--)

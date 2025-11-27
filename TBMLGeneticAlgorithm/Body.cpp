@@ -46,13 +46,13 @@ bool Body::overlapOnAxis(const std::vector<sf::Vector2f>& vertices1, const std::
 bool Body::intersectBody(const Body& other) const
 {
 	// Get all axes as all edges from both rectangles
-	std::vector<sf::Vector2f> axes;
+	sf::Vector2f axes[8];
 	for (size_t i = 0; i < 4; ++i)
 	{
 		sf::Vector2f edge1 = vertices[i] - vertices[(i + 1) % 4];
 		sf::Vector2f edge2 = other.vertices[i] - other.vertices[(i + 1) % 4];
-		axes.push_back(sf::Vector2f(-edge1.y, edge1.x));
-		axes.push_back(sf::Vector2f(-edge2.y, edge2.x));
+		axes[i * 2 + 0] = sf::Vector2f(-edge1.y, edge1.x);
+		axes[i * 2 + 1] = sf::Vector2f(-edge2.y, edge2.x);
 	}
 
 	// Collision if there is no axis of separation

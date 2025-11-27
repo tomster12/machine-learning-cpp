@@ -31,7 +31,7 @@ bool NNTargetAgent::evaluate()
 	// Calculate with brain
 	const sf::Vector2f& targetPos1 = genepool->getTarget(currentTarget);
 	const sf::Vector2f& targetPos2 = genepool->getTarget(currentTarget + 1);
-	netInput.setData({ 1, 4 }, {
+	netInput.set({ 1, 4 }, {
 		targetPos1.x - pos.x,
 		targetPos1.y - pos.y,
 		vel.x,

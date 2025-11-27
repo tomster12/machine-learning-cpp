@@ -73,7 +73,7 @@ bool NNDriverAgent::evaluate()
 
 	// Calculate with brain (bias, eyes, speed, angle, angle diff)
 	float rotDiff = genepool->getTargetDir(mainBody.pos, currentTarget) - mainBody.rot;
-	netInput.setData({ 1, 8 }, { eyeHits[0], eyeHits[1], eyeHits[2], eyeHits[3], eyeHits[4], drivingSpeed, mainBody.rot, rotDiff });
+	netInput.set({ 1, 8 }, { eyeHits[0], eyeHits[1], eyeHits[2], eyeHits[3], eyeHits[4], drivingSpeed, mainBody.rot, rotDiff });
 	genome->getNetwork().propogateMut(netInput);
 
 	// Update position, angle, speed

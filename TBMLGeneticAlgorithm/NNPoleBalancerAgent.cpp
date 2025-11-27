@@ -37,7 +37,7 @@ bool NNPoleBalancerAgent::evaluate()
 	if (isFinished) return true;
 
 	// Calculate force with network
-	netProp.setData({ 1, 4 }, {
+	netProp.set({ 1, 4 }, {
 		cartPosition,
 		cartAcceleration,
 		poleAngle,

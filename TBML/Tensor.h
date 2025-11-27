@@ -19,7 +19,9 @@ namespace tbml
 		Tensor(const std::vector<std::vector<float>>& data);
 		Tensor(const std::vector<std::vector<std::vector<float>>>& data);
 		void zero();
-		void setData(std::vector<size_t>&& shape, std::vector<float>&& data);
+		void set(std::vector<size_t>&& shape, std::vector<float>&& data);
+		void set(const std::vector<size_t>& shape, float v);
+		void set(const std::vector<size_t>& shape);
 
 		template<typename... Args>
 		float& at(Args... args) { return data[_getIndex(0, 1, args...)]; }
@@ -47,11 +49,14 @@ namespace tbml
 		Tensor& ewise(const Tensor& t, std::function<float(float, float)> fn);
 		Tensor& matmul(const Tensor& t);
 		Tensor& transpose();
+
 		Tensor mapped(std::function<float(float)> fn) const { return Tensor(*this).map(fn); }
 		Tensor ewised(const Tensor& t, std::function<float(float, float)> fn) const { return Tensor(*this).ewise(t, fn); }
 		Tensor matmulled(const Tensor& t) const { return Tensor(*this).matmul(t); }
 		Tensor transposed() const { return Tensor(*this).transpose(); }
 		Tensor sample(size_t dim, std::vector<size_t> indices) const;
+
+		Tensor& matmulled_to(const Tensor& t, Tensor& out) const;
 
 		Tensor& operator+=(const Tensor& t) { return add(t); }
 		Tensor& operator+=(float v) { return add(v); }

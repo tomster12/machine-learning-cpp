@@ -21,7 +21,9 @@ void testMNISTSerialization();
 int main()
 {
 	tbml::setOmpThreads(12);
+
 	srand(0);
+
 	testMNIST();
 }
 
@@ -136,7 +138,7 @@ void testMNIST()
 	testExpected.print("Test Expected: ");
 
 	// Create network and train
-	// Timing (Batch: ~12ms, Epoch: ~7800ms @ 12 matmul threads) Fitness (10 epochs = 94.72%)
+	// Timing (batch size: 100, omp threads: 12 | batch: ~7ms, epoch: ~4800ms) Fitness (10 epochs = 94.72%)
 	tbml::nn::NeuralNetwork network({
 		std::make_unique<tbml::nn::Layer::Dense>(784, 100),
 		std::make_unique<tbml::nn::Layer::ReLU>(),

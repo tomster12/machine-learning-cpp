@@ -169,6 +169,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="IAppScenario.cpp" />
     <ClCompile Include="AppScenarioController.cpp" />
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="CommonImpl.cpp" />
@@ -176,13 +177,13 @@
     <ClCompile Include="global.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NNDriverAgent.cpp" />
-    <ClCompile Include="NNDriverApp.cpp" />
+    <ClCompile Include="NNDriverScenario.cpp" />
     <ClCompile Include="NNDriverGenepool.cpp" />
-    <ClCompile Include="NNPoleBalancerApp.cpp" />
+    <ClCompile Include="NNPoleBalancerScenario.cpp" />
     <ClCompile Include="NNTargetGenepool.cpp" />
     <ClCompile Include="NNPoleBalancerAgent.cpp" />
     <ClCompile Include="NNTargetAgent.cpp" />
-    <ClCompile Include="NNTargetApp.cpp" />
+    <ClCompile Include="NNTargetScenario.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -199,19 +200,20 @@
     <ClCompile Include="VectorListTargetScenario.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IAppScenario.h" />
     <ClInclude Include="AppScenarioController.h" />
     <ClInclude Include="Body.h" />
     <ClInclude Include="CommonImpl.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="NNDriverAgent.h" />
-    <ClInclude Include="NNDriverApp.h" />
+    <ClInclude Include="NNDriverScenario.h" />
     <ClInclude Include="NNDriverGenepool.h" />
-    <ClInclude Include="NNPoleBalancerApp.h" />
+    <ClInclude Include="NNPoleBalancerScenario.h" />
     <ClInclude Include="NNTargetGenepool.h" />
     <ClInclude Include="NNPoleBalancerAgent.h" />
     <ClInclude Include="NNTargetAgent.h" />
-    <ClInclude Include="NNTargetApp.h" />
+    <ClInclude Include="NNTargetScenario.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="UIButton.h" />
     <ClInclude Include="UIDynamicText.h" />

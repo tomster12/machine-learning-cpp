@@ -27,9 +27,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="App.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -63,16 +60,16 @@
     <ClCompile Include="CommonImpl.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
-    <ClCompile Include="NNTargetApp.cpp">
+    <ClCompile Include="NNTargetScenario.cpp">
       <Filter>Source\Scenarios\NN Target</Filter>
     </ClCompile>
     <ClCompile Include="NNTargetAgent.cpp">
       <Filter>Source\Scenarios\NN Target</Filter>
     </ClCompile>
-    <ClCompile Include="NNPoleBalancerApp.cpp">
+    <ClCompile Include="NNPoleBalancerScenario.cpp">
       <Filter>Source\Scenarios\NN Pole Balancer</Filter>
     </ClCompile>
-    <ClCompile Include="NNDriverApp.cpp">
+    <ClCompile Include="NNDriverScenario.cpp">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClCompile>
     <ClCompile Include="NNDriverGenepool.cpp">
@@ -96,11 +93,14 @@
     <ClCompile Include="VectorListTargetScenario.cpp">
       <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="IAppScenario.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="App.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -128,16 +128,16 @@
     <ClInclude Include="CommonImpl.h">
       <Filter>Source\Common</Filter>
     </ClInclude>
-    <ClInclude Include="NNTargetApp.h">
+    <ClInclude Include="NNTargetScenario.h">
       <Filter>Source\Scenarios\NN Target</Filter>
     </ClInclude>
     <ClInclude Include="NNTargetAgent.h">
       <Filter>Source\Scenarios\NN Target</Filter>
     </ClInclude>
-    <ClInclude Include="NNPoleBalancerApp.h">
+    <ClInclude Include="NNPoleBalancerScenario.h">
       <Filter>Source\Scenarios\NN Pole Balancer</Filter>
     </ClInclude>
-    <ClInclude Include="NNDriverApp.h">
+    <ClInclude Include="NNDriverScenario.h">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClInclude>
     <ClInclude Include="NNDriverGenepool.h">
@@ -163,6 +163,12 @@
     </ClInclude>
     <ClInclude Include="VectorListTargetScenario.h">
       <Filter>Source\Scenarios\Vector List Target</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="IAppScenario.h">
+      <Filter>Source\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

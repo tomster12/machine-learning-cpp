@@ -2,15 +2,15 @@
 
 #include "GenepoolSimulation.h"
 #include "IAppScenario.h"
-#include "VectorListTargetGenepool.h"
+#include "NNPoleBalancerAgent.h"
 
-class VectorListTargetScenario : public IAppScenario
+class NNPoleBalancerScenario : public IAppScenario
 {
 public:
-	VectorListTargetScenario();
+	NNPoleBalancerScenario();
 	void render(sf::RenderWindow* window) override;
 	tbml::ga::IGenepoolPtr getGenepool() const override { return std::static_pointer_cast<tbml::ga::IGenepool>(genepool); }
 
 private:
-	std::shared_ptr<VectorListTargetGenepool> genepool = nullptr;
+	std::shared_ptr<tbml::ga::Genepool<NNGenome, NNPoleBalancerAgent>> genepool = nullptr;
 };

@@ -54,6 +54,7 @@ namespace tbml
 		class IGenepool
 		{
 		public:
+			virtual ~IGenepool() = default;
 			virtual void configThreading(bool enableMultithreadedStepEvaluation = false, bool enableMultithreadedFullEvaluation = false, bool syncMultithreadedSteps = false) = 0;
 			virtual void resetGenepool(int populationSize, float mutationRate) = 0;
 			virtual void initializeGeneration() = 0;
@@ -63,8 +64,6 @@ namespace tbml
 			virtual float getBestFitness() const = 0;
 			virtual bool getGenepoolInitialized() const = 0;
 			virtual bool getGenerationEvaluated() const = 0;
-			virtual bool getShowVisuals() const = 0;
-			virtual void setShowVisuals(bool showVisuals) = 0;
 			virtual void logInformation() = 0;
 		};
 
@@ -72,7 +71,7 @@ namespace tbml
 
 		// TGenome: Genome<TGenome>, TAgent: Agent<TGenome>
 		template<class TGenome, class TAgent>
-		class Genepool : public virtual IGenepool
+		class Genepool : public IGenepool
 		{
 		public:
 			using GenomeCPtr = std::shared_ptr<const TGenome>;
@@ -199,8 +198,6 @@ namespace tbml
 				initializeGeneration();
 			};
 
-			void setShowVisuals(bool showVisuals) { this->showVisuals = showVisuals; }
-
 			void configThreading(bool enableMultithreadedStepEvaluation = false, bool enableMultithreadedFullEvaluation = false, bool syncMultithreadedSteps = false)
 			{
 				if (enableMultithreadedFullEvaluation && enableMultithreadedStepEvaluation)
@@ -213,6 +210,8 @@ namespace tbml
 				this->syncThreadedFullSteps = syncMultithreadedSteps;
 			}
 
+			std::vector<AgentPtr>* getAgentPopulation() { return &this->agentPopulation; }
+
 			int getGenerationNumber() const { return this->currentGeneration; }
 
 			GenomeCPtr getBestData() const { return this->bestGenome; }
@@ -222,8 +221,6 @@ namespace tbml
 			bool getGenepoolInitialized() const { return this->isGenepoolInitialized; }
 
 			bool getGenerationEvaluated() const { return this->isGenerationEvaluated; }
-
-			bool getShowVisuals() const { return this->showVisuals; }
 
 			void setCreateGenomeFn(std::function<GenomeCPtr(void)> createGenomeFn) { this->createGenomeFn = createGenomeFn; }
 
@@ -249,7 +246,6 @@ namespace tbml
 			bool useThreadedStep = false;
 			bool useThreadedFullStep = false;
 			bool syncThreadedFullSteps = false;
-			bool showVisuals = true;
 			int populationSize = 0;
 			float mutationRate = 0.0f;
 

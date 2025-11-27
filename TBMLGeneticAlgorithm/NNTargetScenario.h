@@ -2,15 +2,15 @@
 
 #include "GenepoolSimulation.h"
 #include "IAppScenario.h"
-#include "VectorListTargetGenepool.h"
+#include "NNTargetGenepool.h"
 
-class VectorListTargetScenario : public IAppScenario
+class NNTargetScenario : public IAppScenario
 {
 public:
-	VectorListTargetScenario();
+	NNTargetScenario();
 	void render(sf::RenderWindow* window) override;
 	tbml::ga::IGenepoolPtr getGenepool() const override { return std::static_pointer_cast<tbml::ga::IGenepool>(genepool); }
 
 private:
-	std::shared_ptr<VectorListTargetGenepool> genepool = nullptr;
+	std::shared_ptr<NNTargetGenepool> genepool = nullptr;
 };

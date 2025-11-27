@@ -2,7 +2,6 @@
 
 #include "CommonImpl.h"
 #include "VectorListTargetAgent.h"
-#include "AppScenarioController.h"
 
 class VectorListTargetGenepool : public tbml::ga::Genepool<VectorListGenome, VectorListTargetAgent>
 {
@@ -17,6 +16,7 @@ public:
 	float getTargetRadius() const;
 
 protected:
+	bool isVisualInit = false;
 	sf::CircleShape target;
 	sf::Vector2f targetPos;
 	float targetRadius = 0.0f;

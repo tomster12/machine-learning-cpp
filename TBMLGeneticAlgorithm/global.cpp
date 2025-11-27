@@ -5,9 +5,8 @@ namespace global
 {
 	sf::Font font;
 
-	int initialize()
+	void initialize()
 	{
 		font = sf::Font("assets/arial.ttf");
-		return 0;
 	}
 }

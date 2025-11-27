@@ -1,34 +1,32 @@
 #include "stdafx.h"
 #include "App.h"
-#include "UIToggleButton.h"
-#include "UIButton.h"
-#include "UIDynamicText.h"
 #include "TbmlGlobal.h"
+#include "NNDriverScenario.h"
+#include "NNPoleBalancerScenario.h"
 #include "VectorListTargetScenario.h"
+#include "NNTargetScenario.h"
 
-#define SCENARIO 3
+#define SCENARIO 0
 
 App::~App()
 {
 	delete window;
 }
 
-int App::run()
+void App::run()
 {
-	if (initialize() != 0) return 1;
+	this->initialize();
 
 	while (window->isOpen())
 	{
 		update();
 		render();
 	}
-
-	return 0;
 }
 
-int App::initialize()
+void App::initialize()
 {
-	if (global::initialize() != 0) return 1;
+	global::initialize();
 
 	tbml::setOmpThreads(1);
 
@@ -37,53 +35,16 @@ int App::initialize()
 	window->setFramerateLimit(60);
 
 	#if SCENARIO == 0
-	NNTargetApp app;
+	IAppScenarioUPtr scenario = std::make_unique<NNTargetScenario>();
 	#elif SCENARIO == 1
-	NNPoleBalancerApp app;
+	IAppScenarioUPtr scenario = std::make_unique<NNDriverScenario>();
 	#elif SCENARIO == 2
-	NNDriverApp app;
+	IAppScenarioUPtr scenario = std::make_unique<NNPoleBalancerScenario>();
 	#elif SCENARIO == 3
 	IAppScenarioUPtr scenario = std::make_unique<VectorListTargetScenario>();
 	#endif
 
-	controller = std::make_unique<AppScenarioController>(std::move(scenario));
-	ui = std::make_unique<UIManager>();
-
-	setupUI();
-
-	return 0;
-}
-
-void App::setupUI()
-{
-	this->ui = std::make_unique<UIManager>();
-	float osp = 6.0f;
-	float sp = 6.0f;
-	float sz = 30.0f;
-
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIToggleButton(this->window, { osp + sp + 0 * (sp + sz), osp + sp + 0 * (sp + sz) }, { sz, sz }, "assets/autoEvaluate.png", false,
-		[&](bool toggled) { this->controller->setEvaluate(toggled); })));
-
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIToggleButton(this->window, { osp + sp + 0 * (sp + sz), osp + sp + 1 * (sp + sz) }, { sz, sz }, "assets/autoFullEvaluate.png", false,
-		[&](bool toggled) { this->controller->setFullEvaluate(toggled); })));
-
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIButton(this->window, { osp + sp + 1 * (sp + sz), osp + sp + 0 * (sp + sz) }, { sz, sz }, "assets/iterate.png",
-		[&]() { this->controller->iterateGeneration(); })));
-
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIToggleButton(this->window, { osp + sp + 1 * (sp + sz), osp + sp + 1 * (sp + sz) }, { sz, sz }, "assets/autoIterate.png", false,
-		[&](bool toggled) { this->controller->setAutoIterate(toggled); })));
-
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIToggleButton(this->window, { osp + sp + 2 * (sp + sz), osp + sp + 0 * (sp + sz) }, { sz, sz }, "assets/show.png", true,
-		[&](bool toggled) { this->controller->setShowVisuals(toggled); })));
-
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIDynamicText(this->window, { osp + sp * 1.2f, osp + sp + osp + 2 * (sp + sz) + 0 }, 15,
-		[&]() { return std::string("Generation: ") + std::to_string(this->controller->getGenepool()->getGenerationNumber()); })));
-
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIDynamicText(this->window, { osp + sp * 1.2f, osp + sp + osp + 2 * (sp + sz) + 20 }, 15,
-		[&]() { return std::string("Evaluated: ") + std::string(this->controller->getGenepool()->getGenerationEvaluated() ? "True" : "False"); })));
-
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIDynamicText(this->window, { osp + sp * 1.2f, osp + sp + osp + 2 * (sp + sz) + 40 }, 15,
-		[&]() { return std::string("Best Fitness: ") + std::to_string(this->controller->getGenepool()->getBestFitness()); })));
+	controller = std::make_unique<AppScenarioController>(std::move(scenario), window);
 }
 
 void App::update()
@@ -99,7 +60,6 @@ void App::update()
 	}
 
 	controller->update();
-	ui->update();
 }
 
 void App::render()
@@ -107,7 +67,6 @@ void App::render()
 	window->clear();
 
 	controller->render(window);
-	ui->render(window);
 
 	window->display();
 }

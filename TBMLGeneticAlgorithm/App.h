@@ -7,19 +7,16 @@ class App
 {
 public:
 	virtual ~App();
-	int run();
+	void run();
 
 protected:
-	virtual void setupUI();
-
 	std::unique_ptr<AppScenarioController> controller;
-	std::unique_ptr<UIManager> ui;
 	sf::RenderWindow* window = nullptr;
 	sf::Clock dtClock;
 	float dt = 0;
 
 private:
-	int initialize();
+	void initialize();
 	void update();
 	void render();
 };

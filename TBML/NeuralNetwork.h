@@ -49,6 +49,7 @@ namespace tbml
 				Dense(size_t inputSize, size_t outputSize, InitType initType = InitType::RANDOM, bool useBias = true);
 				Dense(Tensor&& weights, Tensor&& bias);
 
+				void initGradTensors();
 				virtual void propogateMut(Tensor& input) const override;
 				virtual const Tensor* propogatePtr(const Tensor* input) override;
 				void backpropogate(const Tensor* gradOutput) override;
@@ -69,6 +70,8 @@ namespace tbml
 				Tensor gradBias;
 				Tensor momentumWeights;
 				Tensor momentumBias;
+				std::vector<std::vector<float>> threadGradWeights;
+				std::vector<std::vector<float>> threadGradBias;
 			};
 
 			class ReLU : public Base

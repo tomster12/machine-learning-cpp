@@ -67,7 +67,6 @@ namespace tbml
 		const size_t getSize() const { return data.size(); }
 		const std::vector<float>& getData() const { return data; }
 		std::vector<float>& getData() { return data; }
-		bool isZero() const;
 
 		void serialize(std::ostream& os) const;
 		static Tensor deserialize(std::istream& is);

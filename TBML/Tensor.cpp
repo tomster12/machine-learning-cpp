@@ -64,7 +64,7 @@ namespace tbml
 	Tensor::Tensor(const std::vector<std::vector<std::vector<float>>>& data)
 	{
 		// Hardcoded 3D overload
-		shape = { data[0].size(), data[0][0].size(), data.size() };
+		shape = { data[0].size(), data[0].size(), data[0][0].size() };
 		this->data = std::vector<float>(shape[0] * shape[1] * shape[2]);
 		for (size_t i = 0; i < shape[0]; i++)
 		{
@@ -119,6 +119,9 @@ namespace tbml
 		// TODO: Figure out the more generic way to do this
 		assert(moddim < 2);
 
+		const size_t rows = shape[0];
+		const size_t cols = shape[1];
+
 		// Ensure that all dimensions except moddim are the same
 		for (size_t i = 0; i < getDims(); i++)
 		{
@@ -132,28 +135,35 @@ namespace tbml
 
 		if (moddim == 0)
 		{
-			// shape = (1, 4, 2) => Take all the data to closest row 0
+			// t.shape = (1, 4, 2) => Take all the data to closest row 0
 			// [ 0, 1, 2, 3 ] .. [ 4, 5, 6, 7 ]
 			// [ 0, 1, 2, 3 ] .. [ 4, 5, 6, 7 ]
 			// [ 0, 1, 2, 3 ] .. [ 4, 5, 6, 7 ]
-			// ni = i // 3
-			for (size_t i = 0; i < data.size(); i++)
+
+			for (size_t i = 0; i < rows; i++)
 			{
-				int ni = (int)(i / shape[0]);
-				data[i] += t.data[ni];
+				for (size_t j = 0; j < cols; j++)
+				{
+					const float colVal = t.data[j];
+					data[i * cols + j] += colVal;
+				}
 			}
 		}
 
 		else if (moddim == 1)
 		{
-			// shape = (3, 1, 2) => Take all the data to closest col 0
+			// t,shape = (3, 1, 2) => Take all the data to closest col 0
 			// [ 0, 0, 0, 0 ] .. [ 3, 3, 3, 3 ]
 			// [ 1, 1, 1, 1 ] .. [ 4, 4, 4, 4 ]
 			// [ 2, 2, 2, 2 ] .. [ 5, 5, 5, 5 ]
-			for (size_t i = 0; i < data.size(); i++)
+
+			for (size_t i = 0; i < rows; i++)
 			{
-				size_t ni = (i / (shape[0] * shape[1])) + (i % shape[0]);
-				data[i] += t.data[ni];
+				const float rowVal = t.data[i];
+				for (size_t j = 0; j < cols; j++)
+				{
+					data[i * cols + j] += rowVal;
+				}
 			}
 		}
 
@@ -275,7 +285,7 @@ namespace tbml
 					const float* bPtr = bCol;
 
 					float acc = 0.0f;
-					for (int i = 0; i < aCols; i++)
+					for (int k = 0; k < aCols; k++)
 					{
 						acc += (*aPtr) * (*bPtr);
 						aPtr += 1;
@@ -484,16 +494,6 @@ namespace tbml
 		}
 
 		return groups;
-	}
-
-	bool Tensor::isZero() const
-	{
-		if (getDims() == 0) return true;
-		for (size_t i = 0; i < getDims(); i++)
-		{
-			if (shape[i] != 0) return false;
-		}
-		return true;
 	}
 
 	void Tensor::serialize(std::ostream& os) const

@@ -48,6 +48,8 @@ namespace tbml
 			{
 				weights = other.weights;
 				bias = other.bias;
+
+				initGradTensors();
 			}
 
 			Dense::Dense(size_t inputSize, size_t outputSize, InitType initType, bool useBias)
@@ -69,15 +71,23 @@ namespace tbml
 					}
 				}
 
-				gradWeights = Tensor(weights.getShape(), 0);
-				gradBias = Tensor(bias.getShape(), 0);
+				initGradTensors();
 			}
 
 			Dense::Dense(Tensor&& weights, Tensor&& bias)
 				: weights(std::move(weights)), bias(std::move(bias))
 			{
+				initGradTensors();
+			}
+
+			void Dense::initGradTensors()
+			{
 				gradWeights = Tensor(weights.getShape(), 0);
 				gradBias = Tensor(bias.getShape(), 0);
+
+				int threads = tbml::getOmpThreads();
+				threadGradWeights = std::vector<std::vector<float>>(threads, std::vector<float>(weights.getShape(0) * weights.getShape(1), 0.0f));
+				threadGradBias = std::vector<std::vector<float>>(threads, std::vector<float>(weights.getShape(1), 0.0f));
 			}
 
 			void Dense::propogateMut(Tensor& input) const
@@ -106,31 +116,54 @@ namespace tbml
 				// Calculate pd to neuron in and layer in
 				gradOutput->matmul_to(weights.transposed(), gradInput);
 
-				int batchSize = (int)input->getShape(0);
-				int rows = (int)weights.getShape(0);
-				int cols = (int)weights.getShape(1);
+				// Grab the data and values needed to backpropogate
+				const int batchSize = (int)input->getShape(0);
+				const int weightRows = (int)weights.getShape(0);
+				const int weightCols = (int)weights.getShape(1);
+				const float scale = 1.0f / batchSize;
+				const std::vector<float>& inputData = input->getData();
+				const std::vector<float>& gradOutputData = gradOutput->getData();
+				std::vector<float>& gradWeightsData = gradWeights.getData();
+				std::vector<float>& gradBiasData = gradBias.getData();
 
 				gradWeights.zero();
 				gradBias.zero();
 
-				// Calculate pd to weights and bias as average of batches
+				// Backpropogate multithreading with local accumulators to avoid race conditions on additions
 				int threads = tbml::getOmpThreads();
-				#pragma omp parallel for num_threads(threads)
-				for (int batchRow = 0; batchRow < batchSize; batchRow++)
+
+				for (int i = 0; i < threads; i++) threadGradWeights[i].assign(weightRows * weightCols, 0.0f);
+				for (int i = 0; i < threads; i++) threadGradBias[i].assign(weightCols, 0.0f);
+
+				#pragma omp parallel num_threads(threads)
 				{
-					for (int i = 0; i < rows; i++)
+					int tid = omp_get_thread_num();
+					auto& localGradWeights = threadGradWeights[tid];
+					auto& localGradBias = threadGradBias[tid];
+
+					#pragma omp for
+					for (int batchRow = 0; batchRow < batchSize; batchRow++)
 					{
-						const float batchInputI = input->at(batchRow, i);
-						for (int j = 0; j < cols; j++)
+						const float* inputRow = &inputData[batchRow * weightRows];
+						const float* gradOutputRow = &gradOutputData[batchRow * weightCols];
+						for (int i = 0; i < weightRows; i++)
 						{
-							const float batchOutputJ = gradOutput->at(batchRow, j);
-							gradWeights(i, j) += (batchInputI * batchOutputJ) / batchSize;
-							if (i == 0)
+							const float inputI = inputRow[i];
+							for (int j = 0; j < weightCols; j++)
 							{
-								gradBias(0, j) += batchOutputJ / batchSize;
+								const float gradOutputJ = gradOutputRow[j];
+								gradWeightsData[i * weightCols + j] += inputI * gradOutputJ * scale;
+								if (i == 0) gradBiasData[j] += gradOutputJ * scale;
 							}
 						}
 					}
+				}
+
+				// Now in the main thread, accumulate the local gradients into the main gradient tensors
+				for (int t = 0; t < threads; t++)
+				{
+					for (int idx = 0; idx < weightRows * weightCols; idx++) gradWeightsData[idx] += threadGradWeights[t][idx];
+					for (int j = 0; j < weightCols; j++) gradBiasData[j] += threadGradBias[t][j];
 				}
 			}
 

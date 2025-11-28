@@ -95,7 +95,7 @@ namespace tbml
 				// Propogate input with weights and bias
 				// Retain input and output for backprop
 				this->input = input;
-				input->matmulled_to(weights, output).add(bias, 0);
+				input->matmul_to(weights, output).add(bias, 0);
 				return &output;
 			}
 
@@ -104,11 +104,11 @@ namespace tbml
 				assert(gradOutput->getDims() == 2 && gradOutput->getShape(1) == weights.getShape(1) && "gradOutput shape does not match weights shape");
 
 				// Calculate pd to neuron in and layer in
-				gradOutput->matmulled_to(weights.transposed(), gradInput);
+				gradOutput->matmul_to(weights.transposed(), gradInput);
 
 				int batchSize = (int)input->getShape(0);
-				int m = (int)weights.getShape(0);
-				int n = (int)weights.getShape(1);
+				int rows = (int)weights.getShape(0);
+				int cols = (int)weights.getShape(1);
 
 				gradWeights.zero();
 				gradBias.zero();
@@ -118,17 +118,18 @@ namespace tbml
 				#pragma omp parallel for num_threads(threads)
 				for (int batchRow = 0; batchRow < batchSize; batchRow++)
 				{
-					for (int i = 0; i < m; i++)
+					for (int i = 0; i < rows; i++)
 					{
-						for (int j = 0; j < n; j++)
+						const float batchInputI = input->at(batchRow, i);
+						for (int j = 0; j < cols; j++)
 						{
-							gradWeights(i, j) += ((*input)(batchRow, i) * gradOutput->at(batchRow, j)) / batchSize;
+							const float batchOutputJ = gradOutput->at(batchRow, j);
+							gradWeights(i, j) += (batchInputI * batchOutputJ) / batchSize;
+							if (i == 0)
+							{
+								gradBias(0, j) += batchOutputJ / batchSize;
+							}
 						}
-					}
-
-					for (int j = 0; j < n; j++)
-					{
-						gradBias(0, j) += gradOutput->at(batchRow, j) / batchSize;
 					}
 				}
 			}

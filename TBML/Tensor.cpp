@@ -10,70 +10,69 @@ namespace tbml
 
 	Tensor::Tensor()
 	{
-		// Default constructor
 		shape = {};
 		data = {};
 	}
 
 	Tensor::Tensor(const Tensor& t)
 	{
-		// Copy constructor
 		shape = t.shape;
 		data = t.data;
 	}
 
 	Tensor::Tensor(const std::vector<size_t>& shape, float v)
 	{
-		// Create tensor with shape and fill with v
-		this->shape = shape;
 		size_t dataSize = 1;
-		for (size_t i = 0; i < getDims(); i++) dataSize *= shape[i];
-		data = std::vector<float>(dataSize, v);
+		for (size_t i = 0; i < shape.size(); i++) dataSize *= shape[i];
+
+		this->shape = shape;
+		this->data = std::vector<float>(dataSize, v);
 	}
 
 	Tensor::Tensor(const std::vector<size_t>& shape, const std::vector<float>& data)
 	{
-		// Create tensor with shape and data and assert data fits
-		this->shape = shape;
 		size_t dataSize = 1;
-		for (size_t i = 0; i < getDims(); i++) dataSize *= shape[i];
+		for (size_t i = 0; i < shape.size(); i++) dataSize *= shape[i];
+
 		assert(dataSize == data.size());
+
+		this->shape = shape;
 		this->data = data;
 	}
 
 	Tensor::Tensor(const std::vector<float>& data)
 	{
-		// Create 1D tensor
+		// Hardcoded 1D overload
 		this->shape = { data.size() };
 		this->data = data;
 	}
 
 	Tensor::Tensor(const std::vector<std::vector<float>>& data)
 	{
-		// Create 2D tensor
+		// Hardcoded 2D overload
 		shape = { data.size(), data[0].size() };
 		this->data = std::vector<float>(shape[0] * shape[1]);
-		for (size_t row = 0; row < shape[0]; row++)
+		for (size_t i = 0; i < shape[0]; i++)
 		{
-			for (size_t col = 0; col < shape[1]; col++)
+			for (size_t j = 0; j < shape[1]; j++)
 			{
-				this->data[row + col * shape[0]] = data[row][col];
+				this->at(i, j) = data[i][j];
 			}
 		}
 	}
 
 	Tensor::Tensor(const std::vector<std::vector<std::vector<float>>>& data)
 	{
-		// Create 3D tensor
+		// Hardcoded 3D overload
 		shape = { data[0].size(), data[0][0].size(), data.size() };
 		this->data = std::vector<float>(shape[0] * shape[1] * shape[2]);
-		for (size_t x = 0; x < shape[0]; x++)
+		for (size_t i = 0; i < shape[0]; i++)
 		{
-			for (size_t y = 0; y < shape[1]; y++)
+			for (size_t j = 0; j < shape[1]; j++)
 			{
-				for (size_t z = 0; z < shape[2]; z++)
+				for (size_t k = 0; k < shape[2]; k++)
 				{
-					this->data[x + y * shape[0] + z * shape[0] * shape[1]] = data[z][x][y];
+					this->at(i, j, k) = data[i][j][k];
 				}
 			}
 		}
@@ -84,25 +83,20 @@ namespace tbml
 		for (size_t i = 0; i < data.size(); i++) data[i] = 0;
 	}
 
-	void Tensor::set(std::vector<size_t>&& shape, std::vector<float>&& data)
+	void Tensor::setData(std::vector<size_t>&& shape, std::vector<float>&& data)
 	{
 		this->shape = std::move(shape);
 		this->data = std::move(data);
 	}
 
-	void Tensor::set(const std::vector<size_t>& shape, float v)
-	{
-		set(shape);
-		for (size_t i = 0; i < data.size(); i++) data[i] = v;
-	}
-
-	void Tensor::set(const std::vector<size_t>& shape)
+	void Tensor::resizeData(const std::vector<size_t>& shape)
 	{
 		if (this->shape == shape) return;
 
-		this->shape = shape;
 		size_t dataSize = 1;
-		for (size_t i = 0; i < getDims(); i++) dataSize *= this->shape[i];
+		for (size_t i = 0; i < shape.size(); i++) dataSize *= shape[i];
+
+		this->shape = shape;
 		data.resize(dataSize);
 	}
 
@@ -122,16 +116,16 @@ namespace tbml
 
 	Tensor& Tensor::add(const Tensor& t, size_t moddim)
 	{
-		// Add function with broadcasting along moddim
 		// TODO: Figure out the more generic way to do this
 		assert(moddim < 2);
 
+		// Ensure that all dimensions except moddim are the same
 		for (size_t i = 0; i < getDims(); i++)
 		{
 			if (i != moddim) assert(shape[i] == t.shape[i]);
 		}
 
-		// shape = (3, 4, 2)
+		// Example shape = (3, 4, 2)
 		// [ 0, 3, 6, 9  ] .. [ 12, 15, 18, 21 ]
 		// [ 1, 4, 7, 10 ] .. [ 13, 16, 19, 22 ]
 		// [ 2, 5, 8, 11 ] .. [ 14, 17, 20, 23 ]
@@ -241,37 +235,54 @@ namespace tbml
 
 	Tensor& Tensor::matmul(const Tensor& t)
 	{
-		const int dims = getDims();
+		const size_t dims = getDims();
 		assert(dims == t.getDims());
+
+		std::vector<float>& a = data;
+		const std::vector<float>& b = t.data;
 
 		if (dims == 1)
 		{
-			assert(getShape(0) == t.getShape(0));
+			const size_t aCols = shape[0];
+			const size_t bCols = t.shape[0];
+			assert(aCols == bCols);
 
-			return this->operator*=(t);
+			for (size_t i = 0; i < data.size(); i++) a[i] *= b[i];
+			return *this;
 		}
 
 		else if (dims == 2)
 		{
-			assert(getShape(1) == t.getShape(0));
+			const size_t aRows = shape[0];
+			const size_t aCols = shape[1];
+			const size_t bRows = t.shape[0];
+			const size_t bCols = t.shape[1];
+			assert(aCols == bRows);
 
-			const std::vector<float>& a = data;
-			const std::vector<float>& b = t.data;
-			std::vector<float> out(shape[0] * t.shape[1]);
+			std::vector<float> out(aRows * bCols);
 
 			int threads = tbml::getOmpThreads();
-
 			#pragma omp parallel for num_threads(threads)
-			for (int row = 0; row < (int)shape[0]; row++)
+			for (int i = 0; i < aRows; i++)
 			{
-				for (int ocol = 0; ocol < (int)t.shape[1]; ocol++)
+				const float* aRow = &a[i * aCols];
+				float* outRow = &out[i * bCols];
+
+				for (int j = 0; j < bCols; j++)
 				{
+					const float* bCol = &b[j];
+					const float* aPtr = aRow;
+					const float* bPtr = bCol;
+
 					float acc = 0.0f;
-					for (int i = 0; i < (int)shape[1]; i++)
+					for (int i = 0; i < aCols; i++)
 					{
-						acc += a[row + shape[0] * i] * b[i + t.shape[0] * ocol];
+						acc += (*aPtr) * (*bPtr);
+						aPtr += 1;
+						bPtr += bCols;
 					}
-					out[row + shape[0] * ocol] = acc;
+
+					outRow[j] = acc;
 				}
 			}
 
@@ -283,28 +294,96 @@ namespace tbml
 		throw std::runtime_error("Invalid shape for matrix multiplication");
 	}
 
+	Tensor& Tensor::matmul_to(const Tensor& t, Tensor& out) const
+	{
+		const size_t dims = getDims();
+		assert(dims == t.getDims());
+
+		const std::vector<float>& a = data;
+		const std::vector<float>& b = t.data;
+		std::vector<float>& outData = out.data;
+
+		if (dims == 1)
+		{
+			const size_t aCols = getShape(0);
+			const size_t bCols = t.getShape(0);
+			assert(aCols == bCols);
+
+			if (out.getDims() != 1 || out.shape[0] != aCols)
+			{
+				out.resizeData({ aCols });
+			}
+
+			for (size_t i = 0; i < aCols; i++) outData[i] = a[i] * b[i];
+		}
+
+		else if (dims == 2)
+		{
+			const size_t aRows = shape[0];
+			const size_t aCols = shape[1];
+			const size_t bRows = t.shape[0];
+			const size_t bCols = t.shape[1];
+			assert(aCols == bRows);
+
+			if (out.getDims() != 2 || out.shape[0] != aRows || out.shape[1] != bCols)
+			{
+				out.resizeData({ aRows, bCols });
+			}
+
+			int threads = tbml::getOmpThreads();
+			#pragma omp parallel for num_threads(threads)
+			for (int i = 0; i < aRows; i++)
+			{
+				const float* aRow = &a[i * aCols];
+				float* outRow = &outData[i * bCols];
+
+				for (int j = 0; j < bCols; j++)
+				{
+					const float* bCol = &b[j];
+					const float* aPtr = aRow;
+					const float* bPtr = bCol;
+
+					float acc = 0.0f;
+					for (int i = 0; i < aCols; i++)
+					{
+						acc += (*aPtr) * (*bPtr);
+						aPtr += 1;
+						bPtr += bCols;
+					}
+
+					outRow[j] = acc;
+				}
+			}
+		}
+
+		return out;
+	}
+
 	Tensor& Tensor::transpose()
 	{
 		if (getDims() == 1)
 		{
-			shape = { 1, shape[0] };
+			const size_t rows = shape[0];
+			shape = { 1, rows };
 			return *this;
 		}
 
 		else if (getDims() == 2)
 		{
-			std::vector<float> result(shape[0] * shape[1]);
+			const size_t rows = shape[0];
+			const size_t cols = shape[1];
+			std::vector<float> out(rows * cols);
 
-			for (size_t row = 0; row < shape[0]; row++)
+			for (size_t i = 0; i < rows; i++)
 			{
-				for (size_t col = 0; col < shape[1]; col++)
+				for (size_t j = 0; j < cols; j++)
 				{
-					result[col + shape[1] * row] = data[row + shape[0] * col];
+					out[j * rows + i] = data[i * cols + j];
 				}
 			}
 
-			data = std::move(result);
-			shape = { shape[1], shape[0] };
+			data = std::move(out);
+			shape = { cols, rows };
 			return *this;
 		}
 
@@ -313,68 +392,27 @@ namespace tbml
 
 	Tensor Tensor::sample(size_t dim, std::vector<size_t> indices) const
 	{
+		// Hardcoded only for 2D tensor and dim 0
 		assert(getDims() == 2);
 		assert(dim == 0);
 
-		// Only implemented for dim 0 of 2D tensor
-		std::vector<float> result(indices.size() * shape[1]);
+		const size_t rows = shape[0];
+		const size_t cols = shape[1];
+
+		std::vector<float> out(indices.size() * cols);
 		for (size_t i = 0; i < indices.size(); i++)
 		{
-			for (size_t j = 0; j < shape[1]; j++)
+			size_t srcI = indices[i];
+			const float* row = &data[srcI * cols];
+			float* outRow = &out[i * cols];
+
+			for (size_t j = 0; j < cols; j++)
 			{
-				result[i + indices.size() * j] = data[indices[i] + shape[0] * j];
+				outRow[j] = row[j];
 			}
 		}
 
-		return Tensor({ indices.size(), shape[1] }, result);
-	}
-
-	Tensor& Tensor::matmulled_to(const Tensor& t, Tensor& out) const
-	{
-		const int dims = getDims();
-		assert(dims == t.getDims());
-
-		if (dims == 1)
-		{
-			assert(getShape(0) == t.getShape(0));
-
-			const std::vector<float>& a = data;
-			const std::vector<float>& b = t.data;
-			std::vector<float>& o = out.data;
-
-			for (size_t i = 0; i < data.size(); i++) o[i] = a[i] * b[i];
-		}
-
-		else if (dims == 2)
-		{
-			assert(getShape(1) == t.getShape(0));
-
-			if (out.getDims() != 2 || out.shape[0] != shape[0] || out.shape[1] != t.shape[1])
-			{
-				out.set({ shape[0], t.shape[1] });
-			}
-
-			const std::vector<float>& a = data;
-			const std::vector<float>& b = t.data;
-			std::vector<float>& o = out.data;
-
-			int threads = tbml::getOmpThreads();
-			#pragma omp parallel for num_threads(threads)
-			for (int row = 0; row < (int)shape[0]; row++)
-			{
-				for (int ocol = 0; ocol < (int)t.shape[1]; ocol++)
-				{
-					float acc = 0.0f;
-					for (int i = 0; i < (int)shape[1]; i++)
-					{
-						acc += a[row + shape[0] * i] * b[i + t.shape[0] * ocol];
-					}
-					o[row + shape[0] * ocol] = acc;
-				}
-			}
-		}
-
-		return out;
+		return Tensor({ indices.size(), cols }, out);
 	}
 
 	void Tensor::print(std::string tag) const
@@ -403,12 +441,12 @@ namespace tbml
 			if (data.size() > 50) dataStr += "\t[ ... ]";
 			else
 			{
-				for (size_t x = 0; x < shape[0]; x++)
+				for (size_t i = 0; i < shape[0]; i++)
 				{
 					dataStr += "\t[ ";
-					for (size_t y = 0; y < shape[1]; y++)
+					for (size_t j = 0; j < shape[1]; j++)
 					{
-						dataStr += std::to_string(data[x + shape[0] * y]) + " ";
+						dataStr += std::to_string(data[i * shape[1] + j]) + " ";
 					}
 					dataStr += "]\n";
 				}
@@ -420,24 +458,27 @@ namespace tbml
 
 	std::vector<Tensor> Tensor::groupRows(size_t targetGroupSize) const
 	{
-		// TODO: More generic way to do this
+		// Hardcoded only for 2D tensor
 		assert(getDims() == 2);
 
-		size_t groupCount = (size_t)(ceil((float)shape[0] / targetGroupSize));
-		bool hasUneven = (shape[0] % targetGroupSize) != 0;
+		const size_t rows = shape[0];
+		const size_t cols = shape[1];
 
-		std::vector<Tensor> groups = std::vector<Tensor>(groupCount);
+		size_t groupCount = (size_t)(ceil((float)rows / targetGroupSize));
+		std::vector<Tensor> groups(groupCount);
 
-		for (size_t i = 0; i < groupCount; i++)
+		bool hasUneven = (rows % targetGroupSize) != 0;
+		for (size_t g = 0; g < groupCount; g++)
 		{
-			size_t groupSize = (hasUneven && (i == groupCount - 1)) ? (shape[0] % targetGroupSize) : targetGroupSize;
-			groups[i] = Tensor{ { groupSize, shape[1] }, 0 };
+			size_t groupSize = (hasUneven && (g == groupCount - 1)) ? (rows % targetGroupSize) : targetGroupSize;
+			groups[g] = Tensor{ { groupSize, cols }, 0 };
 
-			for (size_t row = 0; row < groupSize; row++)
+			for (size_t i = 0; i < groupSize; i++)
 			{
-				for (size_t col = 0; col < shape[1]; col++)
+				size_t srcI = g * targetGroupSize + i;
+				for (size_t j = 0; j < cols; j++)
 				{
-					groups[i](row, col) = at(i * groupSize + row, col);
+					groups[g].data[i * cols + j] = data[srcI * cols + j];
 				}
 			}
 		}

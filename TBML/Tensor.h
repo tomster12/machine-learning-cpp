@@ -4,8 +4,7 @@
 
 namespace tbml
 {
-	// Column-major order vector<float> based tensor
-	// e.g. shape[0] = rows, shape[1] = columns, ...
+	// Row-major vector<float> tensor
 	class Tensor
 	{
 	public:
@@ -19,21 +18,8 @@ namespace tbml
 		Tensor(const std::vector<std::vector<float>>& data);
 		Tensor(const std::vector<std::vector<std::vector<float>>>& data);
 		void zero();
-		void set(std::vector<size_t>&& shape, std::vector<float>&& data);
-		void set(const std::vector<size_t>& shape, float v);
-		void set(const std::vector<size_t>& shape);
-
-		template<typename... Args>
-		float& at(Args... args) { return data[_getIndex(0, 1, args...)]; }
-
-		template<typename... Args>
-		float at(Args... args) const { return data[_getIndex(0, 1, args...)]; }
-
-		template<typename... Args>
-		float& operator()(Args... args) { return at(args...); }
-
-		template<typename... Args>
-		float operator()(Args... args) const { return at(args...); }
+		void setData(std::vector<size_t>&& shape, std::vector<float>&& data);
+		void resizeData(const std::vector<size_t>& shape);
 
 		Tensor& add(const Tensor& t);
 		Tensor& add(const Tensor& t, size_t moddim);
@@ -48,15 +34,13 @@ namespace tbml
 		Tensor& map(std::function<float(float)> fn);
 		Tensor& ewise(const Tensor& t, std::function<float(float, float)> fn);
 		Tensor& matmul(const Tensor& t);
+		Tensor& matmul_to(const Tensor& t, Tensor& out) const;
 		Tensor& transpose();
-
 		Tensor mapped(std::function<float(float)> fn) const { return Tensor(*this).map(fn); }
 		Tensor ewised(const Tensor& t, std::function<float(float, float)> fn) const { return Tensor(*this).ewise(t, fn); }
 		Tensor matmulled(const Tensor& t) const { return Tensor(*this).matmul(t); }
 		Tensor transposed() const { return Tensor(*this).transpose(); }
 		Tensor sample(size_t dim, std::vector<size_t> indices) const;
-
-		Tensor& matmulled_to(const Tensor& t, Tensor& out) const;
 
 		Tensor& operator+=(const Tensor& t) { return add(t); }
 		Tensor& operator+=(float v) { return add(v); }
@@ -82,22 +66,27 @@ namespace tbml
 		const size_t getDims() const { return shape.size(); }
 		const size_t getSize() const { return data.size(); }
 		const std::vector<float>& getData() const { return data; }
+		std::vector<float>& getData() { return data; }
 		bool isZero() const;
 
 		void serialize(std::ostream& os) const;
 		static Tensor deserialize(std::istream& is);
 
+		template<typename... Args>
+		float& at(Args... args) { return data[idx(args...)]; }
+		template<typename... Args>
+		float at(Args... args) const { return data[idx(args...)]; }
+		template<typename... Args>
+		float& operator()(Args... args) { return at(args...); }
+		template<typename... Args>
+		float operator()(Args... args) const { return at(args...); }
+
 	private:
 		std::vector<size_t> shape;
 		std::vector<float> data;
 
-		template<typename ICurrent, typename... IRest>
-		size_t _getIndex(size_t acc, size_t mult, ICurrent index, IRest... rest) const
-		{
-			// t[a, b, c] = data[a + b * shape[0] + c * shape[0] * shape[1]]
-			return _getIndex(acc + (index * mult), (mult * shape[shape.size() - sizeof...(IRest) - 1]), rest...);
-		}
-
-		size_t _getIndex(size_t acc, size_t mult) const { return acc; }
+		inline size_t idx(size_t i) const { return i; }
+		inline size_t idx(size_t i, size_t j) const { return j + i * shape[1]; }
+		inline size_t idx(size_t i, size_t j, size_t k) const { return (j + i * shape[1]) * shape[2] + k; }
 	};
 }

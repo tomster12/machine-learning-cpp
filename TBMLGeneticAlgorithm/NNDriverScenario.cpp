@@ -17,13 +17,14 @@ NNDriverScenario::NNDriverScenario()
 	worldBodies.push_back(Body({ 1200.0f, 480.0f }, { 700.0f, 50.0f }, PI * 0.4f));
 
 	std::vector<sf::Vector2f> targets;
-	targets.push_back({ 300.0f, 320.0f });
-	targets.push_back({ 970.0f, 265.0f });
-	targets.push_back({ 1030.0f, 700.0f });
+	targets.push_back({ 250.0f, 270.0f });
+	targets.push_back({ 1000.0f, 280.0f });
+	targets.push_back({ 1200.0f, 750.0f });
 	targets.push_back({ 550.0f, 930.0f });
-	targets.push_back({ 300.0f, 320.0f });
-	targets.push_back({ 970.0f, 265.0f });
-	targets.push_back({ 1030.0f, 700.0f });
+
+	targets.push_back({ 350.0f, 370.0f });
+	targets.push_back({ 900.0f, 320.0f });
+	targets.push_back({ 950.0f, 700.0f });
 	targets.push_back({ 550.0f, 930.0f });
 
 	this->genepool = std::make_shared<NNDriverGenepool>([]()
@@ -31,12 +32,14 @@ NNDriverScenario::NNDriverScenario()
 		return std::make_shared<NNGenome>(tbml::nn::NeuralNetwork({
 				std::make_shared<tbml::nn::Layer::Dense>(8, 5),
 				std::make_shared<tbml::nn::Layer::ReLU>(),
+				std::make_shared<tbml::nn::Layer::Dense>(5, 5),
+				std::make_shared<tbml::nn::Layer::ReLU>(),
 				std::make_shared<tbml::nn::Layer::Dense>(5, 2),
 				std::make_shared<tbml::nn::Layer::TanH>() }));
 	},
 		nullptr,
 		targets,
-		40.0f,
+		20.0f,
 		worldBodies
 	);
 

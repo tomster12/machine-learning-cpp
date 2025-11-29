@@ -99,7 +99,7 @@ bool NNDriverAgent::evaluate()
 	}
 
 	// Finish 2: Reached target
-	if (genepool->getTargetDist(mainBody.pos, currentTarget) < genepool->getTargetRadius())
+	if (genepool->getTargetDist(mainBody.pos, currentTarget) < 0)
 	{
 		currentTarget++;
 		maxIterations += iterationsPerTarget;

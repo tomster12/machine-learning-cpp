@@ -6,7 +6,6 @@
 class NNPoleBalancerAgent : public tbml::ga::Agent<NNGenome>
 {
 public:
-	NNPoleBalancerAgent(NNPoleBalancerAgent::GenomeCPtr&& genome) : Agent(std::move(genome)) {};
 	NNPoleBalancerAgent(
 		NNPoleBalancerAgent::GenomeCPtr&& genome,
 		float cartMass, float poleMass, float poleLength, float force,
@@ -21,6 +20,7 @@ private:
 	const float TIME_STEP = 0.02f;
 	const float METRE_TO_UNIT = 200.0f;
 
+	tbml::nn::NeuralNetwork network;
 	bool isVisualInit = false;
 	sf::RectangleShape cartShape;
 	sf::RectangleShape poleShape;
@@ -31,7 +31,7 @@ private:
 	float trackLimit = 2.4f;
 	float angleLimit = 0.21f;
 	float timeLimit = 5.0f;
-	tbml::Tensor netProp;
+	tbml::Tensor netInput;
 	float poleAngle = 0.0f;
 	float poleVelocity = 0.0f;
 	float poleAcceleration = 0.0f;

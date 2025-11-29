@@ -93,4 +93,19 @@ NNGenome::GenomeCPtr NNGenome::crossover(const NNGenome::GenomeCPtr& otherData, 
 	return std::make_shared<NNGenome>(tbml::nn::NeuralNetwork(std::move(newLayers)));
 }
 
+const tbml::nn::NeuralNetwork& NNGenome::getNetwork() const
+{
+	return this->network;
+}
+
+tbml::nn::NeuralNetwork NNGenome::copyNetwork() const
+{
+	return this->network;
+}
+
+size_t NNGenome::getInputSize() const
+{
+	return this->network.getInputShape()[0];
+}
+
 void NNGenome::print() const { this->network.print(); }

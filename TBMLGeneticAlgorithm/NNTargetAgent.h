@@ -6,7 +6,6 @@ class NNTargetGenepool;
 class NNTargetAgent : public tbml::ga::Agent<NNGenome>
 {
 public:
-	NNTargetAgent(NNTargetAgent::GenomeCPtr&& genome) : Agent(std::move(genome)) {};
 	NNTargetAgent(
 		NNTargetAgent::GenomeCPtr&& genome, const NNTargetGenepool* genepool,
 		sf::Vector2f startPos, float radius, float moveAcc, float moveDrag, int maxIterations);
@@ -19,6 +18,7 @@ public:
 
 private:
 	const NNTargetGenepool* genepool = nullptr;
+	tbml::nn::NeuralNetwork network;
 	bool isVisualInit = false;
 	sf::CircleShape shape;
 	sf::Vector2f startPos;

@@ -264,9 +264,6 @@ namespace tbml
 				for (const auto& agent : agentPopulation) fitnessValues.push_back(agent->getFitness());
 				float totalFitness = std::accumulate(fitnessValues.begin(), fitnessValues.end(), 0.0f);
 
-				std::vector<float> fitnessProportions;
-				for (const auto& fitness : fitnessValues) fitnessProportions.push_back(fitness / totalFitness);
-
 				std::vector<AgentPtr> selectedAgents;
 				for (int i = 0; i < selectAmount; i++)
 				{

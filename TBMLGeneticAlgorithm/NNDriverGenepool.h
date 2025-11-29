@@ -16,7 +16,7 @@ public:
 	bool checkWorldIntersectBody(Body& body) const;
 	bool checkWorldIntersectRaycast(sf::Vector2f start, float angle, float length) const;
 	float getTargetDist(sf::Vector2f pos, size_t target) const;
-	float getTargetDir(sf::Vector2f pos, size_t target) const;
+	float getTargetDirDiff(const Body& body, size_t target) const;
 	float getTargetRadius() const { return targetRadius; }
 	size_t getTargetCount() const { return targets.size(); }
 
@@ -28,3 +28,10 @@ private:
 	std::vector<Body> worldBodies;
 	std::vector<sf::RectangleShape> worldShapes;
 };
+
+inline float normalizeAngle(float a)
+{
+	while (a > 3.14159265f) a -= 2.0f * 3.14159265f;
+	while (a <= -3.14159265f) a += 2.0f * 3.14159265f;
+	return a;
+}

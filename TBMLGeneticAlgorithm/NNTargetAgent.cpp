@@ -5,7 +5,7 @@
 NNTargetAgent::NNTargetAgent(
 	NNTargetAgent::GenomeCPtr&& genome, const NNTargetGenepool* genepool,
 	sf::Vector2f startPos, float radius, float moveAcc, float moveDrag, int maxIterations)
-	: Agent(std::move(genome)), genepool(genepool),
+	: Agent(std::move(genome)), genepool(genepool), network(this->genome->copyNetwork()), netInput({ 1, 4 }, 0.0f),
 	pos(startPos), radius(radius), moveAcc(moveAcc), moveDrag(moveDrag), maxIterations(maxIterations),
 	currentIteration(0), currentTarget(0), vel(), anger(0.0f)
 {}
@@ -31,16 +31,12 @@ bool NNTargetAgent::evaluate()
 	// Calculate with brain
 	const sf::Vector2f& targetPos1 = genepool->getTarget(currentTarget);
 	const sf::Vector2f& targetPos2 = genepool->getTarget(currentTarget + 1);
-	netInput.set({ 1, 4 }, {
-		targetPos1.x - pos.x,
-		targetPos1.y - pos.y,
-		vel.x,
-		vel.y });
-	genome->getNetwork().propogateMut(netInput);
+	netInput.setData({ targetPos1.x - pos.x, targetPos1.y - pos.y, vel.x, vel.y });
+	const tbml::Tensor* output = network.propogatePtr(&netInput);
 
 	// Update position, velocity, drag
-	vel.x += netInput(0, 0) * moveAcc * (1.0f / 60.0f);
-	vel.y += netInput(0, 1) * moveAcc * (1.0f / 60.0f);
+	vel.x += output->at(0, 0) * moveAcc * (1.0f / 60.0f);
+	vel.y += output->at(0, 1) * moveAcc * (1.0f / 60.0f);
 	pos.x += vel.x * (1.0f / 60.0f);
 	pos.y += vel.y * (1.0f / 60.0f);
 	vel.x *= moveDrag;

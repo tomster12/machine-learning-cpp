@@ -28,8 +28,9 @@ public:
 	NNGenome(tbml::nn::NeuralNetwork&& network);
 
 	NNGenome::GenomeCPtr crossover(const NNGenome::GenomeCPtr& otherData, float mutateChance) const override;
-	const tbml::nn::NeuralNetwork& getNetwork() const { return this->network; }
-	size_t getInputSize() const { return this->network.getInputShape()[0]; }
+	const tbml::nn::NeuralNetwork& getNetwork() const;
+	tbml::nn::NeuralNetwork copyNetwork() const;
+	size_t getInputSize() const;
 	void print() const;
 
 private:

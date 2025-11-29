@@ -11,15 +11,22 @@ namespace tbml
 		static const Tensor ZERO;
 
 		Tensor();
+		virtual ~Tensor() = default;
 		Tensor(const Tensor& t);
+		Tensor& operator=(const Tensor& t);
+		Tensor(Tensor&& t) noexcept;
+		Tensor& operator=(Tensor&& t) noexcept;
+
 		Tensor(const std::vector<size_t>& shape, float v);
 		Tensor(const std::vector<size_t>& shape, const std::vector<float>& data);
 		Tensor(const std::vector<float>& data);
 		Tensor(const std::vector<std::vector<float>>& data);
 		Tensor(const std::vector<std::vector<std::vector<float>>>& data);
-		void zero();
-		void setData(std::vector<size_t>&& shape, std::vector<float>&& data);
+		void moveData(std::vector<size_t>&& shape, std::vector<float>&& data);
 		void resizeData(const std::vector<size_t>& shape);
+		void setData(const std::vector<float>& data);
+		void setData(std::initializer_list<float> src);
+		void zero();
 
 		Tensor& add(const Tensor& t);
 		Tensor& add(const Tensor& t, size_t moddim);
@@ -32,13 +39,14 @@ namespace tbml
 		Tensor& div(float v);
 		float acc(std::function<float(float, float)> fn, float initial) const;
 		Tensor& map(std::function<float(float)> fn);
+		Tensor& map_to(std::function<float(float)> fn, Tensor& out) const;
+		Tensor mapped(std::function<float(float)> fn) const { return Tensor(*this).map(fn); }
 		Tensor& ewise(const Tensor& t, std::function<float(float, float)> fn);
+		Tensor ewised(const Tensor& t, std::function<float(float, float)> fn) const { return Tensor(*this).ewise(t, fn); }
 		Tensor& matmul(const Tensor& t);
 		Tensor& matmul_to(const Tensor& t, Tensor& out) const;
-		Tensor& transpose();
-		Tensor mapped(std::function<float(float)> fn) const { return Tensor(*this).map(fn); }
-		Tensor ewised(const Tensor& t, std::function<float(float, float)> fn) const { return Tensor(*this).ewise(t, fn); }
 		Tensor matmulled(const Tensor& t) const { return Tensor(*this).matmul(t); }
+		Tensor& transpose();
 		Tensor transposed() const { return Tensor(*this).transpose(); }
 		Tensor sample(size_t dim, std::vector<size_t> indices) const;
 

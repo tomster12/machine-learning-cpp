@@ -81,9 +81,13 @@ float NNDriverGenepool::getTargetDist(sf::Vector2f pos, size_t target) const
 	return sqrt(dx * dx + dy * dy) - targetRadius;
 }
 
-float NNDriverGenepool::getTargetDir(sf::Vector2f pos, size_t target) const
+float NNDriverGenepool::getTargetDirDiff(const Body& body, size_t target) const
 {
-	float dx = targets[target].x - pos.x;
-	float dy = targets[target].y - pos.y;
-	return atan2(dy, dx);
+	float dx = targets[target].x - body.pos.x;
+	float dy = targets[target].y - body.pos.y;
+
+	float targetAngle = atan2(dy, dx);
+	float diff = targetAngle - body.rot;
+
+	return normalizeAngle(diff);
 }

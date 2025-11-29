@@ -203,7 +203,12 @@ namespace tbml
 		public:
 			static const int MAX_EPOCHS = 1'000;
 
-			NeuralNetwork() {}
+			NeuralNetwork() = default;
+			virtual ~NeuralNetwork() = default;
+			NeuralNetwork(NeuralNetwork&&) = default;
+			NeuralNetwork& operator=(NeuralNetwork&&) = default;
+			NeuralNetwork(const NeuralNetwork& other);
+			NeuralNetwork& operator=(const NeuralNetwork&) = delete;
 			NeuralNetwork(std::vector<Layer::BasePtr>&& layers) : layers(std::move(layers)) {}
 
 			void addLayer(Layer::BasePtr&& layer);

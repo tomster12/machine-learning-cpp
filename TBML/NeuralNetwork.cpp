@@ -82,10 +82,9 @@ namespace tbml
 
 			void Dense::initGradTensors()
 			{
+				int threads = tbml::getOmpThreads();
 				gradWeights = Tensor(weights.getShape(), 0);
 				gradBias = Tensor(bias.getShape(), 0);
-
-				int threads = tbml::getOmpThreads();
 				threadGradWeights = std::vector<std::vector<float>>(threads, std::vector<float>(weights.getShape(0) * weights.getShape(1), 0.0f));
 				threadGradBias = std::vector<std::vector<float>>(threads, std::vector<float>(weights.getShape(1), 0.0f));
 			}
@@ -121,19 +120,18 @@ namespace tbml
 				const int weightRows = (int)weights.getShape(0);
 				const int weightCols = (int)weights.getShape(1);
 				const float scale = 1.0f / batchSize;
+
 				const std::vector<float>& inputData = input->getData();
 				const std::vector<float>& gradOutputData = gradOutput->getData();
 				std::vector<float>& gradWeightsData = gradWeights.getData();
 				std::vector<float>& gradBiasData = gradBias.getData();
 
-				gradWeights.zero();
-				gradBias.zero();
-
 				// Backpropogate multithreading with local accumulators to avoid race conditions on additions
 				int threads = tbml::getOmpThreads();
-
-				for (int i = 0; i < threads; i++) threadGradWeights[i].assign(weightRows * weightCols, 0.0f);
-				for (int i = 0; i < threads; i++) threadGradBias[i].assign(weightCols, 0.0f);
+				gradWeights.zero();
+				gradBias.zero();
+				for (int i = 0; i < threads; i++) std::fill(threadGradWeights[i].begin(), threadGradWeights[i].end(), 0.0f);
+				for (int i = 0; i < threads; i++) std::fill(threadGradBias[i].begin(), threadGradBias[i].end(), 0.0f);
 
 				#pragma omp parallel num_threads(threads)
 				{
@@ -151,10 +149,12 @@ namespace tbml
 							const float inputI = inputRow[i];
 							for (int j = 0; j < weightCols; j++)
 							{
-								const float gradOutputJ = gradOutputRow[j];
-								gradWeightsData[i * weightCols + j] += inputI * gradOutputJ * scale;
-								if (i == 0) gradBiasData[j] += gradOutputJ * scale;
+								localGradWeights[i * weightCols + j] += inputI * gradOutputRow[j] * scale;
 							}
+						}
+						for (int j = 0; j < weightCols; j++)
+						{
+							localGradBias[j] += gradOutputRow[j] * scale;
 						}
 					}
 				}
@@ -208,7 +208,7 @@ namespace tbml
 				// Propogate input with ReLU activation
 				// Retain input and output for backprop
 				this->input = input;
-				output = input->mapped([](float x) { return std::max(0.0f, x); });
+				input->map_to([](float x) { return std::max(0.0f, x); }, output);
 				return &output;
 			}
 
@@ -242,7 +242,7 @@ namespace tbml
 				// Propogate input with Sigmoid activation
 				// Retain input and output for backprop
 				this->input = input;
-				output = input->mapped([this](float x) { return sigmoid(x); });
+				input->map_to([this](float x) { return sigmoid(x); }, output);
 				return &output;
 			}
 
@@ -280,7 +280,7 @@ namespace tbml
 				// Propogate input with TanH activation
 				// Retain input and output for backprop
 				this->input = input;
-				output = input->mapped([](float x) { return tanhf(x); });
+				input->map_to([](float x) { return tanhf(x); }, output);
 				return &output;
 			}
 
@@ -448,6 +448,15 @@ namespace tbml
 		void NeuralNetwork::addLayer(Layer::BasePtr&& layer)
 		{
 			layers.push_back(std::move(layer));
+		}
+
+		NeuralNetwork::NeuralNetwork(const NeuralNetwork& other)
+		{
+			layers.reserve(other.layers.size());
+			for (const auto& l : other.layers)
+			{
+				layers.push_back(l ? l->clone() : nullptr);
+			}
 		}
 
 		Tensor NeuralNetwork::propogate(const Tensor& input) const

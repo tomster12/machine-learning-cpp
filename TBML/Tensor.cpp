@@ -20,6 +20,26 @@ namespace tbml
 		data = t.data;
 	}
 
+	Tensor& Tensor::operator=(const Tensor& t)
+	{
+		shape = t.shape;
+		data = t.data;
+		return *this;
+	}
+
+	Tensor::Tensor(Tensor&& t) noexcept
+	{
+		this->shape = std::move(t.shape);
+		this->data = std::move(t.data);
+	}
+
+	Tensor& Tensor::operator=(Tensor&& t) noexcept
+	{
+		this->shape = std::move(t.shape);
+		this->data = std::move(t.data);
+		return *this;
+	}
+
 	Tensor::Tensor(const std::vector<size_t>& shape, float v)
 	{
 		size_t dataSize = 1;
@@ -78,12 +98,7 @@ namespace tbml
 		}
 	}
 
-	void Tensor::zero()
-	{
-		for (size_t i = 0; i < data.size(); i++) data[i] = 0;
-	}
-
-	void Tensor::setData(std::vector<size_t>&& shape, std::vector<float>&& data)
+	void Tensor::moveData(std::vector<size_t>&& shape, std::vector<float>&& data)
 	{
 		this->shape = std::move(shape);
 		this->data = std::move(data);
@@ -98,6 +113,23 @@ namespace tbml
 
 		this->shape = shape;
 		data.resize(dataSize);
+	}
+
+	void Tensor::setData(const std::vector<float>& src)
+	{
+		assert(src.size() == data.size());
+		std::copy(src.begin(), src.end(), data.begin());
+	}
+
+	void Tensor::setData(std::initializer_list<float> src)
+	{
+		assert(src.size() == data.size());
+		std::copy(src.begin(), src.end(), data.begin());
+	}
+
+	void Tensor::zero()
+	{
+		for (size_t i = 0; i < data.size(); i++) data[i] = 0;
 	}
 
 	Tensor& Tensor::add(const Tensor& t)
@@ -116,7 +148,7 @@ namespace tbml
 
 	Tensor& Tensor::add(const Tensor& t, size_t moddim)
 	{
-		// TODO: Figure out the more generic way to do this
+		// Hardcoded only for 2D tensor and moddim < 2
 		assert(moddim < 2);
 
 		const size_t rows = shape[0];
@@ -236,6 +268,13 @@ namespace tbml
 		return *this;
 	}
 
+	Tensor& Tensor::map_to(std::function<float(float)> fn, Tensor& out) const
+	{
+		if (out.shape != shape) out.resizeData(shape);
+		for (size_t i = 0; i < data.size(); i++) out.data[i] = fn(data[i]);
+		return out;
+	}
+
 	Tensor& Tensor::ewise(const Tensor& t, std::function<float(float, float)> fn)
 	{
 		assert(shape == t.shape);
@@ -319,10 +358,7 @@ namespace tbml
 			const size_t bCols = t.getShape(0);
 			assert(aCols == bCols);
 
-			if (out.getDims() != 1 || out.shape[0] != aCols)
-			{
-				out.resizeData({ aCols });
-			}
+			if (out.getDims() != 2 || out.shape[0] != aCols) out.resizeData({ aCols });
 
 			for (size_t i = 0; i < aCols; i++) outData[i] = a[i] * b[i];
 		}
@@ -335,10 +371,7 @@ namespace tbml
 			const size_t bCols = t.shape[1];
 			assert(aCols == bRows);
 
-			if (out.getDims() != 2 || out.shape[0] != aRows || out.shape[1] != bCols)
-			{
-				out.resizeData({ aRows, bCols });
-			}
+			if (out.getDims() != 2 || out.shape[0] != aRows || out.shape[1] != bCols) out.resizeData({ aRows, bCols });
 
 			int threads = tbml::getOmpThreads();
 			#pragma omp parallel for num_threads(threads)
@@ -481,7 +514,7 @@ namespace tbml
 		for (size_t g = 0; g < groupCount; g++)
 		{
 			size_t groupSize = (hasUneven && (g == groupCount - 1)) ? (rows % targetGroupSize) : targetGroupSize;
-			groups[g] = Tensor{ { groupSize, cols }, 0 };
+			groups[g].resizeData({ groupSize, cols });
 
 			for (size_t i = 0; i < groupSize; i++)
 			{

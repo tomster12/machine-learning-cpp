@@ -1,4 +1,5 @@
 #include <atomic>
+#include "TbmlGlobal.h"
 
 static std::atomic<int> tbmlOmpThreads{ 1 };
 

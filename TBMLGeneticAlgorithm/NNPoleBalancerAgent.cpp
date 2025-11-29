@@ -6,10 +6,9 @@ NNPoleBalancerAgent::NNPoleBalancerAgent(
 	NNPoleBalancerAgent::GenomeCPtr&& genome,
 	float cartMass, float poleMass, float poleLength, float force,
 	float trackLimit, float angleLimit, float timeLimit)
-	: Agent(std::move(genome)),
+	: Agent(std::move(genome)), network(this->genome->copyNetwork()), netInput({ 1, 4 }, 0.0f),
 	cartMass(cartMass), poleMass(poleMass), poleLength(poleLength), force(force),
-	trackLimit(trackLimit), angleLimit(angleLimit), timeLimit(timeLimit),
-	netProp({ 1, 4 }, 0), poleAngle(0.1f)
+	trackLimit(trackLimit), angleLimit(angleLimit), timeLimit(timeLimit), poleAngle(0.1f)
 {}
 
 void NNPoleBalancerAgent::initVisual()
@@ -37,13 +36,9 @@ bool NNPoleBalancerAgent::evaluate()
 	if (isFinished) return true;
 
 	// Calculate force with network
-	netProp.set({ 1, 4 }, {
-		cartPosition,
-		cartAcceleration,
-		poleAngle,
-		poleAcceleration });
-	genome->getNetwork().propogateMut(netProp);
-	float ft = netProp(0, 0) * force;
+	netInput.setData({ cartPosition, cartAcceleration, poleAngle, poleAcceleration });
+	const tbml::Tensor* netOutput = network.propogatePtr(&netInput);
+	float ft = netOutput->at(0, 0) * force;
 
 	// Calculate acceleration
 	cartAcceleration = (ft + poleMass * poleLength * (poleVelocity * poleVelocity * sin(poleAngle) - poleAcceleration * cos(poleAngle))) / (cartMass + poleMass);

@@ -32,6 +32,7 @@ void App::initialize()
 	sf::VideoMode mode({ 1400, 1000 });
 	window = new sf::RenderWindow(mode, "Genetic Algorithm", sf::Style::Titlebar | sf::Style::Close);
 	window->setFramerateLimit(60);
+	window->setVerticalSyncEnabled(false);
 
 	#if SCENARIO == 0
 	IAppScenarioUPtr scenario = std::make_unique<NNTargetScenario>();

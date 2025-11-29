@@ -65,12 +65,12 @@ void DrawableGrid::update()
 
 			if (distance < this->drawRadius * this->cellSize)
 			{
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 				{
 					this->grid[i * this->cols + j] = 1;
 					hasChanged = true;
 				}
-				else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+				else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
 				{
 					this->grid[i * this->cols + j] = 0;
 					hasChanged = true;
@@ -105,7 +105,7 @@ void DrawableGrid::setPosition(float x, float y)
 	{
 		for (int j = 0; j < this->cols; j++)
 		{
-			this->cells[i * this->cols + j].setPosition(this->x + j * this->cellSize, this->y + i * this->cellSize);
+			this->cells[i * this->cols + j].setPosition({ this->x + j * this->cellSize, this->y + i * this->cellSize });
 		}
 	}
 }

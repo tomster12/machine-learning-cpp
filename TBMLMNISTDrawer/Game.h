@@ -5,15 +5,13 @@
 class Game
 {
 private:
-	sf::RenderWindow* window;
-	sf::Event sfEvent;
-	sf::Clock dtClock;
-	float dt;
-
-	void initVariables();
 	void update();
 	void render();
 	void updateGuess();
+
+	sf::RenderWindow* window;
+	sf::Clock dtClock;
+	float dt;
 
 	tbml::nn::NeuralNetwork network;
 	DrawableGrid grid;

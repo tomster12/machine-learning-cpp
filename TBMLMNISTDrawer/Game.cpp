@@ -2,28 +2,16 @@
 #include "Game.h"
 #include "NeuralNetwork.h"
 
-Game::Game()
-{
-	this->initVariables();
-}
-
-void Game::initVariables()
+Game::Game() : font("assets/arial.ttf"), guessText(font)
 {
 	this->window = NULL;
 	this->dt = 0.0f;
 
 	// Setup window using default settings
-	sf::VideoMode windowMode = sf::VideoMode::getDesktopMode();
-	windowMode.width = 1400;
-	windowMode.height = 800;
-	std::string title = "MNIST Drawer";
-	bool fullscreen = false;
-	unsigned framerateLimit = 120;
-	bool verticalSyncEnabled = false;
-	if (fullscreen) this->window = new sf::RenderWindow(windowMode, title, sf::Style::Fullscreen);
-	else this->window = new sf::RenderWindow(windowMode, title, sf::Style::Titlebar | sf::Style::Close);
-	this->window->setFramerateLimit(framerateLimit);
-	this->window->setVerticalSyncEnabled(verticalSyncEnabled);
+	sf::VideoMode mode({ 1400, 800 });
+	window = new sf::RenderWindow(mode, "MNIST Drawer", sf::Style::Titlebar | sf::Style::Close);
+	window->setFramerateLimit(120);
+	window->setVerticalSyncEnabled(false);
 
 	// Read the trained MNIST model
 	network = tbml::nn::loadFromFile("../TBMLNeuralNetwork/MNIST.nn");
@@ -35,12 +23,10 @@ void Game::initVariables()
 	grid.setPosition(200.0f, 200.0f);
 
 	// Initialize guess text
-	this->font.loadFromFile("assets/arial.ttf");
-	this->guessText.setFont(this->font);
 	this->guessText.setCharacterSize(50);
 	this->guessText.setFillColor(sf::Color::White);
 	this->guessText.setString("NA");
-	this->guessText.setPosition(950.0f, 400.0f - 30.0f);
+	this->guessText.setPosition({ 950.0f, 400.0f - 30.0f });
 
 	// Initialize guess chances
 	this->guessChances = std::vector<sf::RectangleShape>(10);
@@ -52,7 +38,7 @@ void Game::initVariables()
 		this->guessChances[i].setFillColor(sf::Color::White);
 		this->guessChances[i].setOutlineColor(sf::Color::Black);
 		this->guessChances[i].setOutlineThickness(1.0f);
-		this->guessChances[i].setPosition(750.0f, 200.0f + i * (height + gap));
+		this->guessChances[i].setPosition({ 750.0f, 200.0f + i * (height + gap) });
 	}
 
 	// Subscribe update guess to grid change
@@ -78,14 +64,11 @@ void Game::update()
 {
 	this->dt = this->dtClock.restart().asSeconds();
 
-	while (this->window->pollEvent(this->sfEvent))
+	while (const auto event = window->pollEvent())
 	{
-		switch (this->sfEvent.type)
+		if (event->is<sf::Event::Closed>())
 		{
-			// Closed window
-		case sf::Event::Closed:
-			this->window->close();
-			break;
+			window->close();
 		}
 	}
 

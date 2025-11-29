@@ -130,8 +130,11 @@ namespace tbml
 				int threads = tbml::getOmpThreads();
 				gradWeights.zero();
 				gradBias.zero();
-				for (int i = 0; i < threads; i++) std::fill(threadGradWeights[i].begin(), threadGradWeights[i].end(), 0.0f);
-				for (int i = 0; i < threads; i++) std::fill(threadGradBias[i].begin(), threadGradBias[i].end(), 0.0f);
+				for (int i = 0; i < threads; i++)
+				{
+					std::fill(threadGradWeights[i].begin(), threadGradWeights[i].end(), 0.0f);
+					std::fill(threadGradBias[i].begin(), threadGradBias[i].end(), 0.0f);
+				}
 
 				#pragma omp parallel num_threads(threads)
 				{

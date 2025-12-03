@@ -14,10 +14,11 @@ public:
 	void initUI(sf::RenderWindow* window);
 	void update();
 	void render(sf::RenderWindow* window);
-	void iterateGeneration();
-	void setEvaluate(bool v) { toEvaluate = v; }
-	void setFullEvaluate(bool v) { toFullEvaluate = v; }
-	void setAutoIterate(bool v) { toAutoIterate = v; }
+	void fullEvaluate();
+	void iterate();
+	void setEvaluating(bool v) { evaluating = v; }
+	void setFullEvaluating(bool v) { toFullEvaluate = v; }
+	void setIterating(bool v) { iterating = v; }
 	void setShowVisuals(bool v) { toShowVisuals = v; }
 	tbml::ga::IGenepoolPtr getGenepool() { return genepool; }
 
@@ -26,7 +27,7 @@ private:
 	IAppScenarioUPtr scenario = nullptr;
 	tbml::ga::IGenepoolPtr genepool = nullptr;
 	bool toShowVisuals = false;
-	bool toEvaluate = false;
+	bool evaluating = false;
 	bool toFullEvaluate = false;
-	bool toAutoIterate = false;
+	bool iterating = false;
 };

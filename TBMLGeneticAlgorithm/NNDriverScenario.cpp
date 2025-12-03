@@ -3,6 +3,7 @@
 #include "CommonImpl.h"
 #include "NNDriverScenario.h"
 #include "Body.h"
+#include "UIButton.h"
 
 NNDriverScenario::NNDriverScenario()
 {
@@ -11,8 +12,8 @@ NNDriverScenario::NNDriverScenario()
 	std::vector<Body> worldBodies;
 	worldBodies.push_back(Body({ 150.0f, 550.0f }, { 50.0f, 850.0f }, PI * 0.01f));
 	worldBodies.push_back(Body({ 520.0f, 620.0f }, { 450.0f, 50.0f }, PI * 0.4f));
-	worldBodies.push_back(Body({ 640.0f, 150.0f }, { 1000.0f, 50.0f }));
-	worldBodies.push_back(Body({ 600.0f, 400.0f }, { 400.0f, 50.0f }));
+	worldBodies.push_back(Body({ 640.0f, 150.0f }, { 1000.0f, 50.0f }, 0));
+	worldBodies.push_back(Body({ 600.0f, 400.0f }, { 400.0f, 50.0f }, 0));
 	worldBodies.push_back(Body({ 800.0f, 600.0f }, { 400.0f, 50.0f }, PI * 0.45f));
 	worldBodies.push_back(Body({ 1200.0f, 480.0f }, { 700.0f, 50.0f }, PI * 0.4f));
 
@@ -52,14 +53,19 @@ NNDriverScenario::NNDriverScenario()
 		);
 	});
 
-	tbml::setOmpThreads(2);
-
 	this->genepool->configThreading(false, true, false);
-	this->genepool->resetGenepool(1000, 0.02f);
+	this->genepool->resetGenepool(2000, 0.05f);
 	this->genepool->logInformation();
 }
 
 void NNDriverScenario::render(sf::RenderWindow* window)
 {
 	this->genepool->render(window);
+
+	//NNDriverGenepool::AgentPtr bestAgent = this->genepool->getBestAgent();
+	//if (bestAgent != nullptr)
+	//{
+	//	const tbml::nn::NeuralNetwork& bestNetwork = bestAgent->getGenome()->getNetwork();
+	//	this->nnRenderer.render(window, bestNetwork);
+	//}
 }

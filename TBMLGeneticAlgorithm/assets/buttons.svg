@@ -119,12 +119,12 @@
      inkscape:pageopacity="0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="0.10523737"
-     inkscape:cx="5886.6922"
-     inkscape:cy="2560.8774"
+     inkscape:zoom="0.1767767"
+     inkscape:cx="10120.112"
+     inkscape:cy="313.95541"
      inkscape:window-width="2560"
      inkscape:window-height="1417"
-     inkscape:window-x="-8"
+     inkscape:window-x="2552"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer-MC0"
@@ -137,21 +137,21 @@
        height="1706.6667"
        margin="0"
        bleed="0"
-       inkscape:label="startStepping" />
+       inkscape:label="startEvaluating" />
     <inkscape:page
        x="1726.6667"
        y="0"
        id="page2"
        width="1706.6667"
        height="1706.6667"
-       inkscape:label="stopStepping" />
+       inkscape:label="stopEvaluating" />
     <inkscape:page
        x="3453.3333"
        y="0"
        id="page5"
        width="1706.6667"
        height="1706.6667"
-       inkscape:label="evaluate" />
+       inkscape:label="fullEvaluate" />
     <inkscape:page
        x="5180"
        y="0"
@@ -165,21 +165,21 @@
        id="page11"
        width="1706.6667"
        height="1706.6667"
-       inkscape:label="autoStartStepping" />
+       inkscape:label="evaluating" />
     <inkscape:page
        x="8633.3333"
        y="0"
        id="page17"
        width="1706.6667"
        height="1706.6667"
-       inkscape:label="autoEvaluate" />
+       inkscape:label="fullEvaluating" />
     <inkscape:page
        x="10360"
        y="0"
        id="page24"
        width="1706.6667"
        height="1706.6667"
-       inkscape:label="autoIterate" />
+       inkscape:label="iterating" />
     <inkscape:page
        x="12086.667"
        y="0"
@@ -187,9 +187,9 @@
        width="1706.6667"
        height="1706.6667"
        margin="0.00004069 0 0 0"
-       inkscape:label="show" />
+       inkscape:label="hide" />
     <inkscape:page
-       x="1.4921397e-13"
+       x="0"
        y="1805.4421"
        width="1706.6667"
        height="1706.6665"
@@ -230,7 +230,7 @@
        transform="matrix(1.3333333,0,0,-1.3333333,0,1706.6667)" />
     <path
        id="path2-5"
-       d="M -3.9411328e-7,3512.1088 H 1706.6667 V 1805.4422 H -3.9411328e-7 Z M 53.333402,1858.7755 H 1653.3333 v 1600 H 53.333402 Z"
+       d="M 4.0132672e-6,3512.1088 H 1706.6667 V 1805.4422 H 4.0132672e-6 Z M 53.333404,1858.7755 H 1653.3333 v 1600 H 53.333404 Z"
        style="fill:#e6e6e6 icc-color(sRGB-IEC61966-2, 0.1, 0.9019928, 0.9019928, 0.9019928);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333" />
     <path
        id="path3"
@@ -391,7 +391,7 @@
     <circle
        style="fill:#ffffff;stroke:none;stroke-width:37.7953"
        id="path43"
-       cx="853.33337"
+       cx="853.33331"
        cy="2658.7754"
        r="367.71603" />
   </g>

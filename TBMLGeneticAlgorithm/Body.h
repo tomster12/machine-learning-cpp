@@ -16,7 +16,7 @@ public:
 	bool intersectRaycast(sf::Vector2f start, sf::Vector2f end) const;
 
 private:
-std::vector<sf::Vector2f> vertices; private:
+	std::vector<sf::Vector2f> vertices;
 	static bool overlapOnAxis(const std::vector<sf::Vector2f>& vertices1, const std::vector<sf::Vector2f>& vertices2, const sf::Vector2f& axis);
 	static std::pair<float, float> projectVerticesOnAxis(const std::vector<sf::Vector2f>& vertices, const sf::Vector2f& axis);
 };

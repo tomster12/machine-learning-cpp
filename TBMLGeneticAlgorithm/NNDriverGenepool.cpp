@@ -6,7 +6,12 @@ NNDriverGenepool::NNDriverGenepool(
 	std::vector<sf::Vector2f> targets, float targetRadius, std::vector<Body> worldBodies)
 	: Genepool(createGenomeFn, createAgentFn),
 	targets(targets), targetRadius(targetRadius), worldBodies(worldBodies)
-{}
+{
+	for (auto& body : this->worldBodies)
+	{
+		body.recalculateVertices();
+	}
+}
 
 void NNDriverGenepool::initVisual()
 {
@@ -33,7 +38,6 @@ void NNDriverGenepool::initVisual()
 		shape.setSize(body.size);
 		shape.setOrigin({ body.size.x / 2.0f, body.size.y / 2.0f });
 		body.updateShape(shape);
-		body.recalculateVertices();
 		worldShapes.push_back(shape);
 	}
 

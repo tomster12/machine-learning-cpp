@@ -180,6 +180,7 @@
     <ClCompile Include="NNDriverScenario.cpp" />
     <ClCompile Include="NNDriverGenepool.cpp" />
     <ClCompile Include="NNPoleBalancerScenario.cpp" />
+    <ClCompile Include="NNRenderer.cpp" />
     <ClCompile Include="NNTargetGenepool.cpp" />
     <ClCompile Include="NNPoleBalancerAgent.cpp" />
     <ClCompile Include="NNTargetAgent.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="NNDriverScenario.h" />
     <ClInclude Include="NNDriverGenepool.h" />
     <ClInclude Include="NNPoleBalancerScenario.h" />
+    <ClInclude Include="NNRenderer.h" />
     <ClInclude Include="NNTargetGenepool.h" />
     <ClInclude Include="NNPoleBalancerAgent.h" />
     <ClInclude Include="NNTargetAgent.h" />

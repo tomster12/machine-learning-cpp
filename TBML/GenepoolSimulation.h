@@ -58,7 +58,7 @@ namespace tbml
 			virtual void configThreading(bool enableMultithreadedStepEvaluation = false, bool enableMultithreadedFullEvaluation = false, bool syncMultithreadedSteps = false) = 0;
 			virtual void resetGenepool(int populationSize, float mutationRate) = 0;
 			virtual void initializeGeneration() = 0;
-			virtual void evaluateGeneration(bool step = false) = 0;
+			virtual void evaluateGeneration(bool singleStep = false) = 0;
 			virtual void iterateGeneration() = 0;
 			virtual int getGenerationNumber() const = 0;
 			virtual float getBestFitness() const = 0;
@@ -166,9 +166,10 @@ namespace tbml
 
 				// Sort generation and extract best agent
 				std::sort(this->agentPopulation.begin(), this->agentPopulation.end(), [this](const auto& a, const auto& b) { return a->getFitness() > b->getFitness(); });
-				const AgentPtr& bestInstance = this->agentPopulation[0];
-				this->bestGenome = GenomeCPtr(bestInstance->getGenome());
-				this->bestFitness = bestInstance->getFitness();
+				this->bestAgent = this->agentPopulation[0];
+				this->bestGenome = GenomeCPtr(bestAgent->getGenome());
+				this->bestFitness = bestAgent->getFitness();
+
 				std::cout << "Generation " << this->currentGeneration << " iterating, best fitness: " << this->bestFitness << std::endl;
 
 				// Initialize next generation with previous best (Elitism)
@@ -214,7 +215,9 @@ namespace tbml
 
 			int getGenerationNumber() const { return this->currentGeneration; }
 
-			GenomeCPtr getBestData() const { return this->bestGenome; }
+			AgentPtr getBestAgent() const { return this->bestAgent; }
+
+			GenomeCPtr getBestGenome() const { return this->bestGenome; }
 
 			float getBestFitness() const { return this->bestFitness; }
 
@@ -253,6 +256,7 @@ namespace tbml
 			bool isGenerationEvaluated = false;
 			int currentGeneration = 0;
 			int currentStep = 0;
+			AgentPtr bestAgent = nullptr;
 			GenomeCPtr bestGenome = nullptr;
 			float bestFitness = 0.0f;
 			ThreadPool evaluateThreadPool;

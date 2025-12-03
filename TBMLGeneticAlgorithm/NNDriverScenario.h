@@ -3,6 +3,8 @@
 #include "GenepoolSimulation.h"
 #include "IAppScenario.h"
 #include "NNDriverGenepool.h"
+#include "NNDriverTester.h"
+#include "NNRenderer.h"
 
 class NNDriverScenario : public IAppScenario
 {
@@ -13,4 +15,5 @@ public:
 
 private:
 	std::shared_ptr<NNDriverGenepool> genepool = nullptr;
+	NNRenderer nnRenderer;
 };

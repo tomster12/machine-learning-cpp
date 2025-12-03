@@ -99,6 +99,9 @@
     <ClCompile Include="IAppScenario.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
+    <ClCompile Include="NNRenderer.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -168,6 +171,9 @@
       <Filter>Source\Common</Filter>
     </ClInclude>
     <ClInclude Include="IAppScenario.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="NNRenderer.h">
       <Filter>Source\Common</Filter>
     </ClInclude>
   </ItemGroup>

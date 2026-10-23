@@ -6,7 +6,7 @@
 #include "VectorListTargetScenario.h"
 #include "NNTargetScenario.h"
 
-#define SCENARIO 1
+#define SCENARIO 3
 
 App::~App()
 {

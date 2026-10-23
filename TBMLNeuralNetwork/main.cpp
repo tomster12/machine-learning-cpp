@@ -39,7 +39,9 @@ void testTime()
 		std::make_shared<tbml::nn::Layer::Sigmoid>() });
 
 	// Setup and print input
-	tbml::Tensor input = tbml::Tensor(std::vector<std::vector<float>>{ std::vector<float>{ 1, 0, -1, 0.2f, 0.7f, -0.3f, -1, -1 } });
+	tbml::Tensor input = tbml::Tensor(std::vector<std::vector<float>>{
+		std::vector<float>{ 1, 0, -1, 0.2f, 0.7f, -0.3f, -1, -1 }
+	});
 	input.print("Input: ");
 
 	// Time different propogation methods
@@ -100,7 +102,16 @@ void testTraining()
 	input.print("Input:");
 	expected.print("Expected:");
 	network.propogate(input).print("Net Initial: ");
-	network.train(input, expected, std::make_shared<tbml::fn::SquareError>(), { -1, -1, 0.2f, 0.85f, 0.01f, 2, 1 });
+
+	network.train(input, expected, std::make_shared<tbml::fn::SquareError>(), {
+		.maxEpoch = -1,
+		.batchSize = -1,
+		.learningRate = 0.2f,
+		.momentumRate = 0.85f,
+		.errorThreshold = 0.01f,
+		.logLevel = 2,
+		.logFrequency = 1 });
+
 	network.propogate(input).print("Net Trained: ");
 }
 
@@ -146,8 +157,16 @@ void testMNIST()
 		std::make_unique<tbml::nn::Layer::ReLU>(),
 		std::make_unique<tbml::nn::Layer::Dense>(100, 10),
 		std::make_unique<tbml::nn::Layer::Softmax>() });
+
 	std::cout << "\nParameters: " << network.getParameterCount() << std::endl << std::endl;
-	network.train(trainInput, trainExpected, std::make_shared<tbml::fn::CrossEntropy>(), { 10, 100, 0.02f, 0.9f, 0.01f, 3, 100 });
+	network.train(trainInput, trainExpected, std::make_shared<tbml::fn::CrossEntropy>(), {
+		.maxEpoch = 10,
+		.batchSize = 100,
+		.learningRate = 0.02f,
+		.momentumRate = 0.9f,
+		.errorThreshold = 0.01f,
+		.logLevel = 3,
+		.logFrequency = 100 });
 
 	// Test network against test data
 	tbml::Tensor testPredicted = network.propogate(testInput);

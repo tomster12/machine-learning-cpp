@@ -85,6 +85,8 @@ namespace tbml
 				int threads = tbml::getOmpThreads();
 				gradWeights = Tensor(weights.getShape(), 0);
 				gradBias = Tensor(bias.getShape(), 0);
+				momentumWeights = Tensor(weights.getShape(), 0);
+				momentumBias = Tensor(bias.getShape(), 0);
 				threadGradWeights = std::vector<std::vector<float>>(threads, std::vector<float>(weights.getShape(0) * weights.getShape(1), 0.0f));
 				threadGradBias = std::vector<std::vector<float>>(threads, std::vector<float>(weights.getShape(1), 0.0f));
 			}

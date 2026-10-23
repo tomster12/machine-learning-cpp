@@ -84,7 +84,7 @@ namespace tbml
 	Tensor::Tensor(const std::vector<std::vector<std::vector<float>>>& data)
 	{
 		// Hardcoded 3D overload
-		shape = { data[0].size(), data[0].size(), data[0][0].size() };
+		shape = { data.size(), data[0].size(), data[0][0].size() };
 		this->data = std::vector<float>(shape[0] * shape[1] * shape[2]);
 		for (size_t i = 0; i < shape[0]; i++)
 		{
@@ -387,7 +387,7 @@ namespace tbml
 					const float* bPtr = bCol;
 
 					float acc = 0.0f;
-					for (int i = 0; i < aCols; i++)
+					for (int k = 0; k < aCols; k++)
 					{
 						acc += (*aPtr) * (*bPtr);
 						aPtr += 1;

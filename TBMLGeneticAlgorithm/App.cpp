@@ -5,8 +5,9 @@
 #include "NNPoleBalancerScenario.h"
 #include "VectorListTargetScenario.h"
 #include "NNTargetScenario.h"
+#include "LanderScenario.h"
 
-#define SCENARIO 3
+#define SCENARIO 5
 
 App::~App()
 {
@@ -42,6 +43,8 @@ void App::initialize()
 	ScenarioUPtr scenario = std::make_unique<NNPoleBalancerScenario>();
 	#elif SCENARIO == 4
 	ScenarioUPtr scenario = std::make_unique<VectorListTargetScenario>();
+	#elif SCENARIO == 5
+	ScenarioUPtr scenario = std::make_unique<LanderScenario>();
 	#endif
 
 	controller = std::make_unique<AppScenarioController>(std::move(scenario), window);

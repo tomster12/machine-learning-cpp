@@ -25,7 +25,7 @@ class NNGenome : public tbml::ga::Genome<NNGenome>
 {
 public:
 	NNGenome() {};
-	NNGenome(tbml::nn::NeuralNetwork&& network);
+	NNGenome(tbml::nn::NeuralNetwork&& network, float perturbStrength = 0.0f);
 
 	NNGenome::GenomeCPtr crossover(const NNGenome::GenomeCPtr& otherData, float mutateChance) const override;
 	const tbml::nn::NeuralNetwork& getNetwork() const;
@@ -35,4 +35,5 @@ public:
 
 private:
 	tbml::nn::NeuralNetwork network;
+	float perturbStrength = 0.0f;
 };

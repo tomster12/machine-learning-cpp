@@ -46,8 +46,19 @@ const sf::Vector2f VectorListGenome::getValue(int index) const { return this->va
 
 const size_t VectorListGenome::getSize() const { return this->dataSize; }
 
-NNGenome::NNGenome(tbml::nn::NeuralNetwork&& network)
-	: network(std::move(network))
+namespace
+{
+	float getRandomGaussian()
+	{
+		// Box-Muller transform
+		const float u = std::max(tbml::fn::getRandomFloat(), 1e-6f);
+		const float v = tbml::fn::getRandomFloat();
+		return std::sqrt(-2.0f * std::log(u)) * std::cos(6.28318531f * v);
+	}
+}
+
+NNGenome::NNGenome(tbml::nn::NeuralNetwork&& network, float perturbStrength)
+	: network(std::move(network)), perturbStrength(perturbStrength)
 {}
 
 NNGenome::GenomeCPtr NNGenome::crossover(const NNGenome::GenomeCPtr& otherData, float mutateChance) const
@@ -73,24 +84,23 @@ NNGenome::GenomeCPtr NNGenome::crossover(const NNGenome::GenomeCPtr& otherData, 
 		const tbml::Tensor& otherWeights = otherDenseLayer.getWeights();
 		const tbml::Tensor& biases = denseLayer.getBias();
 		const tbml::Tensor& otherBiases = otherDenseLayer.getBias();
-		tbml::Tensor newWeights = weights.ewised(otherWeights, [&](float a, float b) -> float
+		auto inheritOrMutate = [&](float a, float b) -> float
 		{
-			if (tbml::fn::getRandomFloat() < mutateChance) return tbml::fn::getRandomFloat() * 2 - 1;
-			if (tbml::fn::getRandomFloat() < 0.5f) return a;
-			return b;
-		});
-		tbml::Tensor newBiases = biases.ewised(otherBiases, [&](float a, float b) -> float
-		{
-			if (tbml::fn::getRandomFloat() < mutateChance) return tbml::fn::getRandomFloat() * 2 - 1;
-			if (tbml::fn::getRandomFloat() < 0.5f) return a;
-			return b;
-		});
+			const float inherited = tbml::fn::getRandomFloat() < 0.5f ? a : b;
+			if (tbml::fn::getRandomFloat() >= mutateChance) return inherited;
+
+			// Nudge the inherited value, or replace it outright when perturbation is off
+			if (this->perturbStrength > 0.0f) return inherited + getRandomGaussian() * this->perturbStrength;
+			return tbml::fn::getRandomFloat() * 2 - 1;
+		};
+		tbml::Tensor newWeights = weights.ewised(otherWeights, inheritOrMutate);
+		tbml::Tensor newBiases = biases.ewised(otherBiases, inheritOrMutate);
 
 		// Create new dense layer
 		newLayers[i] = std::make_shared<tbml::nn::Layer::Dense>(std::move(newWeights), std::move(newBiases));
 	}
 
-	return std::make_shared<NNGenome>(tbml::nn::NeuralNetwork(std::move(newLayers)));
+	return std::make_shared<NNGenome>(tbml::nn::NeuralNetwork(std::move(newLayers)), this->perturbStrength);
 }
 
 const tbml::nn::NeuralNetwork& NNGenome::getNetwork() const

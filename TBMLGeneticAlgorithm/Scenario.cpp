@@ -59,8 +59,16 @@ void Scenario::updateElite()
 	}
 	averageFitness = total / static_cast<float>(count);
 
-	// Only swap elite on a clear lead (or a new generation) so the highlight doesn't flicker between near ties
+	// After the first generation the elite is last generation's best, carried over by elitism into the first slot
 	const int generation = genepool->getGenerationNumber();
+	if (generation > 1)
+	{
+		eliteIndex = 0;
+		eliteGeneration = generation;
+		return;
+	}
+
+	// Only swap elite on a clear lead (or a new generation) so the highlight doesn't flicker between near ties
 	if (generation != eliteGeneration || genepool->getAgentFitness(best) > genepool->getAgentFitness(eliteIndex) * 1.03f + 0.1f)
 	{
 		eliteIndex = best;

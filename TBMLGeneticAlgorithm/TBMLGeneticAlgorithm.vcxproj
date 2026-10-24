@@ -178,6 +178,9 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FitnessGraph.cpp" />
     <ClCompile Include="Scenario.cpp" />
+    <ClCompile Include="LanderAgent.cpp" />
+    <ClCompile Include="LanderCourse.cpp" />
+    <ClCompile Include="LanderScenario.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NNDriverAgent.cpp" />
@@ -208,6 +211,9 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FitnessGraph.h" />
     <ClInclude Include="Scenario.h" />
+    <ClInclude Include="LanderAgent.h" />
+    <ClInclude Include="LanderCourse.h" />
+    <ClInclude Include="LanderScenario.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="NNDriverAgent.h" />
     <ClInclude Include="NNDriverScenario.h" />

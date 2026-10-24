@@ -19,6 +19,10 @@ namespace theme
 	inline const sf::Color CAR_CRASHED = NEGATIVE;
 	inline const sf::Color CAR_TIMED_OUT = WARNING;
 	inline const sf::Color CAR_COMPLETED = INFO;
+	inline const sf::Color SHIP_FLYING = CAR_ALIVE;
+	inline const sf::Color SHIP_LANDED = INFO;
+	inline const sf::Color SHIP_CRASHED = NEGATIVE;
+	inline const sf::Color SHIP_LOST = WARNING;
 
 	constexpr unsigned int TEXT_HEADER = 14;
 	constexpr unsigned int TEXT_BODY = 13;

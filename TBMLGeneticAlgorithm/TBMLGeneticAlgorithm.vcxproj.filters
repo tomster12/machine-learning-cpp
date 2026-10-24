@@ -19,6 +19,9 @@
     <Filter Include="Source\Scenarios\NN Target">
       <UniqueIdentifier>{1e677a4d-0d7b-45e7-9093-6308907c46c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Scenarios\Lander">
+      <UniqueIdentifier>{8c1f0d52-3b7a-4e1d-9a64-2f5d7c3e9b10}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\UI">
       <UniqueIdentifier>{cba3320b-ded3-4b64-b3c0-c29ad8adfffe}</UniqueIdentifier>
     </Filter>
@@ -95,6 +98,15 @@
     </ClCompile>
     <ClCompile Include="NNRenderer.cpp">
       <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="LanderAgent.cpp">
+      <Filter>Source\Scenarios\Lander</Filter>
+    </ClCompile>
+    <ClCompile Include="LanderCourse.cpp">
+      <Filter>Source\Scenarios\Lander</Filter>
+    </ClCompile>
+    <ClCompile Include="LanderScenario.cpp">
+      <Filter>Source\Scenarios\Lander</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +208,15 @@
     </ClInclude>
     <ClInclude Include="NNRenderer.h">
       <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="LanderAgent.h">
+      <Filter>Source\Scenarios\Lander</Filter>
+    </ClInclude>
+    <ClInclude Include="LanderCourse.h">
+      <Filter>Source\Scenarios\Lander</Filter>
+    </ClInclude>
+    <ClInclude Include="LanderScenario.h">
+      <Filter>Source\Scenarios\Lander</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

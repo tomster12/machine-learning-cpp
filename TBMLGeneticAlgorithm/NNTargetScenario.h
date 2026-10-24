@@ -1,16 +1,21 @@
 #pragma once
 
-#include "GenepoolSimulation.h"
-#include "IAppScenario.h"
+#include "NNRenderer.h"
 #include "NNTargetGenepool.h"
+#include "Scenario.h"
 
-class NNTargetScenario : public IAppScenario
+class NNTargetScenario : public Scenario
 {
 public:
 	NNTargetScenario();
-	void render(sf::RenderWindow* window) override;
-	tbml::ga::IGenepoolPtr getGenepool() const override { return std::static_pointer_cast<tbml::ga::IGenepool>(genepool); }
+	tbml::ga::IGenepoolPtr getGenepool() const override { return genepool; }
+
+protected:
+	void renderWorld(sf::RenderWindow* window) override;
+	void renderAgents(sf::RenderWindow* window) override;
+	void renderOverlay(sf::RenderWindow* window) override;
 
 private:
 	std::shared_ptr<NNTargetGenepool> genepool = nullptr;
+	NNRenderer nnRenderer;
 };

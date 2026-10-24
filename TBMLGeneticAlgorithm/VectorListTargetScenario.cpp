@@ -20,7 +20,12 @@ VectorListTargetScenario::VectorListTargetScenario()
 	this->genepool->resetGenepool(1000, 0.04f);
 }
 
-void VectorListTargetScenario::render(sf::RenderWindow* window)
+void VectorListTargetScenario::renderWorld(sf::RenderWindow* window)
 {
-	this->genepool->render(window);
+	this->genepool->renderWorld(window);
+}
+
+void VectorListTargetScenario::renderAgents(sf::RenderWindow* window)
+{
+	this->renderGenepoolAgents(window, *genepool->getAgentPopulation());
 }

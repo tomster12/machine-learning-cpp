@@ -3,6 +3,7 @@
 #include "Body.h"
 
 NNTargetScenario::NNTargetScenario()
+	: nnRenderer({ { "target x", 500.0f }, { "target y", 500.0f }, { "speed x", 500.0f }, { "speed y", 500.0f } }, { "x acc", "y acc" })
 {
 	this->genepool = std::make_shared<NNTargetGenepool>([]()
 	{
@@ -25,7 +26,18 @@ NNTargetScenario::NNTargetScenario()
 	this->genepool->resetGenepool(1000, 0.1f);
 }
 
-void NNTargetScenario::render(sf::RenderWindow* window)
+void NNTargetScenario::renderWorld(sf::RenderWindow* window)
 {
-	this->genepool->render(window);
+	this->genepool->renderWorld(window);
+}
+
+void NNTargetScenario::renderAgents(sf::RenderWindow* window)
+{
+	this->renderGenepoolAgents(window, *genepool->getAgentPopulation());
+}
+
+void NNTargetScenario::renderOverlay(sf::RenderWindow* window)
+{
+	const auto& elite = getElite(*genepool->getAgentPopulation());
+	nnRenderer.render(window, elite->getBrain(), elite->getNetInput());
 }

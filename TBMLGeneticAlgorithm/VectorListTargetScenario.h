@@ -1,15 +1,17 @@
 #pragma once
 
-#include "GenepoolSimulation.h"
-#include "IAppScenario.h"
+#include "Scenario.h"
 #include "VectorListTargetGenepool.h"
 
-class VectorListTargetScenario : public IAppScenario
+class VectorListTargetScenario : public Scenario
 {
 public:
 	VectorListTargetScenario();
-	void render(sf::RenderWindow* window) override;
-	tbml::ga::IGenepoolPtr getGenepool() const override { return std::static_pointer_cast<tbml::ga::IGenepool>(genepool); }
+	tbml::ga::IGenepoolPtr getGenepool() const override { return genepool; }
+
+protected:
+	void renderWorld(sf::RenderWindow* window) override;
+	void renderAgents(sf::RenderWindow* window) override;
 
 private:
 	std::shared_ptr<VectorListTargetGenepool> genepool = nullptr;

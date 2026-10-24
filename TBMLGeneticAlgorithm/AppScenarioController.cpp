@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "AppScenarioController.h"
-#include "UIToggleButton.h"
-#include "UIButton.h"
-#include "UIDynamicText.h"
+#include "UIIconButton.h"
+#include "UILabel.h"
+#include "UIPanel.h"
+#include "UIStatsPanel.h"
+#include "UITooltip.h"
 
-AppScenarioController::AppScenarioController(IAppScenarioUPtr&& scenario, sf::RenderWindow* window)
+AppScenarioController::AppScenarioController(ScenarioUPtr&& scenario, sf::RenderWindow* window)
 	: scenario(std::move(scenario))
 {
 	this->genepool = this->scenario->getGenepool();
@@ -15,62 +17,113 @@ void AppScenarioController::initUI(sf::RenderWindow* window)
 {
 	this->ui = std::make_unique<UIManager>();
 
-	float osp = 6.0f;
-	float sp = 6.0f;
-	float sz = 30.0f;
+	const float tile = 26.0f;
+	const float tileGap = 2.0f;
+	const float pad = theme::PADDING;
+	const sf::Vector2f origin(theme::MARGIN, theme::MARGIN);
 
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIToggleButton(window, { osp + sp + 0 * (sp + sz), osp + sp + 0 * (sp + sz) }, { sz, sz }, "assets/buttons_evaluating.png", false,
-		[&](bool toggled) { this->setEvaluating(toggled); })));
+	// Controls panel: icon tiles with each auto toggle directly beside the one-shot it repeats, then a speed stepper
+	const float controlsHeight = pad + tile + theme::GAP + tile + pad;
+	this->ui->addElement(std::make_shared<UIPanel>(origin, sf::Vector2f{ theme::PANEL_WIDTH, controlsHeight }));
 
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIButton(window, { osp + sp + 1 * (sp + sz), osp + sp + 0 * (sp + sz) }, { sz, sz }, "assets/buttons_fullEvaluate.png",
-		[&]() { this->fullEvaluate(); })));
+	float x = origin.x + pad;
+	auto addIcon = [&](float gapBefore, Icon icon, Icon activeIcon, const std::string& tooltip, bool isToggle, std::function<void(bool)> action)
+	{
+		x += gapBefore;
+		this->ui->addElement(std::make_shared<UIIconButton>(window, sf::Vector2f{ x, origin.y + pad }, sf::Vector2f{ tile, tile }, icon, activeIcon, tooltip, isToggle, std::move(action)));
+		x += tile;
+	};
 
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIToggleButton(window, { osp + sp + 2 * (sp + sz), osp + sp + 0 * (sp + sz) }, { sz, sz }, "assets/buttons_fullEvaluating.png", false,
-		[&](bool toggled) { this->setFullEvaluating(toggled); })));
+	addIcon(0.0f, Icon::PLAY, Icon::PAUSE, "Run / pause evaluation", true, [&](bool toggled) { this->setEvaluating(toggled); });
+	addIcon(theme::GAP, Icon::RUN_TO_END, Icon::RUN_TO_END, "Evaluate this generation now", false, [&](bool) { this->fullEvaluate(); });
+	addIcon(tileGap, Icon::LOOP, Icon::LOOP, "Auto: evaluate whole generations", true, [&](bool toggled) { this->setFullEvaluating(toggled); });
+	addIcon(theme::GAP, Icon::NEXT, Icon::NEXT, "Next generation", false, [&](bool) { this->iterate(); });
+	addIcon(tileGap, Icon::LOOP, Icon::LOOP, "Auto: advance generations", true, [&](bool toggled) { this->setIterating(toggled); });
+	addIcon(theme::GAP, Icon::FAST, Icon::FAST, "Fast mode: run generations back to back with the scenario hidden", true, [&](bool toggled) { this->setFastMode(toggled); });
 
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIButton(window, { osp + sp + 0 * (sp + sz), osp + sp + 1 * (sp + sz) }, { sz, sz }, "assets/buttons_iterate.png",
-		[&]() { this->iterate(); })));
+	// Speed stepper: [-] 1x [+] with minimal gaps
+	const float stepperTop = origin.y + pad + tile + theme::GAP;
+	const float readoutWidth = 44.0f;
+	this->ui->addElement(std::make_shared<UIIconButton>(window, sf::Vector2f{ origin.x + pad, stepperTop }, sf::Vector2f{ tile, tile }, Icon::MINUS, Icon::MINUS,
+		"Slower", false, [&](bool) { this->changeSpeed(-1); }));
+	this->ui->addElement(std::make_shared<UILabel>(sf::Vector2f{ origin.x + pad + tile + tileGap + readoutWidth / 2.0f, stepperTop + tile / 2.0f },
+		[&]() { return this->getSpeedText(); }, theme::TEXT_BODY, theme::TEXT_PRIMARY, theme::Align::CENTER));
+	this->ui->addElement(std::make_shared<UIIconButton>(window, sf::Vector2f{ origin.x + pad + tile + tileGap + readoutWidth + tileGap, stepperTop }, sf::Vector2f{ tile, tile }, Icon::PLUS, Icon::PLUS,
+		"Faster", false, [&](bool) { this->changeSpeed(1); }));
 
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIToggleButton(window, { osp + sp + 1 * (sp + sz), osp + sp + 1 * (sp + sz) }, { sz, sz }, "assets/buttons_iterating.png", false,
-		[&](bool toggled) { this->setIterating(toggled); })));
+	// Stats panel sits below the controls
+	UIStatsPanel stats(window, this->ui.get(), { origin.x, origin.y + controlsHeight + theme::GAP }, theme::PANEL_WIDTH);
 
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIToggleButton(window, { osp + sp + 2 * (sp + sz), osp + sp + 1 * (sp + sz) }, { sz, sz }, "assets/buttons_hide.png", false,
-		[&](bool toggled) { this->setShowVisuals(!toggled); })));
+	stats.header("Network");
+	stats.row("Generation", [&]() { return std::to_string(this->genepool->getGenerationNumber()); });
+	stats.row("Population", [&]() { return std::to_string(this->genepool->getPopulationSize()); });
+	stats.row("Evaluated", [&]() { return std::string(this->genepool->getGenerationEvaluated() ? "Yes" : "No"); });
+	stats.row("Best fitness", [&]() { return global::formatFloat(this->genepool->getBestFitness()); });
 
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIDynamicText(window, { osp + sp * 1.2f, osp + sp + osp + 2 * (sp + sz) + 0 }, 15,
-		[&]() { return std::string("Generation: ") + std::to_string(this->genepool->getGenerationNumber()); })));
+	stats.header("Simulation");
+	stats.row("FPS", [&]() { return global::formatFloat(this->fps, 0); });
+	stats.row("Speed", [&]() { return this->getSpeedText(); });
 
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIDynamicText(window, { osp + sp * 1.2f, osp + sp + osp + 2 * (sp + sz) + 20 }, 15,
-		[&]() { return std::string("Evaluated: ") + std::string(this->genepool->getGenerationEvaluated() ? "True" : "False"); })));
+	this->scenario->initStats(stats);
+	stats.finish();
 
-	this->ui->addElement(std::shared_ptr<UIElement>(new UIDynamicText(window, { osp + sp * 1.2f, osp + sp + osp + 2 * (sp + sz) + 40 }, 15,
-		[&]() { return std::string("Best Fitness: ") + std::to_string(this->genepool->getBestFitness()); })));
+	// Added last so it draws over everything
+	this->ui->addElement(std::make_shared<UITooltip>());
+}
 
-	this->scenario->initUI(window, ui.get());
+std::string AppScenarioController::getSpeedText() const
+{
+	std::ostringstream ss;
+	ss << SPEEDS[speedIndex] << "x";
+	return ss.str();
+}
+
+void AppScenarioController::handleEvent(const sf::Event& event)
+{
+	scenario->handleEvent(event);
 }
 
 void AppScenarioController::update()
 {
 	if (!genepool->getGenepoolInitialized()) throw std::runtime_error("Genepool not initialized.");
 
+	const float dt = frameClock.restart().asSeconds();
+	if (dt > 0.0f) fps += (1.0f / dt - fps) * 0.1f;
+
 	this->ui->update();
 
-	scenario->update();
+	if (isFastMode)
+	{
+		this->runFast();
+		return;
+	}
 
-	if (!genepool->getGenerationEvaluated() && evaluating) genepool->evaluateGeneration(!toFullEvaluate);
+	scenario->updateDisplay();
 
-	if (genepool->getGenerationEvaluated() && iterating) genepool->iterateGeneration();
+	// Speeds below 1 accumulate until a whole step is due; full evaluation already runs a whole generation, so it caps at 1
+	stepAccumulator += SPEEDS[speedIndex];
+	int steps = static_cast<int>(stepAccumulator);
+	stepAccumulator -= static_cast<float>(steps);
+	if (toFullEvaluate) steps = std::min(steps, 1);
+
+	for (int i = 0; i < steps; i++)
+	{
+		if (!genepool->getGenerationEvaluated() && (evaluating || toFullEvaluate)) genepool->evaluateGeneration(!toFullEvaluate);
+
+		if (genepool->getGenerationEvaluated() && iterating) genepool->iterateGeneration();
+	}
 }
 
 void AppScenarioController::render(sf::RenderWindow* window)
 {
-	if (this->toShowVisuals)
+	if (!isFastMode)
 	{
 		if (!genepool->getGenepoolInitialized()) throw std::runtime_error("Genepool not initialized.");
 
 		scenario->render(window);
 	}
 
+	window->setView(theme::screenView(window));
 	this->ui->render(window);
 }
 
@@ -90,4 +143,22 @@ void AppScenarioController::iterate()
 	if (!genepool->getGenerationEvaluated()) return;
 
 	genepool->iterateGeneration();
+}
+
+void AppScenarioController::runFast()
+{
+	// Evaluate and advance whole generations until the frame budget is spent, leaving the UI responsive
+	const sf::Clock clock;
+	do
+	{
+		if (!genepool->getGenerationEvaluated()) genepool->evaluateGeneration(false);
+		genepool->iterateGeneration();
+	}
+	while (clock.getElapsedTime().asMilliseconds() < FAST_FRAME_MS);
+}
+
+void AppScenarioController::changeSpeed(int direction)
+{
+	const int count = static_cast<int>(std::size(SPEEDS));
+	speedIndex = static_cast<size_t>(std::clamp(static_cast<int>(speedIndex) + direction, 0, count - 1));
 }

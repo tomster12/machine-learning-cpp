@@ -171,11 +171,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="IAppScenario.cpp" />
     <ClCompile Include="AppScenarioController.cpp" />
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="CommonImpl.cpp" />
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FitnessGraph.cpp" />
+    <ClCompile Include="Scenario.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NNDriverAgent.cpp" />
@@ -193,21 +195,19 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="UIButton.cpp" />
-    <ClCompile Include="UIDynamicText.cpp" />
-    <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIManager.cpp" />
-    <ClCompile Include="UIToggleButton.cpp" />
     <ClCompile Include="VectorListTargetAgent.cpp" />
     <ClCompile Include="VectorListTargetGenepool.cpp" />
     <ClCompile Include="VectorListTargetScenario.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IAppScenario.h" />
     <ClInclude Include="AppScenarioController.h" />
     <ClInclude Include="Body.h" />
     <ClInclude Include="CommonImpl.h" />
     <ClInclude Include="App.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="FitnessGraph.h" />
+    <ClInclude Include="Scenario.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="NNDriverAgent.h" />
     <ClInclude Include="NNDriverScenario.h" />
@@ -219,11 +219,18 @@
     <ClInclude Include="NNTargetAgent.h" />
     <ClInclude Include="NNTargetScenario.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="UIButton.h" />
-    <ClInclude Include="UIDynamicText.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="UIManager.h" />
-    <ClInclude Include="UIToggleButton.h" />
+    <ClInclude Include="UIPanel.h" />
+    <ClInclude Include="UILabel.h" />
+    <ClInclude Include="UIHeader.h" />
+    <ClInclude Include="UIRow.h" />
+    <ClInclude Include="UITooltip.h" />
+    <ClInclude Include="UIIconButton.h" />
+    <ClInclude Include="UIRadioGroup.h" />
+    <ClInclude Include="Icon.h" />
+    <ClInclude Include="UIStatsPanel.h" />
+    <ClInclude Include="UITheme.h" />
     <ClInclude Include="VectorListTargetAgent.h" />
     <ClInclude Include="VectorListTargetGenepool.h" />
     <ClInclude Include="VectorListTargetScenario.h" />

@@ -32,22 +32,23 @@ bool VectorListTargetAgent::evaluate()
 	pos.y += nextDir.y * moveAcc;
 	currentIndex++;
 
+	// Keep fitness current so the elite can be picked mid generation
+	calculateFitness();
+
 	// Check finish conditions
 	float dist = calculateDist();
-	if (currentIndex == genome->getSize() || dist < 0.0f)
-	{
-		calculateFitness();
-		isFinished = true;
-	}
+	if (currentIndex == genome->getSize() || dist < 0.0f) isFinished = true;
 	return isFinished;
 };
 
-void VectorListTargetAgent::render(sf::RenderWindow* window)
+void VectorListTargetAgent::render(sf::RenderWindow* window, bool isElite)
 {
 	if (!isVisualInit) initVisual();
 
-	// Update shape position and colour
+	// Update shape position and colour, solid for the elite and fainter once finished
 	shape.setPosition({ pos.x, pos.y });
+	shape.setFillColor(isElite ? sf::Color::White : sf::Color::Transparent);
+	shape.setOutlineColor(isElite ? sf::Color::White : sf::Color(255, 255, 255, isFinished ? 60 : 150));
 
 	// Draw shape to window
 	window->draw(shape);

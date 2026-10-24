@@ -33,13 +33,12 @@ void NNTargetGenepool::initVisual()
 	isVisualInit = true;
 };
 
-void NNTargetGenepool::render(sf::RenderWindow* window)
+void NNTargetGenepool::renderWorld(sf::RenderWindow* window)
 {
 	if (!this->isGenepoolInitialized) throw std::runtime_error("tbml::GenepoolSimulation: Cannot render because uninitialized.");
 
 	if (!isVisualInit) this->initVisual();
 
-	for (const auto& inst : agentPopulation) inst->render(window);
 	for (auto& shape : targetShapes) window->draw(shape);
 }
 

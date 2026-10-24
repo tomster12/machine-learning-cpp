@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "NNDriverGenepool.h"
 #include "NNDriverAgent.h"
+#include "UITheme.h"
 
 NNDriverAgent::NNDriverAgent(
 	NNDriverAgent::GenomeCPtr&& genome, const NNDriverGenepool* genepool,
 	sf::Vector2f startPos, float maxDrivingSpeed, float drivingAcc, float steeringSpeed, float moveDrag, float eyeLength, float eyeSpread, int iterationsPerTarget)
 	: Agent(std::move(genome)), genepool(genepool), network(this->genome->copyNetwork()), netInput({ 1, 8 }, 0.0f),
 	maxDrivingSpeed(maxDrivingSpeed), drivingAcc(drivingAcc), steeringSpeed(steeringSpeed), moveDrag(moveDrag), eyeLength(eyeLength), eyeSpread(eyeSpread), iterationsPerTarget(iterationsPerTarget),
-	maxIterations(iterationsPerTarget), fitnessText(global::font)
+	maxIterations(iterationsPerTarget)
 {
 	mainBody = Body(startPos, sf::Vector2f(40.0f, 20.0f), 1.5f * 3.14159265f);
 }
@@ -16,39 +17,18 @@ void NNDriverAgent::initVisual()
 {
 	if (isVisualInit) return;
 
-	eyeColourHit = sf::Color(200, 100, 100, 60);
-	eyeColourMiss = sf::Color(100, 100, 100, 20);
+	// Only the elite is drawn with shapes, the rest of the pack is batched into a vertex array
+	eyeColourHit = sf::Color(theme::NEGATIVE.r, theme::NEGATIVE.g, theme::NEGATIVE.b, 200);
+	eyeColourMiss = sf::Color(255, 255, 255, 60);
 
-	mainShape.setFillColor(sf::Color::Transparent);
-	mainShape.setOutlineColor(sf::Color(255, 255, 255, 140));
-	mainShape.setOutlineThickness(1.0f);
 	mainShape.setSize(mainBody.size);
 	mainShape.setOrigin({ mainBody.size.x / 2.0f, mainBody.size.y / 2.0f });
 
 	eyeShape.setFillColor(eyeColourMiss);
-	eyeShape.setSize(sf::Vector2f(eyeLength, 3.0f));
-	eyeShape.setOrigin({ 0, 1.5f });
-
-	fitnessText.setCharacterSize(12);
-	fitnessText.setFillColor(sf::Color::White);
-
-	if (isFinished) this->setFinishedVisual();
+	eyeShape.setSize(sf::Vector2f(eyeLength, 2.0f));
+	eyeShape.setOrigin({ 0, 1.0f });
 
 	isVisualInit = true;
-}
-
-void NNDriverAgent::setFinishedVisual()
-{
-	if (!isVisualInit) return;
-
-	// Set main shape based on finish type
-	// 0: Collided, 1: Max iterations, 2: Reached target
-	if (finishType == 0) mainShape.setOutlineColor(sf::Color(200, 100, 100, 150));
-	else if (finishType == 1) mainShape.setOutlineColor(sf::Color(200, 200, 100, 150));
-	else if (finishType == 2) mainShape.setOutlineColor(sf::Color(100, 200, 100, 150));
-
-	// Set eye shapes to transparent
-	eyeShape.setFillColor(sf::Color::Transparent);
 }
 
 bool NNDriverAgent::evaluate()
@@ -63,7 +43,6 @@ bool NNDriverAgent::evaluate()
 	{
 		isFinished = true;
 		finishType = 0;
-		setFinishedVisual();
 		return true;
 	}
 
@@ -94,7 +73,6 @@ bool NNDriverAgent::evaluate()
 	{
 		isFinished = true;
 		finishType = 1;
-		setFinishedVisual();
 		return true;
 	}
 
@@ -109,7 +87,6 @@ bool NNDriverAgent::evaluate()
 		{
 			isFinished = true;
 			finishType = 2;
-			setFinishedVisual();
 			return true;
 		}
 	}
@@ -117,31 +94,69 @@ bool NNDriverAgent::evaluate()
 	return isFinished;
 }
 
-void NNDriverAgent::render(sf::RenderWindow* window)
+void NNDriverAgent::appendPackVertices(sf::VertexArray& vertices) const
+{
+	// Colour shows state, opacity shows role: alive cars are clearer than finished ones (the elite is drawn separately, fully opaque)
+	const sf::Color colour = stateColour(isFinished ? 70 : 130);
+
+	const float c = std::cos(mainBody.rot);
+	const float s = std::sin(mainBody.rot);
+	const float w = mainBody.size.x / 2.0f;
+	const float h = mainBody.size.y / 2.0f;
+	auto corner = [&](float lx, float ly) { return sf::Vector2f(mainBody.pos.x + lx * c - ly * s, mainBody.pos.y + lx * s + ly * c); };
+
+	const sf::Vertex rearLeft{ corner(-w, -h), colour };
+	const sf::Vertex frontLeft{ corner(w, -h), colour };
+	const sf::Vertex frontRight{ corner(w, h), colour };
+	const sf::Vertex rearRight{ corner(-w, h), colour };
+
+	vertices.append(rearLeft);
+	vertices.append(frontLeft);
+	vertices.append(frontRight);
+	vertices.append(rearLeft);
+	vertices.append(frontRight);
+	vertices.append(rearRight);
+}
+
+void NNDriverAgent::renderElite(sf::RenderWindow* window)
 {
 	if (!isVisualInit) this->initVisual();
 
-	mainBody.updateShape(mainShape);
-	window->draw(mainShape);
-
 	if (!isFinished)
 	{
-		sf::Vector2f pos = mainBody.pos;
 		for (int i = 0; i < 5; i++)
 		{
 			float angle = mainBody.rot + (i - 2) * eyeSpread;
-			eyeShape.setPosition(pos);
+			eyeShape.setPosition(mainBody.pos);
 			eyeShape.setRotation(sf::radians(angle));
 			eyeShape.setFillColor(eyeHits[i] > 0.5f ? eyeColourHit : eyeColourMiss);
 			window->draw(eyeShape);
 		}
 	}
 
-	fitnessText.setString(std::to_string(fitness).substr(0, 5));
-	fitnessText.setOrigin(fitnessText.getLocalBounds().getCenter());
-	fitnessText.setPosition(mainBody.pos);
-	fitnessText.setRotation(sf::radians(mainBody.rot));
-	window->draw(fitnessText);
+	mainShape.setFillColor(stateColour(255));
+	mainBody.updateShape(mainShape);
+	window->draw(mainShape);
+
+	// Fitness readout on a small plate above the car, kept upright
+	const std::string label = global::formatFloat(fitness, 1);
+	const float plateWidth = theme::measureText(label, theme::TEXT_SMALL) + 12.0f;
+	const sf::Vector2f centre(mainBody.pos.x, mainBody.pos.y - 28.0f);
+	theme::drawRect(window, { centre.x - plateWidth / 2.0f, centre.y - 9.0f }, { plateWidth, 18.0f }, theme::PANEL_FILL);
+	theme::drawText(window, label, centre, theme::TEXT_SMALL, theme::TEXT_PRIMARY, theme::Align::CENTER);
+}
+
+sf::Color NNDriverAgent::stateColour(std::uint8_t alpha) const
+{
+	// 0: Collided, 1: Max iterations, 2: Reached all targets
+	sf::Color base = theme::CAR_ALIVE;
+	if (isFinished)
+	{
+		if (finishType == 0) base = theme::CAR_CRASHED;
+		else if (finishType == 1) base = theme::CAR_TIMED_OUT;
+		else base = theme::CAR_COMPLETED;
+	}
+	return sf::Color(base.r, base.g, base.b, alpha);
 }
 
 void NNDriverAgent::calculateFitness()

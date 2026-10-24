@@ -30,18 +30,18 @@ void App::initialize()
 	tbml::setOmpThreads(1);
 
 	sf::VideoMode mode({ 1400, 1000 });
-	window = new sf::RenderWindow(mode, "Genetic Algorithm", sf::Style::Titlebar | sf::Style::Close);
+	window = new sf::RenderWindow(mode, "Genetic Algorithm", sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
 	window->setFramerateLimit(60);
 	window->setVerticalSyncEnabled(false);
 
-	#if SCENARIO == 0
-	IAppScenarioUPtr scenario = std::make_unique<NNTargetScenario>();
-	#elif SCENARIO == 1
-	IAppScenarioUPtr scenario = std::make_unique<NNDriverScenario>();
+	#if SCENARIO == 1
+	ScenarioUPtr scenario = std::make_unique<NNTargetScenario>();
 	#elif SCENARIO == 2
-	IAppScenarioUPtr scenario = std::make_unique<NNPoleBalancerScenario>();
+	ScenarioUPtr scenario = std::make_unique<NNDriverScenario>();
 	#elif SCENARIO == 3
-	IAppScenarioUPtr scenario = std::make_unique<VectorListTargetScenario>();
+	ScenarioUPtr scenario = std::make_unique<NNPoleBalancerScenario>();
+	#elif SCENARIO == 4
+	ScenarioUPtr scenario = std::make_unique<VectorListTargetScenario>();
 	#endif
 
 	controller = std::make_unique<AppScenarioController>(std::move(scenario), window);
@@ -49,14 +49,14 @@ void App::initialize()
 
 void App::update()
 {
-	dt = dtClock.restart().asSeconds();
-
 	while (const auto event = window->pollEvent())
 	{
 		if (event->is<sf::Event::Closed>())
 		{
 			window->close();
 		}
+
+		controller->handleEvent(*event);
 	}
 
 	controller->update();

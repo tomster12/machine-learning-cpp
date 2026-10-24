@@ -12,9 +12,12 @@ public:
 
 	void initVisual();
 	bool evaluate() override;
-	void render(sf::RenderWindow* window);
+	void render(sf::RenderWindow* window, bool isElite);
 	float calculateDist();
 	float calculateFitness();
+
+	const tbml::Tensor& getNetInput() const { return netInput; }
+	const tbml::nn::NeuralNetwork& getBrain() const { return network; }
 
 private:
 	const NNTargetGenepool* genepool = nullptr;

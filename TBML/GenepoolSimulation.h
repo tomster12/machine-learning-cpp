@@ -50,6 +50,12 @@ namespace tbml
 			float fitness = 0;
 		};
 
+		struct GenerationStats
+		{
+			float best = 0.0f;
+			float average = 0.0f;
+		};
+
 		// Seperate interface without template for Genepool
 		class IGenepool
 		{
@@ -62,6 +68,9 @@ namespace tbml
 			virtual void iterateGeneration() = 0;
 			virtual int getGenerationNumber() const = 0;
 			virtual float getBestFitness() const = 0;
+			virtual size_t getPopulationSize() const = 0;
+			virtual float getAgentFitness(size_t index) const = 0;
+			virtual const std::vector<GenerationStats>& getHistory() const = 0;
 			virtual bool getGenepoolInitialized() const = 0;
 			virtual bool getGenerationEvaluated() const = 0;
 			virtual void logInformation() = 0;
@@ -85,6 +94,7 @@ namespace tbml
 			{
 				// [INITIALIZATION] Initialize new instances
 				this->agentPopulation.clear();
+				this->history.clear();
 				for (int i = 0; i < populationSize; i++)
 				{
 					GenomeCPtr genome = createGenomeFn();
@@ -170,6 +180,11 @@ namespace tbml
 				this->bestGenome = GenomeCPtr(bestAgent->getGenome());
 				this->bestFitness = bestAgent->getFitness();
 
+				// Record generation stats
+				float totalFitness = 0.0f;
+				for (const auto& agent : this->agentPopulation) totalFitness += agent->getFitness();
+				this->history.push_back({ this->bestFitness, totalFitness / static_cast<float>(this->agentPopulation.size()) });
+
 				std::cout << "Generation " << this->currentGeneration << " iterating, best fitness: " << this->bestFitness << std::endl;
 
 				// Initialize next generation with previous best (Elitism)
@@ -221,6 +236,12 @@ namespace tbml
 
 			float getBestFitness() const { return this->bestFitness; }
 
+			size_t getPopulationSize() const { return this->agentPopulation.size(); }
+
+			float getAgentFitness(size_t index) const { return this->agentPopulation[index]->getFitness(); }
+
+			const std::vector<GenerationStats>& getHistory() const { return this->history; }
+
 			bool getGenepoolInitialized() const { return this->isGenepoolInitialized; }
 
 			bool getGenerationEvaluated() const { return this->isGenerationEvaluated; }
@@ -261,6 +282,7 @@ namespace tbml
 			float bestFitness = 0.0f;
 			ThreadPool evaluateThreadPool;
 			std::vector<AgentPtr> agentPopulation;
+			std::vector<GenerationStats> history;
 
 			static std::vector<AgentPtr> selectRoulette(const std::vector<AgentPtr>& agentPopulation, int selectAmount)
 			{

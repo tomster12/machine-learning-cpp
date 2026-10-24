@@ -3,12 +3,20 @@
 #include "CommonImpl.h"
 #include "NNDriverScenario.h"
 #include "Body.h"
-#include "UIButton.h"
+#include "UIStatsPanel.h"
+#include "UITheme.h"
+
+namespace
+{
+	constexpr float PI = 3.14159265359f;
+	constexpr float MAX_DRIVING_SPEED = 1000.0f;
+}
 
 NNDriverScenario::NNDriverScenario()
+	: nnRenderer(
+		{ { "eye 1" }, { "eye 2" }, { "eye 3" }, { "eye 4" }, { "eye 5" }, { "speed", MAX_DRIVING_SPEED }, { "heading", PI, -1.0f }, { "target", PI } },
+		{ "steer", "accel" })
 {
-	float PI = 3.14159265359f;
-
 	std::vector<Body> worldBodies;
 	worldBodies.push_back(Body({ 150.0f, 550.0f }, { 50.0f, 850.0f }, PI * 0.01f));
 	worldBodies.push_back(Body({ 520.0f, 620.0f }, { 450.0f, 50.0f }, PI * 0.4f));
@@ -49,7 +57,7 @@ NNDriverScenario::NNDriverScenario()
 	{
 		return std::make_unique<NNDriverAgent>(
 			std::move(data), this->genepool.get(),
-			sf::Vector2f{ 300.0f, 780.0f }, 1000.0f, 25.0f, 0.5f, 0.95f, 120.0f, 0.25f, 300
+			sf::Vector2f{ 300.0f, 780.0f }, MAX_DRIVING_SPEED, 25.0f, 0.5f, 0.95f, 120.0f, 0.25f, 300
 		);
 	});
 
@@ -58,14 +66,96 @@ NNDriverScenario::NNDriverScenario()
 	this->genepool->logInformation();
 }
 
-void NNDriverScenario::render(sf::RenderWindow* window)
+void NNDriverScenario::initAgentStats(UIStatsPanel& panel)
 {
-	this->genepool->render(window);
+	panel.row("Step", [this]() { return std::to_string(stats.step); });
 
-	//NNDriverGenepool::AgentPtr bestAgent = this->genepool->getBestAgent();
-	//if (bestAgent != nullptr)
-	//{
-	//	const tbml::nn::NeuralNetwork& bestNetwork = bestAgent->getGenome()->getNetwork();
-	//	this->nnRenderer.render(window, bestNetwork);
-	//}
+	// Swatches double as the legend for car colours
+	panel.row("Alive", [this]() { return std::to_string(stats.alive) + " / " + std::to_string(stats.total); }, &theme::CAR_ALIVE);
+	panel.row("Crashed", [this]() { return std::to_string(stats.crashed); }, &theme::CAR_CRASHED);
+	panel.row("Timed out", [this]() { return std::to_string(stats.timedOut); }, &theme::CAR_TIMED_OUT);
+	panel.row("Reached all", [this]() { return std::to_string(stats.completed); }, &theme::CAR_COMPLETED);
+	panel.row("Furthest target", [this]() { return std::to_string(stats.furthestTarget) + " / " + std::to_string(genepool->getTargetCount()); });
+}
+
+void NNDriverScenario::updateDisplay()
+{
+	Scenario::updateDisplay();
+
+	if (!genepool->getGenepoolInitialized()) return;
+
+	this->updateStats();
+	this->updateTrail();
+}
+
+void NNDriverScenario::updateStats()
+{
+	stats = PopulationStats();
+	for (const auto& agent : *genepool->getAgentPopulation())
+	{
+		stats.total++;
+		stats.furthestTarget = std::max(stats.furthestTarget, agent->getCurrentTarget());
+		stats.step = std::max(stats.step, agent->getCurrentIteration());
+
+		if (!agent->getFinished()) stats.alive++;
+		else if (agent->getFinishType() == 0) stats.crashed++;
+		else if (agent->getFinishType() == 1) stats.timedOut++;
+		else stats.completed++;
+	}
+}
+
+void NNDriverScenario::updateTrail()
+{
+	// Start a fresh trail whenever the elite changes
+	const int generation = genepool->getGenerationNumber();
+	if (getEliteIndex() != trailIndex || generation != trailGeneration)
+	{
+		trail.clear();
+		trailIndex = getEliteIndex();
+		trailGeneration = generation;
+	}
+
+	const sf::Vector2f pos = getEliteAgent()->getPosition();
+	if (trail.empty() || (pos - trail.back()).lengthSquared() > 9.0f) trail.push_back(pos);
+	while (trail.size() > 200) trail.pop_front();
+}
+
+void NNDriverScenario::renderWorld(sf::RenderWindow* window)
+{
+	// Grass with mowed stripes, covering whatever the camera can see
+	const sf::View& view = window->getView();
+	const sf::Vector2f topLeft = view.getCenter() - view.getSize() / 2.0f;
+	theme::drawRect(window, topLeft, view.getSize(), sf::Color(66, 128, 62));
+	for (float x = std::floor(topLeft.x / 200.0f) * 200.0f; x < topLeft.x + view.getSize().x; x += 200.0f)
+	{
+		theme::drawRect(window, { x, topLeft.y }, { 100.0f, view.getSize().y }, sf::Color(0, 40, 0, 28));
+	}
+
+	genepool->renderWorld(window, getEliteAgent().get());
+}
+
+void NNDriverScenario::renderAgents(sf::RenderWindow* window)
+{
+	if (getView() != AgentView::NONE) this->renderTrail(window);
+
+	genepool->renderAgents(window, getEliteAgent().get(), getView());
+}
+
+void NNDriverScenario::renderTrail(sf::RenderWindow* window)
+{
+	if (trail.size() < 2) return;
+
+	sf::VertexArray line(sf::PrimitiveType::LineStrip);
+	for (size_t i = 0; i < trail.size(); i++)
+	{
+		const float t = static_cast<float>(i) / static_cast<float>(trail.size() - 1);
+		line.append(sf::Vertex{ trail[i], sf::Color(255, 255, 255, static_cast<std::uint8_t>(110.0f * t)) });
+	}
+	window->draw(line);
+}
+
+void NNDriverScenario::renderOverlay(sf::RenderWindow* window)
+{
+	const NNDriverGenepool::AgentPtr elite = getEliteAgent();
+	nnRenderer.render(window, elite->getBrain(), elite->getNetInput());
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Scenario.h"
 #include "Body.h"
 #include "CommonImpl.h"
 #include "NNDriverAgent.h"
@@ -12,7 +13,8 @@ public:
 		std::vector<sf::Vector2f> targets, float targetRadius, std::vector<Body> worldBodies);
 
 	void initVisual();
-	void render(sf::RenderWindow* window);
+	void renderWorld(sf::RenderWindow* window, const NNDriverAgent* elite);
+	void renderAgents(sf::RenderWindow* window, NNDriverAgent* elite, AgentView view);
 	bool checkWorldIntersectBody(Body& body) const;
 	bool checkWorldIntersectRaycast(sf::Vector2f start, float angle, float length) const;
 	float getTargetDist(sf::Vector2f pos, size_t target) const;
@@ -27,6 +29,7 @@ private:
 	std::vector<sf::CircleShape> targetShapes;
 	std::vector<Body> worldBodies;
 	std::vector<sf::RectangleShape> worldShapes;
+	sf::VertexArray packVertices = sf::VertexArray(sf::PrimitiveType::Triangles);
 };
 
 inline float normalizeAngle(float a)

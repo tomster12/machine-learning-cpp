@@ -47,25 +47,24 @@ bool NNTargetAgent::evaluate()
 	float dist = calculateDist();
 	anger += dist;
 	if (dist <= 0.0f) currentTarget++;
-	if (currentIteration == maxIterations)
-	{
-		isFinished = true;
-		this->calculateFitness();
-	}
+	if (currentIteration == maxIterations) isFinished = true;
+
+	// Keep fitness current so the elite can be picked mid generation
+	this->calculateFitness();
 	return isFinished;
 };
 
-void NNTargetAgent::render(sf::RenderWindow* window)
+void NNTargetAgent::render(sf::RenderWindow* window, bool isElite)
 {
 	if (!isVisualInit) initVisual();
 
 	// Update shape to position
 	shape.setPosition({ pos.x, pos.y });
 
-	// Set color based on fitness
-	this->calculateFitness();
+	// Set colour based on fitness, solid for the elite and fainter once finished
 	int v = static_cast<int>(255.0f * (0.3f + 0.7f * (fitness / 30.0f)));
-	shape.setOutlineColor(sf::Color(v, v, v));
+	shape.setFillColor(isElite ? sf::Color::White : sf::Color::Transparent);
+	shape.setOutlineColor(isElite ? sf::Color::White : sf::Color(v, v, v, isFinished ? 70 : 150));
 
 	window->draw(shape);
 };

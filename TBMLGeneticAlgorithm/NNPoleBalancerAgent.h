@@ -13,7 +13,10 @@ public:
 
 	void initVisual();
 	bool evaluate() override;
-	void render(sf::RenderWindow* window);
+	void render(sf::RenderWindow* window, bool isElite);
+
+	const tbml::Tensor& getNetInput() const { return netInput; }
+	const tbml::nn::NeuralNetwork& getBrain() const { return network; }
 
 private:
 	const float G = 9.81f;

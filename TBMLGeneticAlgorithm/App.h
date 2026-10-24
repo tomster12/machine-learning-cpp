@@ -12,8 +12,6 @@ public:
 protected:
 	std::unique_ptr<AppScenarioController> controller;
 	sf::RenderWindow* window = nullptr;
-	sf::Clock dtClock;
-	float dt = 0;
 
 private:
 	void initialize();

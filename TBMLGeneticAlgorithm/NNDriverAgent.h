@@ -12,12 +12,21 @@ public:
 		sf::Vector2f startPos, float maxDrivingSpeed, float drivingAcc, float steeringSpeed, float moveDrag, float eyeLength, float eyeSpread, int iterationsPerTarget);
 
 	void initVisual();
-	void setFinishedVisual();
 	bool evaluate() override;
-	void render(sf::RenderWindow* window);
+	void appendPackVertices(sf::VertexArray& vertices) const;
+	void renderElite(sf::RenderWindow* window);
 	void calculateFitness();
 
+	int getFinishType() const { return finishType; }
+	size_t getCurrentTarget() const { return currentTarget; }
+	size_t getCurrentIteration() const { return currentIteration; }
+	sf::Vector2f getPosition() const { return mainBody.pos; }
+	const tbml::Tensor& getNetInput() const { return netInput; }
+	const tbml::nn::NeuralNetwork& getBrain() const { return network; }
+
 private:
+	sf::Color stateColour(std::uint8_t alpha) const;
+
 	const NNDriverGenepool* genepool = nullptr;
 	tbml::nn::NeuralNetwork network;
 	bool isVisualInit = false;
@@ -26,7 +35,6 @@ private:
 	sf::RectangleShape eyeShape;
 	sf::Color eyeColourHit;
 	sf::Color eyeColourMiss;
-	sf::Text fitnessText;
 
 	float maxDrivingSpeed = 2.0f;
 	float steeringSpeed = 0.1f;
@@ -43,6 +51,5 @@ private:
 	tbml::Tensor netInput;
 	float eyeHits[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 	float drivingSpeed = 0.0f;
-	bool isFinished = false;
 	int finishType = -1;
 };

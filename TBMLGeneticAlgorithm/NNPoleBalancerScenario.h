@@ -1,16 +1,20 @@
 #pragma once
 
-#include "GenepoolSimulation.h"
-#include "IAppScenario.h"
 #include "NNPoleBalancerAgent.h"
+#include "NNRenderer.h"
+#include "Scenario.h"
 
-class NNPoleBalancerScenario : public IAppScenario
+class NNPoleBalancerScenario : public Scenario
 {
 public:
 	NNPoleBalancerScenario();
-	void render(sf::RenderWindow* window) override;
-	tbml::ga::IGenepoolPtr getGenepool() const override { return std::static_pointer_cast<tbml::ga::IGenepool>(genepool); }
+	tbml::ga::IGenepoolPtr getGenepool() const override { return genepool; }
+
+protected:
+	void renderAgents(sf::RenderWindow* window) override;
+	void renderOverlay(sf::RenderWindow* window) override;
 
 private:
 	std::shared_ptr<tbml::ga::Genepool<NNGenome, NNPoleBalancerAgent>> genepool = nullptr;
+	NNRenderer nnRenderer;
 };

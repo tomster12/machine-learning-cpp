@@ -27,6 +27,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="FitnessGraph.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenario.cpp">
+      <Filter>Source\Scenarios</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -44,18 +53,6 @@
     </ClCompile>
     <ClCompile Include="NNPoleBalancerAgent.cpp">
       <Filter>Source\Scenarios\NN Pole Balancer</Filter>
-    </ClCompile>
-    <ClCompile Include="UIElement.cpp">
-      <Filter>Source\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UIButton.cpp">
-      <Filter>Source\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UIToggleButton.cpp">
-      <Filter>Source\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UIDynamicText.cpp">
-      <Filter>Source\UI</Filter>
     </ClCompile>
     <ClCompile Include="CommonImpl.cpp">
       <Filter>Source\Common</Filter>
@@ -96,14 +93,50 @@
     <ClCompile Include="App.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
-    <ClCompile Include="IAppScenario.cpp">
-      <Filter>Source\Common</Filter>
-    </ClCompile>
     <ClCompile Include="NNRenderer.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="UIPanel.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UILabel.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIHeader.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIRow.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UITooltip.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Icon.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIIconButton.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIRadioGroup.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="FitnessGraph.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenario.h">
+      <Filter>Source\Scenarios</Filter>
+    </ClInclude>
+    <ClInclude Include="UIStatsPanel.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UITheme.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -120,12 +153,6 @@
       <Filter>Source\Scenarios\NN Pole Balancer</Filter>
     </ClInclude>
     <ClInclude Include="UIElement.h">
-      <Filter>Source\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UIButton.h">
-      <Filter>Source\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UIDynamicText.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
     <ClInclude Include="CommonImpl.h">
@@ -152,9 +179,6 @@
     <ClInclude Include="NNDriverAgent.h">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClInclude>
-    <ClInclude Include="UIToggleButton.h">
-      <Filter>Source\UI</Filter>
-    </ClInclude>
     <ClInclude Include="VectorListTargetAgent.h">
       <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClInclude>
@@ -168,9 +192,6 @@
       <Filter>Source\Scenarios\Vector List Target</Filter>
     </ClInclude>
     <ClInclude Include="App.h">
-      <Filter>Source\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="IAppScenario.h">
       <Filter>Source\Common</Filter>
     </ClInclude>
     <ClInclude Include="NNRenderer.h">

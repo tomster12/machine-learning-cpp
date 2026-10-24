@@ -36,7 +36,7 @@ bool NNPoleBalancerAgent::evaluate()
 	if (isFinished) return true;
 
 	// Calculate force with network
-	netInput.setData({ cartPosition, cartAcceleration, poleAngle, poleAcceleration });
+	netInput.setData({ cartPosition, cartVelocity, poleAngle, poleVelocity });
 	const tbml::Tensor* netOutput = network.propogatePtr(&netInput);
 	float ft = netOutput->at(0, 0) * force;
 
@@ -52,57 +52,38 @@ bool NNPoleBalancerAgent::evaluate()
 	poleVelocity += poleAcceleration * TIME_STEP;
 	this->time += TIME_STEP;
 
-	// Add score if angle upright
+	// Add score if angle upright, less the further from the centre of the track
 	if (abs(poleAngle) < angleLimit)
 	{
-		fitness += 1.0f;
+		fitness += 1.0f - 0.5f * std::min(1.0f, abs(cartPosition) / trackLimit);
 	}
 
 	// Check finish conditions
 	bool done = false;
 	done |= abs(cartPosition) > trackLimit;
+	done |= abs(poleAngle) > angleLimit;
 	done |= time > timeLimit;
-	if (done)
-	{
-		isFinished = true;
-
-		// Set final visual state
-		if (isVisualInit)
-		{
-			cartShape.setOutlineColor(sf::Color(100, 100, 140, 5));
-			poleShape.setOutlineColor(sf::Color(100, 100, 140, 5));
-			cartShape.setPosition({ 700.0f + cartPosition * METRE_TO_UNIT, 700.0f });
-			poleShape.setPosition({ 700.0f + cartPosition * METRE_TO_UNIT, 700.0f });
-			poleShape.setRotation(sf::degrees(poleAngle));
-		}
-	}
+	if (done) isFinished = true;
 
 	return isFinished;
 }
 
-void NNPoleBalancerAgent::render(sf::RenderWindow* window)
+void NNPoleBalancerAgent::render(sf::RenderWindow* window, bool isElite)
 {
 	if (!isVisualInit) initVisual();
 
-	if (!isFinished)
-	{
-		// Transparent if not in threshold
-		if (abs(poleAngle) > angleLimit)
-		{
-			cartShape.setOutlineColor(sf::Color(170, 100, 100, 10));
-			poleShape.setOutlineColor(sf::Color(170, 100, 100, 10));
-		}
-		else
-		{
-			cartShape.setOutlineColor(sf::Color(255, 255, 255, 10));
-			poleShape.setOutlineColor(sf::Color(255, 255, 255, 10));
-		}
+	// Update shape positions and rotations
+	cartShape.setPosition({ 700.0f + cartPosition * METRE_TO_UNIT, 700.0f });
+	poleShape.setPosition({ 700.0f + cartPosition * METRE_TO_UNIT, 700.0f });
+	poleShape.setRotation(sf::degrees(poleAngle));
 
-		// Update shape positions and rotations
-		cartShape.setPosition({ 700.0f + cartPosition * METRE_TO_UNIT, 700.0f });
-		poleShape.setPosition({ 700.0f + cartPosition * METRE_TO_UNIT, 700.0f });
-		poleShape.setRotation(sf::degrees(poleAngle));
-	}
+	// Faint when part of the pack, solid for the elite
+	sf::Color colour = sf::Color(255, 255, 255, 10);
+	if (isElite) colour = sf::Color::White;
+	else if (isFinished) colour = sf::Color(100, 100, 140, 5);
+	else if (abs(poleAngle) > angleLimit) colour = sf::Color(170, 100, 100, 10);
+	cartShape.setOutlineColor(colour);
+	poleShape.setOutlineColor(colour);
 
 	// Draw both to screen
 	window->draw(this->cartShape);

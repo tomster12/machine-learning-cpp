@@ -2,7 +2,14 @@
 #include "CommonImpl.h"
 #include "NNPoleBalancerScenario.h"
 
+namespace
+{
+	constexpr float TRACK_LIMIT = 1.0f;
+	constexpr float ANGLE_LIMIT = 0.21f;
+}
+
 NNPoleBalancerScenario::NNPoleBalancerScenario()
+	: nnRenderer({ { "position", TRACK_LIMIT }, { "velocity", 2.0f }, { "angle", ANGLE_LIMIT }, { "ang. velocity", 1.0f } }, { "force" })
 {
 	this->genepool = std::make_shared<tbml::ga::Genepool<NNGenome, NNPoleBalancerAgent>>(
 		[]()
@@ -15,7 +22,7 @@ NNPoleBalancerScenario::NNPoleBalancerScenario()
 	{
 		return std::make_unique<NNPoleBalancerAgent>(
 			std::move(genome),
-			1.0f, 0.1f, 1.0f, 1.0f, 2.5f, 4.0f, 30.0f
+			1.0f, 0.1f, 1.0f, 1.0f, TRACK_LIMIT, ANGLE_LIMIT, 30.0f
 		);
 	});
 
@@ -23,9 +30,13 @@ NNPoleBalancerScenario::NNPoleBalancerScenario()
 	this->genepool->resetGenepool(1000, 0.1f);
 }
 
-void NNPoleBalancerScenario::render(sf::RenderWindow* window)
+void NNPoleBalancerScenario::renderAgents(sf::RenderWindow* window)
 {
-	if (!this->genepool->getGenepoolInitialized()) throw std::runtime_error("tbml::GenepoolSimulation: Cannot render because uninitialized.");
+	this->renderGenepoolAgents(window, *genepool->getAgentPopulation());
+}
 
-	for (const auto& inst : *this->genepool->getAgentPopulation()) inst->render(window);
+void NNPoleBalancerScenario::renderOverlay(sf::RenderWindow* window)
+{
+	const auto& elite = getElite(*genepool->getAgentPopulation());
+	nnRenderer.render(window, elite->getBrain(), elite->getNetInput());
 }

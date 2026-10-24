@@ -11,7 +11,7 @@ public:
 		sf::Vector2f targetPos, float targetRadius);
 
 	void initVisual();
-	void render(sf::RenderWindow* window);
+	void renderWorld(sf::RenderWindow* window);
 	sf::Vector2f getTargetPos() const;
 	float getTargetRadius() const;
 

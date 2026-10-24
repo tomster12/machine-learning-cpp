@@ -11,7 +11,7 @@ public:
 		std::vector<sf::Vector2f> targets, float targetRadius);
 
 	void initVisual();
-	void render(sf::RenderWindow* window);
+	void renderWorld(sf::RenderWindow* window);
 	const sf::Vector2f& getTarget(int index) const;
 	size_t getTargetCount() const;
 	float getTargetRadius() const;

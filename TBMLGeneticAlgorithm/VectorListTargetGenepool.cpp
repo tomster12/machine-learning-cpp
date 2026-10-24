@@ -21,13 +21,12 @@ void VectorListTargetGenepool::initVisual()
 	isVisualInit = true;
 };
 
-void VectorListTargetGenepool::render(sf::RenderWindow* window)
+void VectorListTargetGenepool::renderWorld(sf::RenderWindow* window)
 {
 	if (!this->isGenepoolInitialized) throw std::runtime_error("tbml::GenepoolSimulation: Cannot render because uninitialized.");
 
 	if (!isVisualInit) this->initVisual();
 
-	for (const auto& inst : agentPopulation) inst->render(window);
 	window->draw(target);
 }
 

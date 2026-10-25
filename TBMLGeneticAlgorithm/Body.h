@@ -13,7 +13,7 @@ public:
 	void updateShape(sf::RectangleShape& shape) const;
 	void recalculateVertices();
 	bool intersectBody(const Body& other) const;
-	bool intersectRaycast(sf::Vector2f start, sf::Vector2f end) const;
+	float raycast(sf::Vector2f start, sf::Vector2f end) const;
 
 private:
 	std::vector<sf::Vector2f> vertices;

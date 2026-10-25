@@ -33,6 +33,12 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
+    <ClCompile Include="Trail.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
     <ClCompile Include="GraphDock.cpp">
       <Filter>Source\UI</Filter>
     </ClCompile>
@@ -50,9 +56,6 @@
     </ClCompile>
     <ClCompile Include="global.cpp">
       <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="NNTargetGenepool.cpp">
-      <Filter>Source\Scenarios\NN Target</Filter>
     </ClCompile>
     <ClCompile Include="NNPoleBalancerAgent.cpp">
       <Filter>Source\Scenarios\NN Pole Balancer</Filter>
@@ -72,13 +75,13 @@
     <ClCompile Include="NNDriverScenario.cpp">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClCompile>
-    <ClCompile Include="NNDriverGenepool.cpp">
-      <Filter>Source\Scenarios\NN Driver</Filter>
-    </ClCompile>
     <ClCompile Include="Body.cpp">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClCompile>
     <ClCompile Include="NNDriverAgent.cpp">
+      <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="DriverCourse.cpp">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClCompile>
     <ClCompile Include="VectorListTargetAgent.cpp">
@@ -137,6 +140,12 @@
     <ClInclude Include="Camera.h">
       <Filter>Source\Common</Filter>
     </ClInclude>
+    <ClInclude Include="Trail.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
     <ClInclude Include="GraphDock.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
@@ -157,9 +166,6 @@
     </ClInclude>
     <ClInclude Include="global.h">
       <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="NNTargetGenepool.h">
-      <Filter>Source\Scenarios\NN Target</Filter>
     </ClInclude>
     <ClInclude Include="NNPoleBalancerAgent.h">
       <Filter>Source\Scenarios\NN Pole Balancer</Filter>
@@ -182,13 +188,13 @@
     <ClInclude Include="NNDriverScenario.h">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClInclude>
-    <ClInclude Include="NNDriverGenepool.h">
-      <Filter>Source\Scenarios\NN Driver</Filter>
-    </ClInclude>
     <ClInclude Include="Body.h">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClInclude>
     <ClInclude Include="NNDriverAgent.h">
+      <Filter>Source\Scenarios\NN Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="DriverCourse.h">
       <Filter>Source\Scenarios\NN Driver</Filter>
     </ClInclude>
     <ClInclude Include="VectorListTargetAgent.h">

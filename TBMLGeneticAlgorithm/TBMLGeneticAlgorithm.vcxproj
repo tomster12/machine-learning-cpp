@@ -176,6 +176,8 @@
     <ClCompile Include="CommonImpl.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Trail.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="GraphDock.cpp" />
     <ClCompile Include="Scenario.cpp" />
     <ClCompile Include="LanderAgent.cpp" />
@@ -184,11 +186,10 @@
     <ClCompile Include="global.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NNDriverAgent.cpp" />
+    <ClCompile Include="DriverCourse.cpp" />
     <ClCompile Include="NNDriverScenario.cpp" />
-    <ClCompile Include="NNDriverGenepool.cpp" />
     <ClCompile Include="NNPoleBalancerScenario.cpp" />
     <ClCompile Include="NNRenderer.cpp" />
-    <ClCompile Include="NNTargetGenepool.cpp" />
     <ClCompile Include="NNPoleBalancerAgent.cpp" />
     <ClCompile Include="NNTargetAgent.cpp" />
     <ClCompile Include="NNTargetScenario.cpp" />
@@ -209,6 +210,8 @@
     <ClInclude Include="CommonImpl.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Trail.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="GraphDock.h" />
     <ClInclude Include="Scenario.h" />
     <ClInclude Include="LanderAgent.h" />
@@ -216,11 +219,10 @@
     <ClInclude Include="LanderScenario.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="NNDriverAgent.h" />
+    <ClInclude Include="DriverCourse.h" />
     <ClInclude Include="NNDriverScenario.h" />
-    <ClInclude Include="NNDriverGenepool.h" />
     <ClInclude Include="NNPoleBalancerScenario.h" />
     <ClInclude Include="NNRenderer.h" />
-    <ClInclude Include="NNTargetGenepool.h" />
     <ClInclude Include="NNPoleBalancerAgent.h" />
     <ClInclude Include="NNTargetAgent.h" />
     <ClInclude Include="NNTargetScenario.h" />

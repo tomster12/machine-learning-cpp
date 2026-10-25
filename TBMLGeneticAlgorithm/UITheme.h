@@ -24,6 +24,10 @@ namespace theme
 	inline const sf::Color SHIP_LANDED = INFO;
 	inline const sf::Color SHIP_CRASHED = NEGATIVE;
 	inline const sf::Color SHIP_LOST = WARNING;
+	inline const sf::Color CART_BALANCING = CAR_ALIVE;
+	inline const sf::Color CART_FELL = NEGATIVE;
+	inline const sf::Color CART_OFF_TRACK = WARNING;
+	inline const sf::Color CART_SURVIVED = INFO;
 
 	constexpr unsigned int TEXT_HEADER = 14;
 	constexpr unsigned int TEXT_BODY = 13;
@@ -73,6 +77,52 @@ namespace theme
 		rect.setPosition(pos);
 		rect.setFillColor(colour);
 		window->draw(rect);
+	}
+
+	inline std::uint8_t toAlpha(float value) { return static_cast<std::uint8_t>(std::clamp(value, 0.0f, 255.0f)); }
+
+	inline void drawRing(sf::RenderWindow* window, sf::Vector2f centre, float radius, float thickness, sf::Color outline, sf::Color fill = sf::Color::Transparent)
+	{
+		sf::CircleShape ring(radius, 48);
+		ring.setOrigin({ radius, radius });
+		ring.setPosition(centre);
+		ring.setFillColor(fill);
+		ring.setOutlineColor(outline);
+		ring.setOutlineThickness(thickness);
+		window->draw(ring);
+	}
+
+	inline void appendQuad(sf::VertexArray& vertices, sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vector2f d, sf::Color colour)
+	{
+		vertices.append({ a, colour });
+		vertices.append({ b, colour });
+		vertices.append({ c, colour });
+		vertices.append({ a, colour });
+		vertices.append({ c, colour });
+		vertices.append({ d, colour });
+	}
+
+	inline void appendLine(sf::VertexArray& vertices, sf::Vector2f from, sf::Vector2f to, float width, sf::Color colour)
+	{
+		const sf::Vector2f delta = to - from;
+		const float length = delta.length();
+		if (length < 0.001f) return;
+
+		const sf::Vector2f offset = sf::Vector2f(-delta.y, delta.x) / length * (width / 2.0f);
+		appendQuad(vertices, from + offset, to + offset, to - offset, from - offset, colour);
+	}
+
+	inline void appendDisc(sf::VertexArray& vertices, sf::Vector2f centre, float radius, sf::Color colour, int segments = 10)
+	{
+		const float step = 6.28318530718f / static_cast<float>(segments);
+		for (int i = 0; i < segments; i++)
+		{
+			const float a = step * static_cast<float>(i);
+			const float b = step * static_cast<float>(i + 1);
+			vertices.append({ centre, colour });
+			vertices.append({ centre + sf::Vector2f(std::cos(a), std::sin(a)) * radius, colour });
+			vertices.append({ centre + sf::Vector2f(std::cos(b), std::sin(b)) * radius, colour });
+		}
 	}
 
 	inline void drawPanel(sf::RenderWindow* window, sf::Vector2f pos, sf::Vector2f size)

@@ -10,27 +10,9 @@ namespace
 {
 	constexpr float PI = 3.14159265359f;
 	constexpr float TIME_STEP = 1.0f / 60.0f;
-	constexpr size_t TRAIL_LENGTH = 300;
-	constexpr size_t MAX_PARTICLES = 600;
 	constexpr int COURSE_PERIOD = 3;
 
 	float randomRange(float low, float high) { return low + (high - low) * tbml::fn::getRandomFloat(); }
-
-	std::uint8_t toAlpha(float value) { return static_cast<std::uint8_t>(std::clamp(value, 0.0f, 255.0f)); }
-
-	void appendQuad(sf::VertexArray& vertices, sf::Vector2f centre, float half, sf::Color colour)
-	{
-		const sf::Vertex a{ { centre.x - half, centre.y - half }, colour };
-		const sf::Vertex b{ { centre.x + half, centre.y - half }, colour };
-		const sf::Vertex c{ { centre.x + half, centre.y + half }, colour };
-		const sf::Vertex d{ { centre.x - half, centre.y + half }, colour };
-		vertices.append(a);
-		vertices.append(b);
-		vertices.append(c);
-		vertices.append(a);
-		vertices.append(c);
-		vertices.append(d);
-	}
 
 	sf::Color skyColour(float t)
 	{
@@ -141,48 +123,25 @@ void LanderScenario::updateStats()
 
 void LanderScenario::updateTrail()
 {
-	// Start a fresh trail whenever the elite changes
-	const int generation = genepool->getGenerationNumber();
-	if (getEliteIndex() != trailIndex || generation != trailGeneration)
-	{
-		trail.clear();
-		trailIndex = getEliteIndex();
-		trailGeneration = generation;
-	}
-
-	const sf::Vector2f pos = getEliteAgent()->getPosition();
-	if (trail.empty() || (pos - trail.back()).lengthSquared() > 16.0f) trail.push_back(pos);
-	while (trail.size() > TRAIL_LENGTH) trail.pop_front();
+	trail.follow(getEliteIndex(), genepool->getGenerationNumber(), getEliteAgent()->getPosition());
 }
 
 void LanderScenario::updateParticles()
 {
-	// Age, move and drop the dead
-	for (Particle& particle : particles)
-	{
-		particle.life -= TIME_STEP;
-		particle.vel.y += particle.gravity * TIME_STEP;
-		particle.pos += particle.vel * TIME_STEP;
-	}
-	std::erase_if(particles, [](const Particle& particle) { return particle.life <= 0.0f; });
+	effects.update(TIME_STEP);
 
 	const LanderAgent& elite = *getEliteAgent();
 
 	// Exhaust trails off the elite's engine
-	if (!elite.getFinished() && elite.getThrottle() > 0.05f && particles.size() < MAX_PARTICLES)
+	if (!elite.getFinished() && elite.getThrottle() > 0.05f)
 	{
 		for (int i = 0; i < 3; i++)
 		{
 			const sf::Vector2f direction = elite.getExhaustDirection();
 			const sf::Vector2f sideways(-direction.y, direction.x);
-			Particle particle;
-			particle.pos = elite.getNozzlePosition();
-			particle.vel = direction * randomRange(160.0f, 260.0f) * (0.5f + elite.getThrottle()) + sideways * randomRange(-35.0f, 35.0f) + elite.getVelocity() * 0.3f;
-			particle.colour = sf::Color(255, static_cast<std::uint8_t>(randomRange(120.0f, 210.0f)), 70);
-			particle.maxLife = randomRange(0.3f, 0.6f);
-			particle.life = particle.maxLife;
-			particle.size = randomRange(1.5f, 3.5f);
-			particles.push_back(particle);
+			const sf::Vector2f vel = direction * randomRange(160.0f, 260.0f) * (0.5f + elite.getThrottle()) + sideways * randomRange(-35.0f, 35.0f) + elite.getVelocity() * 0.3f;
+			const sf::Color colour(255, static_cast<std::uint8_t>(randomRange(120.0f, 210.0f)), 70);
+			effects.emit(elite.getNozzlePosition(), vel, colour, randomRange(0.3f, 0.6f), randomRange(1.5f, 3.5f));
 		}
 	}
 
@@ -206,15 +165,9 @@ void LanderScenario::spawnBurst(const LanderAgent& elite)
 		// Landings kick up low dust, crashes throw sparks in every direction
 		const float angle = landed ? -PI * randomRange(0.05f, 0.95f) : randomRange(0.0f, 2.0f * PI);
 		const float speed = landed ? randomRange(20.0f, 90.0f) : randomRange(40.0f, 260.0f);
-		Particle particle;
-		particle.pos = elite.getPosition();
-		particle.vel = sf::Vector2f(std::cos(angle), std::sin(angle)) * speed;
-		particle.colour = landed ? sf::Color(200, 225, 250) : (i % 3 == 0 ? theme::NEGATIVE : sf::Color(255, 170, 80));
-		particle.maxLife = landed ? randomRange(0.6f, 1.2f) : randomRange(0.6f, 1.6f);
-		particle.life = particle.maxLife;
-		particle.size = randomRange(1.5f, 3.5f);
-		particle.gravity = landed ? 20.0f : 200.0f;
-		particles.push_back(particle);
+		const sf::Color colour = landed ? sf::Color(200, 225, 250) : (i % 3 == 0 ? theme::NEGATIVE : sf::Color(255, 170, 80));
+		const float life = landed ? randomRange(0.6f, 1.2f) : randomRange(0.6f, 1.6f);
+		effects.emit(elite.getPosition(), sf::Vector2f(std::cos(angle), std::sin(angle)) * speed, colour, life, randomRange(1.5f, 3.5f), landed ? 20.0f : 200.0f);
 	}
 }
 
@@ -248,7 +201,7 @@ void LanderScenario::renderSky(sf::RenderWindow* window) const
 	for (const Star& star : stars)
 	{
 		const float twinkle = 0.55f + 0.45f * std::sin(time * 1.5f + star.phase);
-		appendQuad(starVertices, star.pos, star.size * 0.5f, sf::Color(220, 230, 255, toAlpha(200.0f * twinkle)));
+		theme::appendDisc(starVertices, star.pos, star.size * 0.5f, sf::Color(220, 230, 255, theme::toAlpha(200.0f * twinkle)), 6);
 	}
 	window->draw(starVertices);
 }
@@ -298,7 +251,7 @@ void LanderScenario::renderPad(sf::RenderWindow* window, const LanderCourse& cou
 	{
 		const float blink = 0.5f + 0.5f * std::sin(time * 4.0f + static_cast<float>(side) * 1.6f);
 		beacon.setPosition({ centre.x + static_cast<float>(side) * half, centre.y - 8.0f });
-		beacon.setFillColor(sf::Color(255, 120, 110, toAlpha(90.0f + 165.0f * blink)));
+		beacon.setFillColor(sf::Color(255, 120, 110, theme::toAlpha(90.0f + 165.0f * blink)));
 		window->draw(beacon);
 	}
 }
@@ -309,7 +262,7 @@ void LanderScenario::renderAgents(sf::RenderWindow* window)
 
 	const LanderAgent* elite = getEliteAgent().get();
 
-	this->renderTrail(window);
+	trail.render(window);
 
 	// Whole pack in one draw call, elite is drawn separately on top
 	if (getView() == AgentView::ALL)
@@ -322,7 +275,7 @@ void LanderScenario::renderAgents(sf::RenderWindow* window)
 		window->draw(packVertices);
 	}
 
-	this->renderParticles(window);
+	effects.render(window);
 
 	if (!elite->getFinished())
 	{
@@ -331,30 +284,6 @@ void LanderScenario::renderAgents(sf::RenderWindow* window)
 		window->draw(line, 2, sf::PrimitiveType::Lines);
 	}
 	elite->renderElite(window);
-}
-
-void LanderScenario::renderTrail(sf::RenderWindow* window) const
-{
-	if (trail.size() < 2) return;
-
-	sf::VertexArray line(sf::PrimitiveType::LineStrip);
-	for (size_t i = 0; i < trail.size(); i++)
-	{
-		const float t = static_cast<float>(i) / static_cast<float>(trail.size() - 1);
-		line.append(sf::Vertex{ trail[i], sf::Color(255, 255, 255, toAlpha(110.0f * t)) });
-	}
-	window->draw(line);
-}
-
-void LanderScenario::renderParticles(sf::RenderWindow* window) const
-{
-	sf::VertexArray vertices(sf::PrimitiveType::Triangles);
-	for (const Particle& particle : particles)
-	{
-		const float t = particle.life / particle.maxLife;
-		appendQuad(vertices, particle.pos, particle.size * (0.4f + 0.6f * t) * 0.5f, sf::Color(particle.colour.r, particle.colour.g, particle.colour.b, toAlpha(230.0f * t)));
-	}
-	window->draw(vertices);
 }
 
 void LanderScenario::renderOverlay(sf::RenderWindow* window)

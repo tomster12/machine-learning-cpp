@@ -1,9 +1,10 @@
 #pragma once
 
-#include <deque>
 #include "LanderAgent.h"
 #include "NNRenderer.h"
+#include "ParticleSystem.h"
 #include "Scenario.h"
+#include "Trail.h"
 
 class LanderScenario : public Scenario
 {
@@ -40,17 +41,6 @@ private:
 		float phase = 0.0f;
 	};
 
-	struct Particle
-	{
-		sf::Vector2f pos;
-		sf::Vector2f vel;
-		sf::Color colour;
-		float life = 0.0f;
-		float maxLife = 1.0f;
-		float size = 2.0f;
-		float gravity = 0.0f;
-	};
-
 	LanderGenepool::AgentPtr getEliteAgent() const { return getElite(*genepool->getAgentPopulation()); }
 	std::shared_ptr<const LanderCourse> getCourse(int number);
 	void updateStats();
@@ -60,8 +50,6 @@ private:
 	void renderSky(sf::RenderWindow* window) const;
 	void renderTerrain(sf::RenderWindow* window, const LanderCourse& course);
 	void renderPad(sf::RenderWindow* window, const LanderCourse& course) const;
-	void renderTrail(sf::RenderWindow* window) const;
-	void renderParticles(sf::RenderWindow* window) const;
 
 	std::shared_ptr<LanderGenepool> genepool = nullptr;
 	std::shared_ptr<const LanderCourse> courseCache = nullptr;
@@ -70,10 +58,8 @@ private:
 	sf::Clock clock;
 
 	std::vector<Star> stars;
-	std::deque<sf::Vector2f> trail;
-	std::vector<Particle> particles;
-	size_t trailIndex = 0;
-	int trailGeneration = -1;
+	Trail trail = Trail(300, 4.0f);
+	ParticleSystem effects;
 	bool burstDone = false;
 
 	int terrainNumber = -1;

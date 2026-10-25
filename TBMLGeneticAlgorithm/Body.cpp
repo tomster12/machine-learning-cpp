@@ -63,19 +63,22 @@ bool Body::intersectBody(const Body& other) const
 	return true;
 }
 
-bool Body::intersectRaycast(sf::Vector2f start, sf::Vector2f end) const
+float Body::raycast(sf::Vector2f start, sf::Vector2f end) const
 {
-	// Check if ray intersects any edge of the body
+	// Nearest edge the segment crosses, as a fraction of the way along it, 1 if it crosses none
+	const sf::Vector2f direction = end - start;
+	float nearest = 1.0f;
 	for (size_t i = 0; i < 4; ++i)
 	{
-		sf::Vector2f edge = vertices[(i + 1) % 4] - vertices[i];
-		sf::Vector2f normal = sf::Vector2f(-edge.y, edge.x);
-		float startProj = (start.x * normal.x + start.y * normal.y);
-		float endProj = (end.x * normal.x + end.y * normal.y);
-		float minProj = std::min(startProj, endProj);
-		float maxProj = std::max(startProj, endProj);
-		auto pair = projectVerticesOnAxis(vertices, normal);
-		if (pair.second < minProj || pair.first > maxProj) return false;
+		const sf::Vector2f edgeStart = vertices[i];
+		const sf::Vector2f edge = vertices[(i + 1) % 4] - edgeStart;
+		const float denominator = direction.cross(edge);
+		if (std::abs(denominator) < 0.0001f) continue;
+
+		const sf::Vector2f offset = edgeStart - start;
+		const float t = offset.cross(edge) / denominator;
+		const float u = offset.cross(direction) / denominator;
+		if (t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f) nearest = std::min(nearest, t);
 	}
-	return true;
+	return nearest;
 }

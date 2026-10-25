@@ -15,7 +15,7 @@ public:
 
 protected:
 	bool hasDifficulty() const override { return true; }
-	float getDifficulty(int generation) const override;
+	float getGenerationDifficulty(int generation) const override;
 	sf::Vector2f getWorldSize() const override { return getEliteAgent()->getCourse()->getSize(); }
 	void initAgentStats(UIStatsPanel& panel) override;
 	void renderWorld(sf::RenderWindow* window) override;

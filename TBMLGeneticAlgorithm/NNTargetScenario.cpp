@@ -20,12 +20,12 @@ namespace
 
 	int courseFor(int generation) { return (generation - 1) / COURSE_PERIOD + 1; }
 
-	float difficultyFor(int number)
+	float getGenerationDifficulty(int number)
 	{
 		return std::min(1.0f, static_cast<float>(number - 1) / static_cast<float>(RAMP_COURSES));
 	}
 
-	float targetRadiusFor(int number) { return std::lerp(36.0f, 12.0f, difficultyFor(number)); }
+	float targetRadiusFor(int number) { return std::lerp(36.0f, 12.0f, getGenerationDifficulty(number)); }
 
 	NNTargetAgent::Targets makeLayout(int number)
 	{
@@ -73,9 +73,9 @@ NNTargetScenario::NNTargetScenario()
 	this->genepool->resetGenepool(1000, 0.1f);
 }
 
-float NNTargetScenario::getDifficulty(int generation) const
+float NNTargetScenario::getGenerationDifficulty(int generation) const
 {
-	return difficultyFor(courseFor(generation));
+	return getGenerationDifficulty(courseFor(generation));
 }
 
 std::shared_ptr<const NNTargetAgent::Targets> NNTargetScenario::getTargets(int number)
@@ -97,7 +97,7 @@ void NNTargetScenario::initAgentStats(UIStatsPanel& panel)
 
 	panel.header("Course");
 	panel.row("Number", [this]() { return std::to_string(courseFor(genepool->getGenerationNumber())); });
-	panel.row("Difficulty", [this]() { return global::formatFloat(this->getDifficulty(genepool->getGenerationNumber()) * 100.0f, 0) + "%"; });
+	panel.row("Difficulty", [this]() { return global::formatFloat(this->getGenerationDifficulty(genepool->getGenerationNumber()) * 100.0f, 0) + "%"; });
 	panel.row("Target size", [this]() { return global::formatFloat(getEliteAgent()->getTargetRadius(), 0); });
 
 	// Swatch doubles as the legend for agent colours

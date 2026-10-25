@@ -21,7 +21,7 @@ public:
 
 protected:
 	virtual bool hasDifficulty() const { return false; }
-	virtual float getDifficulty(int generation) const { return 0.0f; }
+	virtual float getGenerationDifficulty(int generation) const { return 0.0f; }
 	virtual sf::Vector2f getWorldSize() const { return { 1400.0f, 1000.0f }; };
 	virtual void initAgentStats(UIStatsPanel& panel) {};
 	virtual void renderWorld(sf::RenderWindow* window) {};

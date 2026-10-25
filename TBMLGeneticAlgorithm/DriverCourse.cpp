@@ -118,7 +118,7 @@ DriverCourse::DriverCourse(int number)
 	auto random = [&](float low, float high) { return low + (high - low) * std::uniform_real_distribution<float>(0.0f, 1.0f)(rng); };
 
 	// Later courses are much longer, with a narrower road that varies more, sharper and more frequent bends, and smaller targets
-	difficulty = getDifficultyFor(number);
+	difficulty = getGenerationDifficulty(number);
 	size = { std::lerp(1400.0f, 2800.0f, difficulty), std::lerp(1000.0f, 1800.0f, difficulty) };
 	targetRadius = std::lerp(42.0f, 30.0f, difficulty);
 	const float baseHalfWidth = std::lerp(120.0f, 80.0f, difficulty);
@@ -183,7 +183,7 @@ DriverCourse::DriverCourse(int number)
 	targets.assign(path.begin() + 1, path.end());
 }
 
-float DriverCourse::getDifficultyFor(int number)
+float DriverCourse::getGenerationDifficulty(int number)
 {
 	return std::min(1.0f, static_cast<float>(number - 1) / static_cast<float>(RAMP_COURSES));
 }

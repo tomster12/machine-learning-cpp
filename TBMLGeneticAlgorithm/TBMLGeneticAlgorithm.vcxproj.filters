@@ -25,6 +25,9 @@
     <Filter Include="Source\Scenarios\Walker">
       <UniqueIdentifier>{3a9e6b71-5c24-4d08-b1f3-7e82a4d90c55}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Scenarios\Dogfight">
+      <UniqueIdentifier>{b4d7e2a9-6f13-4c85-9e0a-51c8d3f7a264}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\UI">
       <UniqueIdentifier>{cba3320b-ded3-4b64-b3c0-c29ad8adfffe}</UniqueIdentifier>
     </Filter>
@@ -41,6 +44,24 @@
     </ClCompile>
     <ClCompile Include="WalkerScenario.cpp">
       <Filter>Source\Scenarios\Walker</Filter>
+    </ClCompile>
+    <ClCompile Include="DogfightAgent.cpp">
+      <Filter>Source\Scenarios\Dogfight</Filter>
+    </ClCompile>
+    <ClCompile Include="DogfightArena.cpp">
+      <Filter>Source\Scenarios\Dogfight</Filter>
+    </ClCompile>
+    <ClCompile Include="DogfightLevel.cpp">
+      <Filter>Source\Scenarios\Dogfight</Filter>
+    </ClCompile>
+    <ClCompile Include="DogfightPilot.cpp">
+      <Filter>Source\Scenarios\Dogfight</Filter>
+    </ClCompile>
+    <ClCompile Include="DogfightScenario.cpp">
+      <Filter>Source\Scenarios\Dogfight</Filter>
+    </ClCompile>
+    <ClCompile Include="DogfightShip.cpp">
+      <Filter>Source\Scenarios\Dogfight</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source\Common</Filter>
@@ -235,6 +256,24 @@
     </ClInclude>
     <ClInclude Include="WalkerScenario.h">
       <Filter>Source\Scenarios\Walker</Filter>
+    </ClInclude>
+    <ClInclude Include="DogfightAgent.h">
+      <Filter>Source\Scenarios\Dogfight</Filter>
+    </ClInclude>
+    <ClInclude Include="DogfightArena.h">
+      <Filter>Source\Scenarios\Dogfight</Filter>
+    </ClInclude>
+    <ClInclude Include="DogfightLevel.h">
+      <Filter>Source\Scenarios\Dogfight</Filter>
+    </ClInclude>
+    <ClInclude Include="DogfightPilot.h">
+      <Filter>Source\Scenarios\Dogfight</Filter>
+    </ClInclude>
+    <ClInclude Include="DogfightScenario.h">
+      <Filter>Source\Scenarios\Dogfight</Filter>
+    </ClInclude>
+    <ClInclude Include="DogfightShip.h">
+      <Filter>Source\Scenarios\Dogfight</Filter>
     </ClInclude>
     <ClInclude Include="LanderAgent.h">
       <Filter>Source\Scenarios\Lander</Filter>

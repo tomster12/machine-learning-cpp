@@ -183,6 +183,12 @@
     <ClCompile Include="LanderAgent.cpp" />
     <ClCompile Include="LanderCourse.cpp" />
     <ClCompile Include="LanderScenario.cpp" />
+    <ClCompile Include="DogfightAgent.cpp" />
+    <ClCompile Include="DogfightArena.cpp" />
+    <ClCompile Include="DogfightLevel.cpp" />
+    <ClCompile Include="DogfightPilot.cpp" />
+    <ClCompile Include="DogfightScenario.cpp" />
+    <ClCompile Include="DogfightShip.cpp" />
     <ClCompile Include="WalkerAgent.cpp" />
     <ClCompile Include="WalkerCourse.cpp" />
     <ClCompile Include="WalkerScenario.cpp" />
@@ -220,6 +226,12 @@
     <ClInclude Include="LanderAgent.h" />
     <ClInclude Include="LanderCourse.h" />
     <ClInclude Include="LanderScenario.h" />
+    <ClInclude Include="DogfightAgent.h" />
+    <ClInclude Include="DogfightArena.h" />
+    <ClInclude Include="DogfightLevel.h" />
+    <ClInclude Include="DogfightPilot.h" />
+    <ClInclude Include="DogfightScenario.h" />
+    <ClInclude Include="DogfightShip.h" />
     <ClInclude Include="WalkerAgent.h" />
     <ClInclude Include="WalkerCourse.h" />
     <ClInclude Include="WalkerScenario.h" />

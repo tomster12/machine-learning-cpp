@@ -65,7 +65,9 @@ void NNRenderer::render(sf::RenderWindow* window, const tbml::nn::NeuralNetwork&
 	}
 
 	// Panel in the top right, tall enough for the widest layer
-	const float spacing = 24.0f;
+	// Tall networks squeeze together to stay inside the window
+	const float chrome = theme::HEADER_INSET + theme::HEADER_HEIGHT + theme::GAP + theme::PADDING + 2.0f * theme::MARGIN;
+	const float spacing = std::clamp((static_cast<float>(window->getSize().y) - chrome) / static_cast<float>(maxSize), 13.0f, 24.0f);
 	const sf::Vector2f size(264.0f, theme::HEADER_INSET + theme::HEADER_HEIGHT + theme::GAP + spacing * static_cast<float>(maxSize) + theme::PADDING);
 	const sf::Vector2f origin(static_cast<float>(window->getSize().x) - theme::MARGIN - size.x, theme::MARGIN);
 	theme::drawPanel(window, origin, size);

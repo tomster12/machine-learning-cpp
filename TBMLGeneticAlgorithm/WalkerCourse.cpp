@@ -10,7 +10,7 @@ WalkerCourse::WalkerCourse(int number)
 	auto lerp = [](float a, float b, float t) { return a + (b - a) * t; };
 
 	// Early courses are flat, later ones roll and bump
-	difficulty = getDifficultyFor(number);
+	difficulty = getGenerationDifficulty(number);
 	roughness = lerp(0.0f, 70.0f, difficulty);
 
 	const float frequencies[3] = { random(0.004f, 0.007f), random(0.01f, 0.016f), random(0.025f, 0.04f) };
@@ -30,7 +30,7 @@ WalkerCourse::WalkerCourse(int number)
 	}
 }
 
-float WalkerCourse::getDifficultyFor(int number)
+float WalkerCourse::getGenerationDifficulty(int number)
 {
 	return std::min(1.0f, static_cast<float>(number - 1) / static_cast<float>(RAMP_GENERATIONS));
 }

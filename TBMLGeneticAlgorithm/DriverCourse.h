@@ -9,7 +9,7 @@ public:
 
 	explicit DriverCourse(int number);
 
-	static float getDifficultyFor(int number);
+	static float getGenerationDifficulty(int number);
 
 	bool intersectsBody(const Body& body) const;
 	float castRay(sf::Vector2f start, float angle, float length) const;
@@ -17,7 +17,7 @@ public:
 	float getTargetDirDiff(sf::Vector2f pos, float rot, size_t target) const;
 
 	int getNumber() const { return number; }
-	float getDifficulty() const { return difficulty; }
+	float getGenerationDifficulty() const { return difficulty; }
 	sf::Vector2f getSize() const { return size; }
 	float getPathLength() const { return pathLength; }
 	float getHalfWidth(size_t index) const { return halfWidths[index]; }

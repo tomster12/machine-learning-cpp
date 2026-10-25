@@ -61,9 +61,9 @@ LanderScenario::LanderScenario()
 	}
 }
 
-float LanderScenario::getDifficulty(int generation) const
+float LanderScenario::getGenerationDifficulty(int generation) const
 {
-	return LanderCourse::getDifficultyFor((generation - 1) / COURSE_PERIOD + 1);
+	return LanderCourse::getGenerationDifficulty((generation - 1) / COURSE_PERIOD + 1);
 }
 
 std::shared_ptr<const LanderCourse> LanderScenario::getCourse(int number)
@@ -80,7 +80,7 @@ void LanderScenario::initAgentStats(UIStatsPanel& panel)
 
 	panel.header("Course");
 	panel.row("Number", [this]() { return std::to_string(getEliteAgent()->getCourse()->getNumber()); });
-	panel.row("Difficulty", [this]() { return global::formatFloat(getEliteAgent()->getCourse()->getDifficulty() * 100.0f, 0) + "%"; });
+	panel.row("Difficulty", [this]() { return global::formatFloat(getEliteAgent()->getCourse()->getGenerationDifficulty() * 100.0f, 0) + "%"; });
 	panel.row("Pad width", [this]() { return global::formatFloat(getEliteAgent()->getCourse()->getPadWidth(), 0); });
 
 	// Swatches double as the legend for ship colours

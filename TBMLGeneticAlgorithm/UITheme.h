@@ -28,6 +28,11 @@ namespace theme
 	inline const sf::Color WALKER_FELL = NEGATIVE;
 	inline const sf::Color WALKER_TIMED_OUT = WARNING;
 	inline const sf::Color WALKER_FINISHED = INFO;
+	inline const sf::Color DOGFIGHT_FIGHTING = CAR_ALIVE;
+	inline const sf::Color DOGFIGHT_WON = INFO;
+	inline const sf::Color DOGFIGHT_LOST = NEGATIVE;
+	inline const sf::Color DOGFIGHT_SURVIVED = WARNING;
+	inline const sf::Color DOGFIGHT_RIVAL(240, 150, 96);
 	inline const sf::Color CART_BALANCING = CAR_ALIVE;
 	inline const sf::Color CART_FELL = NEGATIVE;
 	inline const sf::Color CART_OFF_TRACK = WARNING;

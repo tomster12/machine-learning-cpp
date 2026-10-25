@@ -11,13 +11,13 @@ public:
 
 	explicit LanderCourse(int number);
 
-	static float getDifficultyFor(int number);
+	static float getGenerationDifficulty(int number);
 
 	float getHeight(float x) const;
 	float castRay(sf::Vector2f start, float angle, float length) const;
 
 	int getNumber() const { return number; }
-	float getDifficulty() const { return difficulty; }
+	float getGenerationDifficulty() const { return difficulty; }
 	float getPadWidth() const { return padWidth; }
 	sf::Vector2f getPadCentre() const { return { padX, padY }; }
 	sf::Vector2f getSpawnPos() const { return spawnPos; }

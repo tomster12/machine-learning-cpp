@@ -48,9 +48,9 @@ NNDriverScenario::NNDriverScenario()
 	this->genepool->logInformation();
 }
 
-float NNDriverScenario::getDifficulty(int generation) const
+float NNDriverScenario::getGenerationDifficulty(int generation) const
 {
-	return DriverCourse::getDifficultyFor((generation - 1) / COURSE_PERIOD + 1);
+	return DriverCourse::getGenerationDifficulty((generation - 1) / COURSE_PERIOD + 1);
 }
 
 std::shared_ptr<const DriverCourse> NNDriverScenario::getCourse(int number)
@@ -67,7 +67,7 @@ void NNDriverScenario::initAgentStats(UIStatsPanel& panel)
 
 	panel.header("Course");
 	panel.row("Number", [this]() { return std::to_string(getEliteAgent()->getCourse()->getNumber()); });
-	panel.row("Difficulty", [this]() { return global::formatFloat(getEliteAgent()->getCourse()->getDifficulty() * 100.0f, 0) + "%"; });
+	panel.row("Difficulty", [this]() { return global::formatFloat(getEliteAgent()->getCourse()->getGenerationDifficulty() * 100.0f, 0) + "%"; });
 	panel.row("Road width", [this]() { const DriverCourse& course = *getEliteAgent()->getCourse(); return global::formatFloat(course.getMinRoadWidth(), 0) + " - " + global::formatFloat(course.getMaxRoadWidth(), 0); });
 	panel.row("Road length", [this]() { return global::formatFloat(getEliteAgent()->getCourse()->getPathLength(), 0); });
 

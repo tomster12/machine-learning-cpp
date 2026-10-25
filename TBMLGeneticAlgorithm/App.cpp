@@ -7,8 +7,9 @@
 #include "NNTargetScenario.h"
 #include "LanderScenario.h"
 #include "WalkerScenario.h"
+#include "DogfightScenario.h"
 
-#define SCENARIO 2
+#define SCENARIO 7
 
 App::~App()
 {
@@ -48,6 +49,8 @@ void App::initialize()
 	ScenarioUPtr scenario = std::make_unique<LanderScenario>();
 	#elif SCENARIO == 6
 	ScenarioUPtr scenario = std::make_unique<WalkerScenario>();
+	#elif SCENARIO == 7
+	ScenarioUPtr scenario = std::make_unique<DogfightScenario>();
 	#endif
 
 	controller = std::make_unique<AppScenarioController>(std::move(scenario), window);

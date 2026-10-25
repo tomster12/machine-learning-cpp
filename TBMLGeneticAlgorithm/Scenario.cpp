@@ -36,7 +36,7 @@ void Scenario::render(sf::RenderWindow* window)
 	// Panels are drawn in screen space
 	window->setView(theme::screenView(window));
 	std::function<float(int)> difficulty;
-	if (this->hasDifficulty()) difficulty = [this](int generation) { return this->getDifficulty(generation); };
+	if (this->hasDifficulty()) difficulty = [this](int generation) { return this->getGenerationDifficulty(generation); };
 	graphs.render(window, *getGenepool(), difficulty);
 	this->renderOverlay(window);
 

@@ -13,12 +13,12 @@ public:
 
 	explicit WalkerCourse(int number);
 
-	static float getDifficultyFor(int number);
+	static float getGenerationDifficulty(int number);
 
 	float getHeight(float x) const;
 
 	int getNumber() const { return number; }
-	float getDifficulty() const { return difficulty; }
+	float getGenerationDifficulty() const { return difficulty; }
 	float getRoughness() const { return roughness; }
 	const std::vector<float>& getHeights() const { return heights; }
 

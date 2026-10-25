@@ -24,6 +24,10 @@ namespace theme
 	inline const sf::Color SHIP_LANDED = INFO;
 	inline const sf::Color SHIP_CRASHED = NEGATIVE;
 	inline const sf::Color SHIP_LOST = WARNING;
+	inline const sf::Color WALKER_WALKING = CAR_ALIVE;
+	inline const sf::Color WALKER_FELL = NEGATIVE;
+	inline const sf::Color WALKER_TIMED_OUT = WARNING;
+	inline const sf::Color WALKER_FINISHED = INFO;
 	inline const sf::Color CART_BALANCING = CAR_ALIVE;
 	inline const sf::Color CART_FELL = NEGATIVE;
 	inline const sf::Color CART_OFF_TRACK = WARNING;

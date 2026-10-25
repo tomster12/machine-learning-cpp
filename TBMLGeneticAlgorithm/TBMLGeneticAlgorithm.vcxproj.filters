@@ -22,6 +22,9 @@
     <Filter Include="Source\Scenarios\Lander">
       <UniqueIdentifier>{8c1f0d52-3b7a-4e1d-9a64-2f5d7c3e9b10}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Scenarios\Walker">
+      <UniqueIdentifier>{3a9e6b71-5c24-4d08-b1f3-7e82a4d90c55}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\UI">
       <UniqueIdentifier>{cba3320b-ded3-4b64-b3c0-c29ad8adfffe}</UniqueIdentifier>
     </Filter>
@@ -30,6 +33,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="WalkerAgent.cpp">
+      <Filter>Source\Scenarios\Walker</Filter>
+    </ClCompile>
+    <ClCompile Include="WalkerCourse.cpp">
+      <Filter>Source\Scenarios\Walker</Filter>
+    </ClCompile>
+    <ClCompile Include="WalkerScenario.cpp">
+      <Filter>Source\Scenarios\Walker</Filter>
+    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
@@ -214,6 +226,15 @@
     </ClInclude>
     <ClInclude Include="NNRenderer.h">
       <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="WalkerAgent.h">
+      <Filter>Source\Scenarios\Walker</Filter>
+    </ClInclude>
+    <ClInclude Include="WalkerCourse.h">
+      <Filter>Source\Scenarios\Walker</Filter>
+    </ClInclude>
+    <ClInclude Include="WalkerScenario.h">
+      <Filter>Source\Scenarios\Walker</Filter>
     </ClInclude>
     <ClInclude Include="LanderAgent.h">
       <Filter>Source\Scenarios\Lander</Filter>

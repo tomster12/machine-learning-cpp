@@ -183,6 +183,9 @@
     <ClCompile Include="LanderAgent.cpp" />
     <ClCompile Include="LanderCourse.cpp" />
     <ClCompile Include="LanderScenario.cpp" />
+    <ClCompile Include="WalkerAgent.cpp" />
+    <ClCompile Include="WalkerCourse.cpp" />
+    <ClCompile Include="WalkerScenario.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NNDriverAgent.cpp" />
@@ -217,6 +220,9 @@
     <ClInclude Include="LanderAgent.h" />
     <ClInclude Include="LanderCourse.h" />
     <ClInclude Include="LanderScenario.h" />
+    <ClInclude Include="WalkerAgent.h" />
+    <ClInclude Include="WalkerCourse.h" />
+    <ClInclude Include="WalkerScenario.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="NNDriverAgent.h" />
     <ClInclude Include="DriverCourse.h" />

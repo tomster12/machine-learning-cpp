@@ -6,8 +6,9 @@
 #include "VectorListTargetScenario.h"
 #include "NNTargetScenario.h"
 #include "LanderScenario.h"
+#include "WalkerScenario.h"
 
-#define SCENARIO 3
+#define SCENARIO 2
 
 App::~App()
 {
@@ -45,6 +46,8 @@ void App::initialize()
 	ScenarioUPtr scenario = std::make_unique<NNDriverScenario>();
 	#elif SCENARIO == 5
 	ScenarioUPtr scenario = std::make_unique<LanderScenario>();
+	#elif SCENARIO == 6
+	ScenarioUPtr scenario = std::make_unique<WalkerScenario>();
 	#endif
 
 	controller = std::make_unique<AppScenarioController>(std::move(scenario), window);

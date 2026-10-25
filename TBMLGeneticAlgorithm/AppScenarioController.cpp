@@ -6,11 +6,21 @@
 #include "UIStatsPanel.h"
 #include "UITooltip.h"
 
-AppScenarioController::AppScenarioController(ScenarioUPtr&& scenario, sf::RenderWindow* window)
-	: scenario(std::move(scenario))
+AppScenarioController::AppScenarioController(std::vector<ScenarioEntry> entries, size_t startIndex, sf::RenderWindow* window)
+	: entries(std::move(entries)), window(window)
 {
+	this->loadScenario(startIndex);
+}
+
+void AppScenarioController::loadScenario(size_t index)
+{
+	// Drop the old UI first since its rows read from the old scenario
+	this->ui.reset();
+	this->scenarioIndex = index;
+	this->scenario = this->entries[index].create();
 	this->genepool = this->scenario->getGenepool();
-	this->initUI(window);
+	this->stepAccumulator = 0.0f;
+	this->initUI(this->window);
 }
 
 void AppScenarioController::initUI(sf::RenderWindow* window)
@@ -22,7 +32,7 @@ void AppScenarioController::initUI(sf::RenderWindow* window)
 	const float pad = theme::PADDING;
 	const sf::Vector2f origin(theme::MARGIN, theme::MARGIN);
 
-	// Controls panel: icon tiles with each auto toggle directly beside the one-shot it repeats, then a speed stepper
+	// Controls panel: icon tiles with each auto toggle directly beside the one-shot it repeats, then a speed stepper and restart
 	const float controlsHeight = pad + tile + theme::GAP + tile + pad;
 	this->ui->addElement(std::make_shared<UIPanel>(origin, sf::Vector2f{ theme::PANEL_WIDTH, controlsHeight }));
 
@@ -51,8 +61,16 @@ void AppScenarioController::initUI(sf::RenderWindow* window)
 	this->ui->addElement(std::make_shared<UIIconButton>(window, sf::Vector2f{ origin.x + pad + tile + tileGap + readoutWidth + tileGap, stepperTop }, sf::Vector2f{ tile, tile }, Icon::PLUS, Icon::PLUS,
 		"Faster", false, [&](bool) { this->changeSpeed(1); }));
 
+	// Restart sits at the end of the speed row
+	const float restartX = origin.x + theme::PANEL_WIDTH - pad - tile;
+	this->ui->addElement(std::make_shared<UIIconButton>(window, sf::Vector2f{ restartX, stepperTop }, sf::Vector2f{ tile, tile }, Icon::RESET, Icon::RESET,
+		"Restart scenario", false, [&](bool) { this->restartScenario(); }));
+
 	// Stats panel sits below the controls
 	UIStatsPanel stats(window, this->ui.get(), { origin.x, origin.y + controlsHeight + theme::GAP }, theme::PANEL_WIDTH);
+
+	stats.header("Scenario");
+	stats.list(this->getScenarioNames(), [&]() { return this->scenarioIndex; }, [&](size_t index) { if (index != this->scenarioIndex) this->selectScenario(index); });
 
 	stats.header("Network");
 	stats.row("Generation", [&]() { return std::to_string(this->genepool->getGenerationNumber()); });
@@ -72,6 +90,13 @@ void AppScenarioController::initUI(sf::RenderWindow* window)
 	this->ui->addElement(std::make_shared<UITooltip>());
 }
 
+std::vector<std::string> AppScenarioController::getScenarioNames() const
+{
+	std::vector<std::string> names;
+	for (const ScenarioEntry& entry : entries) names.push_back(entry.name);
+	return names;
+}
+
 std::string AppScenarioController::getSpeedText() const
 {
 	std::ostringstream ss;
@@ -86,6 +111,14 @@ void AppScenarioController::handleEvent(const sf::Event& event)
 
 void AppScenarioController::update()
 {
+	// Switch between frames, never from inside a UI callback that is still being iterated
+	if (pendingScenario)
+	{
+		const size_t index = *pendingScenario;
+		pendingScenario.reset();
+		this->loadScenario(index);
+	}
+
 	if (!genepool->getGenepoolInitialized()) throw std::runtime_error("Genepool not initialized.");
 
 	const float dt = frameClock.restart().asSeconds();

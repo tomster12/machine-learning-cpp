@@ -167,6 +167,9 @@
     <ClInclude Include="UIIconButton.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
+    <ClInclude Include="UIList.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
     <ClInclude Include="UIRadioGroup.h">
       <Filter>Source\UI</Filter>
     </ClInclude>

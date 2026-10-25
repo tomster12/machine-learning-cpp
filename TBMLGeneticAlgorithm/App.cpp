@@ -9,8 +9,6 @@
 #include "WalkerScenario.h"
 #include "DogfightScenario.h"
 
-#define SCENARIO 7
-
 App::~App()
 {
 	delete window;
@@ -37,23 +35,17 @@ void App::initialize()
 	window->setFramerateLimit(60);
 	window->setVerticalSyncEnabled(false);
 
-	#if SCENARIO == 1
-	ScenarioUPtr scenario = std::make_unique<VectorListTargetScenario>();
-	#elif SCENARIO == 2
-	ScenarioUPtr scenario = std::make_unique<NNTargetScenario>();
-	#elif SCENARIO == 3
-	ScenarioUPtr scenario = std::make_unique<NNPoleBalancerScenario>();
-	#elif SCENARIO == 4
-	ScenarioUPtr scenario = std::make_unique<NNDriverScenario>();
-	#elif SCENARIO == 5
-	ScenarioUPtr scenario = std::make_unique<LanderScenario>();
-	#elif SCENARIO == 6
-	ScenarioUPtr scenario = std::make_unique<WalkerScenario>();
-	#elif SCENARIO == 7
-	ScenarioUPtr scenario = std::make_unique<DogfightScenario>();
-	#endif
+	std::vector<ScenarioEntry> entries;
+	entries.push_back({ "Vector List", [] { return std::make_unique<VectorListTargetScenario>(); } });
+	entries.push_back({ "NN Target", [] { return std::make_unique<NNTargetScenario>(); } });
+	entries.push_back({ "Pole Balancer", [] { return std::make_unique<NNPoleBalancerScenario>(); } });
+	entries.push_back({ "Driver", [] { return std::make_unique<NNDriverScenario>(); } });
+	entries.push_back({ "Lander", [] { return std::make_unique<LanderScenario>(); } });
+	entries.push_back({ "Walker", [] { return std::make_unique<WalkerScenario>(); } });
+	entries.push_back({ "Dogfight", [] { return std::make_unique<DogfightScenario>(); } });
 
-	controller = std::make_unique<AppScenarioController>(std::move(scenario), window);
+	const size_t startIndex = entries.size() - 1;
+	controller = std::make_unique<AppScenarioController>(std::move(entries), startIndex, window);
 }
 
 void App::update()

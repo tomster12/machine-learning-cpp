@@ -56,5 +56,5 @@ private:
 	std::function<size_t(void)> getIndex;
 	std::function<void(size_t)> onSelect;
 	int hovered = -1;
-	bool isPressed = false;
+	bool isPressed = true;
 };

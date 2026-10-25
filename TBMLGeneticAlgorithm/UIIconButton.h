@@ -54,5 +54,5 @@ private:
 	std::function<void(bool)> action;
 	bool isToggled = false;
 	bool isHovered = false;
-	bool isPressed = false;
+	bool isPressed = true;
 };

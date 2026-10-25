@@ -19,7 +19,7 @@ namespace
         float position = 0.0f;
     };
 
-    float getGenerationDifficulty(int generation)
+    float generationDifficulty(int generation)
     {
         return std::min(1.0f, static_cast<float>(generation - 1) / static_cast<float>(RAMP_GENERATIONS));
     }
@@ -31,7 +31,7 @@ namespace
         { return low + (high - low) * std::uniform_real_distribution<float>(0.0f, 1.0f)(rng); };
 
         // Early generations start almost upright on the centre, later ones lean harder in either direction from off to the side
-        const float difficulty = getGenerationDifficulty(generation);
+        const float difficulty = generationDifficulty(generation);
         StartState start;
         start.angle = random(-1.0f, 1.0f) * std::lerp(0.03f, 0.1f, difficulty);
         start.position = random(-1.0f, 1.0f) * std::lerp(0.0f, 0.5f, difficulty);
@@ -66,7 +66,7 @@ NNPoleBalancerScenario::NNPoleBalancerScenario()
 
 float NNPoleBalancerScenario::getGenerationDifficulty(int generation) const
 {
-    return getGenerationDifficulty(generation);
+    return generationDifficulty(generation);
 }
 
 void NNPoleBalancerScenario::initAgentStats(UIStatsPanel &panel)

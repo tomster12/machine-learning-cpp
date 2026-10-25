@@ -20,12 +20,12 @@ namespace
 
 	int courseFor(int generation) { return (generation - 1) / COURSE_PERIOD + 1; }
 
-	float getGenerationDifficulty(int number)
+	float courseDifficulty(int number)
 	{
 		return std::min(1.0f, static_cast<float>(number - 1) / static_cast<float>(RAMP_COURSES));
 	}
 
-	float targetRadiusFor(int number) { return std::lerp(36.0f, 12.0f, getGenerationDifficulty(number)); }
+	float targetRadiusFor(int number) { return std::lerp(36.0f, 12.0f, courseDifficulty(number)); }
 
 	NNTargetAgent::Targets makeLayout(int number)
 	{
@@ -75,7 +75,7 @@ NNTargetScenario::NNTargetScenario()
 
 float NNTargetScenario::getGenerationDifficulty(int generation) const
 {
-	return getGenerationDifficulty(courseFor(generation));
+	return courseDifficulty(courseFor(generation));
 }
 
 std::shared_ptr<const NNTargetAgent::Targets> NNTargetScenario::getTargets(int number)

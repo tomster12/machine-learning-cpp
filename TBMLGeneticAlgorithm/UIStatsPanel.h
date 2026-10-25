@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UIHeader.h"
+#include "UIList.h"
 #include "UIManager.h"
 #include "UIPanel.h"
 #include "UIRow.h"
@@ -40,9 +41,20 @@ public:
 		cursorY += 24.0f + 6.0f;
 	}
 
+	void list(std::vector<std::string> labels, std::function<size_t(void)> getIndex, std::function<void(size_t)> onSelect)
+	{
+		isFirst = false;
+		const float height = LIST_ITEM_HEIGHT * static_cast<float>(labels.size());
+		cursorY += 6.0f;
+		ui->addElement(std::make_shared<UIList>(window, sf::Vector2f{ left(), cursorY }, sf::Vector2f{ innerWidth(), height }, std::move(labels), std::move(getIndex), std::move(onSelect)));
+		cursorY += height + 6.0f;
+	}
+
 	void finish() { panel->setHeight(cursorY - pos.y + theme::PADDING); }
 
 private:
+	static constexpr float LIST_ITEM_HEIGHT = 24.0f;
+
 	float left() const { return pos.x + theme::PADDING; }
 	float innerWidth() const { return width - 2.0f * theme::PADDING; }
 

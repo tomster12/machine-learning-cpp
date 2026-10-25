@@ -33,7 +33,7 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
-    <ClCompile Include="FitnessGraph.cpp">
+    <ClCompile Include="GraphDock.cpp">
       <Filter>Source\UI</Filter>
     </ClCompile>
     <ClCompile Include="Scenario.cpp">
@@ -137,7 +137,7 @@
     <ClInclude Include="Camera.h">
       <Filter>Source\Common</Filter>
     </ClInclude>
-    <ClInclude Include="FitnessGraph.h">
+    <ClInclude Include="GraphDock.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
     <ClInclude Include="Scenario.h">

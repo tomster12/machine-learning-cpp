@@ -2,7 +2,7 @@
 
 #include <GenepoolSimulation.h>
 #include "Camera.h"
-#include "FitnessGraph.h"
+#include "GraphDock.h"
 
 class UIStatsPanel;
 
@@ -20,6 +20,8 @@ public:
 	void render(sf::RenderWindow* window);
 
 protected:
+	virtual bool hasDifficulty() const { return false; }
+	virtual float getDifficulty(int generation) const { return 0.0f; }
 	virtual sf::Vector2f getWorldSize() const { return { 1400.0f, 1000.0f }; };
 	virtual void initAgentStats(UIStatsPanel& panel) {};
 	virtual void renderWorld(sf::RenderWindow* window) {};
@@ -52,7 +54,7 @@ private:
 	void updateElite();
 
 	Camera camera;
-	FitnessGraph graph;
+	GraphDock graphs;
 	AgentView view = AgentView::ALL;
 	size_t eliteIndex = 0;
 	int eliteGeneration = -1;

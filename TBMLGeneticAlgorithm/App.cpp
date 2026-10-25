@@ -7,7 +7,7 @@
 #include "NNTargetScenario.h"
 #include "LanderScenario.h"
 
-#define SCENARIO 5
+#define SCENARIO 3
 
 App::~App()
 {
@@ -36,13 +36,13 @@ void App::initialize()
 	window->setVerticalSyncEnabled(false);
 
 	#if SCENARIO == 1
-	ScenarioUPtr scenario = std::make_unique<NNTargetScenario>();
+	ScenarioUPtr scenario = std::make_unique<VectorListTargetScenario>();
 	#elif SCENARIO == 2
-	ScenarioUPtr scenario = std::make_unique<NNDriverScenario>();
+	ScenarioUPtr scenario = std::make_unique<NNTargetScenario>();
 	#elif SCENARIO == 3
 	ScenarioUPtr scenario = std::make_unique<NNPoleBalancerScenario>();
 	#elif SCENARIO == 4
-	ScenarioUPtr scenario = std::make_unique<VectorListTargetScenario>();
+	ScenarioUPtr scenario = std::make_unique<NNDriverScenario>();
 	#elif SCENARIO == 5
 	ScenarioUPtr scenario = std::make_unique<LanderScenario>();
 	#endif

@@ -57,7 +57,7 @@ LanderScenario::LanderScenario()
 			std::make_shared<tbml::nn::Layer::Dense>(16, 12),
 			std::make_shared<tbml::nn::Layer::TanH>(),
 			std::make_shared<tbml::nn::Layer::Dense>(12, 2),
-			std::make_shared<tbml::nn::Layer::TanH>() }), 0.15f);
+			std::make_shared<tbml::nn::Layer::TanH>() }));
 	},
 		nullptr);
 
@@ -67,6 +67,8 @@ LanderScenario::LanderScenario()
 		return std::make_unique<LanderAgent>(std::move(data), this->getCourse(this->genepool->getGenerationNumber() / COURSE_PERIOD + 1));
 	});
 
+	// Squared fitness already sharpens roulette, which beat tournaments here
+	this->genepool->configSelection(tbml::ga::SelectionType::ROULETTE);
 	this->genepool->configThreading(false, true, false);
 	this->genepool->resetGenepool(1500, 0.05f);
 	this->genepool->logInformation();
@@ -75,6 +77,11 @@ LanderScenario::LanderScenario()
 	{
 		stars.push_back({ { randomRange(-300.0f, 1700.0f), randomRange(-300.0f, 800.0f) }, randomRange(0.6f, 1.8f), randomRange(0.0f, 6.28f) });
 	}
+}
+
+float LanderScenario::getDifficulty(int generation) const
+{
+	return LanderCourse::getDifficultyFor((generation - 1) / COURSE_PERIOD + 1);
 }
 
 std::shared_ptr<const LanderCourse> LanderScenario::getCourse(int number)

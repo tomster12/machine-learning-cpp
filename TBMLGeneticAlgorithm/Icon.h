@@ -2,7 +2,7 @@
 
 #include "UITheme.h"
 
-enum class Icon { PLAY, PAUSE, RUN_TO_END, NEXT, LOOP, FAST, MINUS, PLUS };
+enum class Icon { PLAY, PAUSE, RUN_TO_END, NEXT, LOOP, RESET, AUTO, FAST, MINUS, PLUS };
 
 namespace icons
 {
@@ -58,8 +58,10 @@ namespace icons
 			break;
 
 		case Icon::LOOP:
+		case Icon::RESET:
 		{
-			// Open circle with an arrowhead on the end
+			// Open circle with an arrowhead on the end, mirrored for reset so it reads as going back
+			const float direction = icon == Icon::RESET ? -1.0f : 1.0f;
 			const float radius = 0.42f * s;
 			const float thickness = std::max(1.0f, 0.17f * s);
 			const float start = 1.0f;
@@ -69,15 +71,21 @@ namespace icons
 			for (int i = 0; i <= segments; i++)
 			{
 				const float angle = start + (end - start) * static_cast<float>(i) / static_cast<float>(segments);
-				const sf::Vector2f point(c.x + radius * std::cos(angle), c.y + radius * std::sin(angle));
+				const sf::Vector2f point(c.x + direction * radius * std::cos(angle), c.y + radius * std::sin(angle));
 				if (i > 0) line(out, previous, point, thickness, colour);
 				previous = point;
 			}
-			const sf::Vector2f radial(std::cos(end), std::sin(end));
-			const sf::Vector2f tangent(-std::sin(end), std::cos(end));
+			const sf::Vector2f radial(direction * std::cos(end), std::sin(end));
+			const sf::Vector2f tangent(-direction * std::sin(end), std::cos(end));
 			polygon(out, { previous + radial * 0.3f * s, previous - radial * 0.3f * s, previous + tangent * 0.45f * s }, colour);
 			break;
 		}
+
+		case Icon::AUTO:
+			line(out, { c.x - 0.45f * s, c.y + 0.5f * s }, { c.x, c.y - 0.5f * s }, 2.0f, colour);
+			line(out, { c.x, c.y - 0.5f * s }, { c.x + 0.45f * s, c.y + 0.5f * s }, 2.0f, colour);
+			line(out, { c.x - 0.25f * s, c.y + 0.15f * s }, { c.x + 0.25f * s, c.y + 0.15f * s }, 2.0f, colour);
+			break;
 
 		case Icon::FAST:
 			polygon(out, { { c.x - 0.55f * s, c.y - 0.45f * s }, { c.x - 0.55f * s, c.y + 0.45f * s }, { c.x - 0.05f * s, c.y } }, colour);

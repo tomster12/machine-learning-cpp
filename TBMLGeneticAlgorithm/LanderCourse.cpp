@@ -10,7 +10,7 @@ LanderCourse::LanderCourse(int number)
 	auto lerp = [](float a, float b, float t) { return a + (b - a) * t; };
 
 	// Later courses have a narrower pad, rougher ground and a wilder spawn
-	difficulty = std::min(1.0f, static_cast<float>(number - 1) / static_cast<float>(RAMP_GENERATIONS));
+	difficulty = getDifficultyFor(number);
 	padWidth = lerp(280.0f, 130.0f, difficulty);
 	const float roughness = lerp(30.0f, 170.0f, difficulty);
 
@@ -42,6 +42,11 @@ LanderCourse::LanderCourse(int number)
 	spawnPos = { std::clamp(padX + random(-1.0f, 1.0f) * lerp(0.0f, 600.0f, difficulty), 150.0f, WIDTH - 150.0f), lerp(420.0f, 90.0f, difficulty) };
 	spawnVel = { random(-1.0f, 1.0f) * lerp(0.0f, 110.0f, difficulty), random(0.0f, 1.0f) * lerp(0.0f, 40.0f, difficulty) };
 	spawnRot = random(-1.0f, 1.0f) * lerp(0.0f, 0.8f, difficulty);
+}
+
+float LanderCourse::getDifficultyFor(int number)
+{
+	return std::min(1.0f, static_cast<float>(number - 1) / static_cast<float>(RAMP_GENERATIONS));
 }
 
 float LanderCourse::getHeight(float x) const

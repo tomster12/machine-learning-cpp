@@ -176,7 +176,7 @@
     <ClCompile Include="CommonImpl.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="FitnessGraph.cpp" />
+    <ClCompile Include="GraphDock.cpp" />
     <ClCompile Include="Scenario.cpp" />
     <ClCompile Include="LanderAgent.cpp" />
     <ClCompile Include="LanderCourse.cpp" />
@@ -209,7 +209,7 @@
     <ClInclude Include="CommonImpl.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="FitnessGraph.h" />
+    <ClInclude Include="GraphDock.h" />
     <ClInclude Include="Scenario.h" />
     <ClInclude Include="LanderAgent.h" />
     <ClInclude Include="LanderCourse.h" />

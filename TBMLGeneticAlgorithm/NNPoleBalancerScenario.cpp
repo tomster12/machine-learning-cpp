@@ -26,6 +26,8 @@ NNPoleBalancerScenario::NNPoleBalancerScenario()
 		);
 	});
 
+	// Only one neuron to recombine, so adapting the mutation rate is what keeps it from stalling
+	this->genepool->setAdaptiveMutation(true);
 	this->genepool->configThreading(false, true, false);
 	this->genepool->resetGenepool(1000, 0.1f);
 }

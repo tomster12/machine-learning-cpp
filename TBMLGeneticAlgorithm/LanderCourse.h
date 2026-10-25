@@ -11,6 +11,8 @@ public:
 
 	explicit LanderCourse(int number);
 
+	static float getDifficultyFor(int number);
+
 	float getHeight(float x) const;
 	float castRay(sf::Vector2f start, float angle, float length) const;
 

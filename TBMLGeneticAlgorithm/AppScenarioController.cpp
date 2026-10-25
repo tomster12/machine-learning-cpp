@@ -59,6 +59,7 @@ void AppScenarioController::initUI(sf::RenderWindow* window)
 	stats.row("Population", [&]() { return std::to_string(this->genepool->getPopulationSize()); });
 	stats.row("Evaluated", [&]() { return std::string(this->genepool->getGenerationEvaluated() ? "Yes" : "No"); });
 	stats.row("Best fitness", [&]() { return global::formatFloat(this->genepool->getBestFitness()); });
+	stats.row("Mutation rate", [&]() { return global::formatFloat(this->genepool->getMutationRate(), 3) + (this->genepool->getAdaptiveMutation() ? " auto" : ""); });
 
 	stats.header("Simulation");
 	stats.row("FPS", [&]() { return global::formatFloat(this->fps, 0); });

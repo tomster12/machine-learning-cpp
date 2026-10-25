@@ -15,7 +15,7 @@ C++23 (MSVC), SFML 3. Match the surrounding code.
 ## Project
 
 - `TBML/` is the library (`tbml::ga`, `tbml::nn`, `tbml::fn`), the apps are in the global namespace.
-- Prefer composition over inheritance. Shared behaviour goes in components a class owns (`Camera`, `FitnessGraph`, `NNRenderer`), not in extra base classes.
-- New scenario: derive from `Scenario` (the only base), hold the genepool as a member, implement `getGenepool` and `renderAgents`, then register it in `App.cpp`. If the agents have `render(window, bool isElite)`, `renderAgents` is `this->renderGenepoolAgents(window, *genepool->getAgentPopulation())`. Override `renderWorld` (world space) or `renderOverlay` (screen space) as needed. For a network viewer, add `getBrain()` / `getNetInput()` to the agent and own an `NNRenderer`.
+- Prefer composition over inheritance. Shared behaviour goes in components a class owns (`Camera`, `GraphDock`, `NNRenderer`), not in extra base classes.
+- New scenario: derive from `Scenario` (the only base), hold the genepool as a member, implement `getGenepool` and `renderAgents`, then register it in `App.cpp`. If the agents have `render(window, bool isElite)`, `renderAgents` is `this->renderGenepoolAgents(window, *genepool->getAgentPopulation())`. Override `renderWorld` (world space) or `renderOverlay` (screen space) as needed. A scenario with a difficulty curve overrides `hasDifficulty` / `getDifficulty(generation)` to get a Difficulty tab in the `GraphDock`. For a network viewer, add `getBrain()` / `getNetInput()` to the agent and own an `NNRenderer`.
 - UI colours, sizes and spacing come from `UITheme.h`.
 - Build through the solution: `MSBuild MachineLearning.sln /t:TBMLGeneticAlgorithm /p:Configuration=Release /p:Platform=x64`. Close the running exe first or linking fails.

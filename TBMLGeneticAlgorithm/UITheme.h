@@ -14,6 +14,7 @@ namespace theme
 	inline const sf::Color NEGATIVE(222, 104, 100);
 	inline const sf::Color WARNING(230, 188, 90);
 	inline const sf::Color INFO(112, 184, 240);
+	inline const sf::Color ELITE(120, 206, 150);
 
 	inline const sf::Color CAR_ALIVE(244, 246, 248);
 	inline const sf::Color CAR_CRASHED = NEGATIVE;

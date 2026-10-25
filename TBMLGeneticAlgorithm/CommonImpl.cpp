@@ -48,6 +48,8 @@ const size_t VectorListGenome::getSize() const { return this->dataSize; }
 
 namespace
 {
+	constexpr size_t MIN_NEURONS_FOR_NEURON_CROSSOVER = 8;
+
 	float getRandomGaussian()
 	{
 		// Box-Muller transform
@@ -79,22 +81,34 @@ NNGenome::GenomeCPtr NNGenome::crossover(const NNGenome::GenomeCPtr& otherData, 
 		const tbml::nn::Layer::Dense& denseLayer = dynamic_cast<const tbml::nn::Layer::Dense&>(*layers[i]);
 		const tbml::nn::Layer::Dense& otherDenseLayer = dynamic_cast<const tbml::nn::Layer::Dense&>(*otherLayers[i]);
 
-		// Perform crossover
+		// Perform crossover, inheriting whole neurons (their incoming weights and bias together) so working circuits stay intact
+		// Narrow layers have too few neurons to recombine that way, so they mix weight by weight instead
+		auto mutate = [&](float value) -> float
+		{
+			if (tbml::fn::getRandomFloat() >= mutateChance) return value;
+
+			// Nudge the inherited value, or replace it outright when perturbation is off
+			if (this->perturbStrength > 0.0f) return value + getRandomGaussian() * this->perturbStrength;
+			return tbml::fn::getRandomFloat() * 2 - 1;
+		};
 		const tbml::Tensor& weights = denseLayer.getWeights();
 		const tbml::Tensor& otherWeights = otherDenseLayer.getWeights();
 		const tbml::Tensor& biases = denseLayer.getBias();
 		const tbml::Tensor& otherBiases = otherDenseLayer.getBias();
-		auto inheritOrMutate = [&](float a, float b) -> float
+		tbml::Tensor newWeights = weights;
+		tbml::Tensor newBiases = biases;
+		const bool wholeNeurons = weights.getShape(1) >= MIN_NEURONS_FOR_NEURON_CROSSOVER;
+		for (size_t neuron = 0; neuron < weights.getShape(1); neuron++)
 		{
-			const float inherited = tbml::fn::getRandomFloat() < 0.5f ? a : b;
-			if (tbml::fn::getRandomFloat() >= mutateChance) return inherited;
-
-			// Nudge the inherited value, or replace it outright when perturbation is off
-			if (this->perturbStrength > 0.0f) return inherited + getRandomGaussian() * this->perturbStrength;
-			return tbml::fn::getRandomFloat() * 2 - 1;
-		};
-		tbml::Tensor newWeights = weights.ewised(otherWeights, inheritOrMutate);
-		tbml::Tensor newBiases = biases.ewised(otherBiases, inheritOrMutate);
+			const bool neuronFromOther = tbml::fn::getRandomFloat() < 0.5f;
+			for (size_t input = 0; input < weights.getShape(0); input++)
+			{
+				const bool fromOther = wholeNeurons ? neuronFromOther : tbml::fn::getRandomFloat() < 0.5f;
+				newWeights.at(input, neuron) = mutate(fromOther ? otherWeights.at(input, neuron) : weights.at(input, neuron));
+			}
+			const bool biasFromOther = wholeNeurons ? neuronFromOther : tbml::fn::getRandomFloat() < 0.5f;
+			newBiases.at(0, neuron) = mutate(biasFromOther ? otherBiases.at(0, neuron) : biases.at(0, neuron));
+		}
 
 		// Create new dense layer
 		newLayers[i] = std::make_shared<tbml::nn::Layer::Dense>(std::move(newWeights), std::move(newBiases));

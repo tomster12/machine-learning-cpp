@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <cmath>
 #include <numeric>
 #include "Utility.h"
 #include "ThreadPool.h"
@@ -54,7 +56,10 @@ namespace tbml
 		{
 			float best = 0.0f;
 			float average = 0.0f;
+			float mutationRate = 0.0f;
 		};
+
+		enum class SelectionType { ROULETTE, TOURNAMENT };
 
 		// Seperate interface without template for Genepool
 		class IGenepool
@@ -73,6 +78,12 @@ namespace tbml
 			virtual const std::vector<GenerationStats>& getHistory() const = 0;
 			virtual bool getGenepoolInitialized() const = 0;
 			virtual bool getGenerationEvaluated() const = 0;
+			virtual float getMutationRate() const = 0;
+			virtual void setMutationRate(float rate) = 0;
+			virtual void resetMutationRate() = 0;
+			virtual bool getAdaptiveMutation() const = 0;
+			virtual void setAdaptiveMutation(bool enabled) = 0;
+			virtual size_t getEliteCount() const = 0;
 			virtual void logInformation() = 0;
 		};
 
@@ -105,6 +116,8 @@ namespace tbml
 				this->isGenepoolInitialized = true;
 				this->populationSize = populationSize;
 				this->mutationRate = mutationRate;
+				this->baseMutationRate = mutationRate;
+				this->stagnantGenerations = 0;
 				this->currentGeneration = 1;
 				this->currentStep = 0;
 				this->isGenerationEvaluated = false;
@@ -180,21 +193,22 @@ namespace tbml
 				this->bestGenome = GenomeCPtr(bestAgent->getGenome());
 				this->bestFitness = bestAgent->getFitness();
 
-				// Record generation stats
+				// Record generation stats alongside the mutation rate used to breed the next generation
 				float totalFitness = 0.0f;
 				for (const auto& agent : this->agentPopulation) totalFitness += agent->getFitness();
-				this->history.push_back({ this->bestFitness, totalFitness / static_cast<float>(this->agentPopulation.size()) });
+				if (this->adaptiveMutation) this->adaptMutationRate();
+				this->history.push_back({ this->bestFitness, totalFitness / static_cast<float>(this->agentPopulation.size()), this->mutationRate });
 
 				std::cout << "Generation " << this->currentGeneration << " iterating, best fitness: " << this->bestFitness << std::endl;
 
-				// Initialize next generation with previous best (Elitism)
+				// Initialize next generation with the previous best (Elitism), keeping them first and in rank order
+				const size_t eliteCount = this->getEliteCount();
 				std::vector<AgentPtr> nextGeneration;
-				nextGeneration.push_back(std::move(createAgentFn(std::move(this->bestGenome))));
+				for (size_t i = 0; i < eliteCount; i++) nextGeneration.push_back(createAgentFn(GenomeCPtr(this->agentPopulation[i]->getGenome())));
 
 				// [SELECTION] Select all parents to use
-				size_t reproduceCount = this->populationSize - 1;
-				std::vector<AgentPtr> parentData = selectRoulette(this->agentPopulation, (int)reproduceCount * 2);
-				//std::vector<AgentPtr> parentData = selectTournament(this->agentPopulation, reproduceCount * 2, 3);
+				const size_t reproduceCount = this->populationSize - eliteCount;
+				std::vector<AgentPtr> parentData = this->selectParents(static_cast<int>(reproduceCount) * 2);
 
 				for (size_t i = 0; i < reproduceCount; i++)
 				{
@@ -214,7 +228,10 @@ namespace tbml
 				initializeGeneration();
 			};
 
-			void configThreading(bool enableMultithreadedStepEvaluation = false, bool enableMultithreadedFullEvaluation = false, bool syncMultithreadedSteps = false)
+			void configThreading(
+				bool enableMultithreadedStepEvaluation = false,
+				bool enableMultithreadedFullEvaluation = false,
+				bool syncMultithreadedSteps = false)
 			{
 				if (enableMultithreadedFullEvaluation && enableMultithreadedStepEvaluation)
 					throw std::runtime_error("tbml::GenepoolSimulation: Cannot have both enableMultithreadedFullEvaluation and enableMultithreadedStepEvaluation.");
@@ -224,6 +241,38 @@ namespace tbml
 				this->useThreadedStep = enableMultithreadedStepEvaluation;
 				this->useThreadedFullStep = enableMultithreadedFullEvaluation;
 				this->syncThreadedFullSteps = syncMultithreadedSteps;
+			}
+
+			void configSelection(SelectionType type, int tournamentSize = 7)
+			{
+				this->selectionType = type;
+				this->tournamentSize = std::max(2, tournamentSize);
+			}
+
+			void configElitism(float fraction) { this->eliteFraction = std::clamp(fraction, 0.0f, 0.5f); }
+
+			float getMutationRate() const { return this->mutationRate; }
+
+			void setMutationRate(float rate) { this->mutationRate = std::clamp(rate, 0.0005f, 1.0f); }
+
+			void resetMutationRate()
+			{
+				this->mutationRate = this->baseMutationRate;
+				this->stagnantGenerations = 0;
+			}
+
+			bool getAdaptiveMutation() const { return this->adaptiveMutation; }
+
+			void setAdaptiveMutation(bool enabled)
+			{
+				this->adaptiveMutation = enabled;
+				this->stagnantGenerations = 0;
+			}
+
+			size_t getEliteCount() const
+			{
+				const size_t count = static_cast<size_t>(std::round(static_cast<float>(this->populationSize) * this->eliteFraction));
+				return std::clamp<size_t>(count, 1, static_cast<size_t>(std::max(1, this->populationSize)));
 			}
 
 			std::vector<AgentPtr>* getAgentPopulation() { return &this->agentPopulation; }
@@ -272,6 +321,12 @@ namespace tbml
 			bool syncThreadedFullSteps = false;
 			int populationSize = 0;
 			float mutationRate = 0.0f;
+			float baseMutationRate = 0.0f;
+			bool adaptiveMutation = false;
+			int stagnantGenerations = 0;
+			float eliteFraction = 0.02f;
+			SelectionType selectionType = SelectionType::TOURNAMENT;
+			int tournamentSize = 7;
 
 			bool isGenepoolInitialized = false;
 			bool isGenerationEvaluated = false;
@@ -284,6 +339,30 @@ namespace tbml
 			std::vector<AgentPtr> agentPopulation;
 			std::vector<GenerationStats> history;
 
+			void adaptMutationRate()
+			{
+				// Compare against the best of the recent generations: explore harder when stuck, settle down while improving
+				constexpr size_t WINDOW = 10;
+				constexpr int PATIENCE = 5;
+				float recentBest = 0.0f;
+				for (size_t i = this->history.size() > WINDOW ? this->history.size() - WINDOW : 0; i < this->history.size(); i++) recentBest = std::max(recentBest, this->history[i].best);
+
+				if (this->history.empty() || this->bestFitness > recentBest * 1.01f)
+				{
+					this->stagnantGenerations = 0;
+					this->mutationRate *= 0.85f;
+				}
+				else if (++this->stagnantGenerations >= PATIENCE) this->mutationRate *= 1.3f;
+
+				this->mutationRate = std::clamp(this->mutationRate, this->baseMutationRate * 0.25f, this->baseMutationRate * 4.0f);
+			}
+
+			std::vector<AgentPtr> selectParents(int selectAmount) const
+			{
+				if (this->selectionType == SelectionType::ROULETTE) return selectRoulette(this->agentPopulation, selectAmount);
+				return selectTournament(this->agentPopulation, selectAmount, this->tournamentSize);
+			}
+
 			static std::vector<AgentPtr> selectRoulette(const std::vector<AgentPtr>& agentPopulation, int selectAmount)
 			{
 				std::vector<float> fitnessValues;
@@ -293,17 +372,26 @@ namespace tbml
 				std::vector<AgentPtr> selectedAgents;
 				for (int i = 0; i < selectAmount; i++)
 				{
+					// Fall back to a uniform pick when nobody has any fitness, or rounding runs past the end
+					if (totalFitness <= 0.0f)
+					{
+						selectedAgents.push_back(agentPopulation[fn::getRandomInt(0, static_cast<int>(agentPopulation.size()) - 1)]);
+						continue;
+					}
+
 					float r = fn::getRandomFloat() * totalFitness;
 					float cumSum = 0.0f;
+					AgentPtr selected = agentPopulation.back();
 					for (size_t j = 0; j < agentPopulation.size(); j++)
 					{
 						cumSum += fitnessValues[j];
 						if (r <= cumSum)
 						{
-							selectedAgents.push_back(agentPopulation[j]);
+							selected = agentPopulation[j];
 							break;
 						}
 					}
+					selectedAgents.push_back(std::move(selected));
 				}
 
 				return selectedAgents;
@@ -314,15 +402,14 @@ namespace tbml
 				std::vector<AgentPtr> selectedAgents;
 				for (int i = 0; i < selectAmount; i++)
 				{
-					std::vector<AgentPtr> tournament;
+					// Fittest of a few random entrants wins
+					const AgentPtr* winner = nullptr;
 					for (int j = 0; j < tournamentSize; j++)
 					{
-						int r = tbml::fn::getRandomInt(0, agentPopulation.size() - 1);
-						tournament.push_back(agentPopulation[r]);
+						const AgentPtr& entrant = agentPopulation[fn::getRandomInt(0, static_cast<int>(agentPopulation.size()) - 1)];
+						if (winner == nullptr || entrant->getFitness() > (*winner)->getFitness()) winner = &entrant;
 					}
-
-					std::sort(tournament.begin(), tournament.end(), [](const auto& a, const auto& b) { return a->getFitness() > b->getFitness(); });
-					selectedAgents.push_back(tournament[0]);
+					selectedAgents.push_back(*winner);
 				}
 
 				return selectedAgents;
